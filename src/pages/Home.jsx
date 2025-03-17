@@ -1,4 +1,3 @@
-import React from "react";
 import { APP_INFO } from "../constants/common.constants";
 import ChatList from "../components/ChatList";
 import ChatWindow from "../components/ChatWindow";
