@@ -14,13 +14,45 @@ const Register = () => {
     confirm_password: "",
   });
 
+  const [errors, setErrors] = useState({
+    phone: "",
+    password: "",
+    confirm_password: "",
+  });
+
+  const validatePhone = (phone) => {
+    const phoneRegex = /(0[3|5|7|8|9])+([0-9]{8})\b/;
+    if (!phoneRegex.test(phone)) {
+      return "Số điện thoại không hợp lệ";
+    }
+    return "";
+  };
+
+  const validatePassword = (password) => {
+    if (password.length < 6) {
+      return "Mật khẩu phải có ít nhất 6 ký tự";
+    }
+    return "";
+  };
+
+  const validateConfirmPassword = (confirm_password) => {
+    if (confirm_password != formData.password) {
+      return "Mật khẩu không khớp";
+    }
+    return "";
+  };
+
   const navigate = useNavigate();
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (errors.phone || errors.password || errors.confirm_password) {
+      alert("Vui lòng kiểm tra lại thông tin");
+      return;
+    }
     // Xử lý logic đăng ký ở đây
     console.log("Form submitted:", formData);
-    navigate("/home"); // Chuyển hướng đến trang chủ sau khi đăng ký thành công
+    navigate("/"); // Chuyển hướng đến trang chủ sau khi đăng ký thành công
   };
 
   const handleChange = (e) => {
@@ -29,6 +61,27 @@ const Register = () => {
       ...prev,
       [name]: value,
     }));
+    if (name === "phone") {
+      setErrors({ ...errors, phone: validatePhone(value) });
+    }
+    if (name === "password") {
+      setErrors({
+        ...errors,
+        password: validatePassword(value),
+      });
+      if (formData.confirm_password != "") {
+        setFormData((prev) => ({
+          ...prev,
+          confirm_password: "",
+        }));
+      }
+    }
+    if (name === "confirm_password") {
+      setErrors({
+        ...errors,
+        confirm_password: validateConfirmPassword(value),
+      });
+    }
   };
 
   return (
@@ -62,6 +115,7 @@ const Register = () => {
               autoComplete="phone"
               onChange={handleChange}
               value={formData.phone}
+              error={errors.phone}
             />
             {/* Mật khẩu */}
             <Input
@@ -73,6 +127,7 @@ const Register = () => {
               autoComplete="new-password"
               onChange={handleChange}
               value={formData.password}
+              error={errors.password}
             />
 
             {/* Xác nhận mật khẩu */}
@@ -85,6 +140,7 @@ const Register = () => {
               autoComplete="new-password"
               onChange={handleChange}
               value={formData.confirm_password}
+              error={errors.confirm_password}
             />
           </div>
 
