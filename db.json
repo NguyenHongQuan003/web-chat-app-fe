@@ -1,0 +1,294 @@
+{
+    "users": [
+      {
+        "userID": "user1",
+        "phoneNumber": "1234567890",
+        "fullName": "Nguyen Van A",
+        "avatar": "https://example.com/avatar1.jpg",
+        "createAtTimeStamp": "2025-03-20T10:00:00Z",
+        "updateAtTimeStamp": "2025-03-20T10:00:00Z"
+      },
+      {
+        "userID": "user2",
+        "phoneNumber": "0987654321",
+        "fullName": "Tran Thi B",
+        "avatar": "https://example.com/avatar2.jpg",
+        "createAtTimeStamp": "2025-03-20T10:05:00Z",
+        "updateAtTimeStamp": "2025-03-20T10:05:00Z"
+      },
+      {
+        "userID": "user3",
+        "phoneNumber": "1122334455",
+        "fullName": "Le Van C",
+        "avatar": "https://example.com/avatar3.jpg",
+        "createAtTimeStamp": "2025-03-20T10:10:00Z",
+        "updateAtTimeStamp": "2025-03-20T10:10:00Z"
+      },
+      {
+        "userID": "user4",
+        "phoneNumber": "2233445566",
+        "fullName": "Pham Thi D",
+        "avatar": "https://example.com/avatar4.jpg",
+        "createAtTimeStamp": "2025-03-20T10:15:00Z",
+        "updateAtTimeStamp": "2025-03-20T10:15:00Z"
+      },
+      {
+        "userID": "user5",
+        "phoneNumber": "3344556677",
+        "fullName": "Hoang Van E",
+        "avatar": "https://example.com/avatar5.jpg",
+        "createAtTimeStamp": "2025-03-20T10:20:00Z",
+        "updateAtTimeStamp": "2025-03-20T10:20:00Z"
+      },
+      {
+        "userID": "user6",
+        "phoneNumber": "4455667788",
+        "fullName": "Nguyen Thi F",
+        "avatar": "https://example.com/avatar6.jpg",
+        "createAtTimeStamp": "2025-03-20T10:25:00Z",
+        "updateAtTimeStamp": "2025-03-20T10:25:00Z"
+      },
+      {
+        "userID": "user7",
+        "phoneNumber": "5566778899",
+        "fullName": "Tran Van G",
+        "avatar": "https://example.com/avatar7.jpg",
+        "createAtTimeStamp": "2025-03-20T10:30:00Z",
+        "updateAtTimeStamp": "2025-03-20T10:30:00Z"
+      }
+    ],
+    "friends": [
+      {
+        "userID": "user1",
+        "friendID": "user2",
+        "friendStatus": "ACCEPTED",
+        "createAtTimeStamp": "2025-03-20T10:35:00Z",
+        "updateAtTimeStamp": "2025-03-20T10:35:00Z"
+      },
+      {
+        "userID": "user1",
+        "friendID": "user3",
+        "friendStatus": "PENDING",
+        "createAtTimeStamp": "2025-03-20T10:40:00Z",
+        "updateAtTimeStamp": "2025-03-20T10:40:00Z"
+      },
+      {
+        "userID": "user2",
+        "friendID": "user4",
+        "friendStatus": "ACCEPTED",
+        "createAtTimeStamp": "2025-03-20T10:45:00Z",
+        "updateAtTimeStamp": "2025-03-20T10:45:00Z"
+      },
+      {
+        "userID": "user3",
+        "friendID": "user5",
+        "friendStatus": "ACCEPTED",
+        "createAtTimeStamp": "2025-03-20T10:50:00Z",
+        "updateAtTimeStamp": "2025-03-20T10:50:00Z"
+      },
+      {
+        "userID": "user4",
+        "friendID": "user6",
+        "friendStatus": "PENDING",
+        "createAtTimeStamp": "2025-03-20T10:55:00Z",
+        "updateAtTimeStamp": "2025-03-20T10:55:00Z"
+      },
+      {
+        "userID": "user5",
+        "friendID": "user7",
+        "friendStatus": "ACCEPTED",
+        "createAtTimeStamp": "2025-03-20T11:00:00Z",
+        "updateAtTimeStamp": "2025-03-20T11:00:00Z"
+      },
+      {
+        "userID": "user6",
+        "friendID": "user1",
+        "friendStatus": "PENDING",
+        "createAtTimeStamp": "2025-03-20T11:05:00Z",
+        "updateAtTimeStamp": "2025-03-20T11:05:00Z"
+      },
+      {
+        "userID": "user7",
+        "friendID": "user2",
+        "friendStatus": "ACCEPTED",
+        "createAtTimeStamp": "2025-03-20T11:10:00Z",
+        "updateAtTimeStamp": "2025-03-20T11:10:00Z"
+      }
+    ],
+    "groups": [
+      {
+        "groupID": "group1",
+        "groupName": "Family Chat",
+        "groupPicture": "https://example.com/group1.jpg",
+        "createAtTimeStamp": "2025-03-20T11:15:00Z",
+        "updateAtTimeStamp": "2025-03-20T11:15:00Z"
+      },
+      {
+        "groupID": "group2",
+        "groupName": "Work Team",
+        "groupPicture": "https://example.com/group2.jpg",
+        "createAtTimeStamp": "2025-03-20T11:20:00Z",
+        "updateAtTimeStamp": "2025-03-20T11:20:00Z"
+      },
+      {
+        "groupID": "group3",
+        "groupName": "Friends Hangout",
+        "groupPicture": "https://example.com/group3.jpg",
+        "createAtTimeStamp": "2025-03-20T11:25:00Z",
+        "updateAtTimeStamp": "2025-03-20T11:25:00Z"
+      }
+    ],
+    "groupMembers": [
+      {
+        "groupID": "group1",
+        "userID": "user1",
+        "role": "ADMIN",
+        "joinAtTimeStamp": "2025-03-20T11:30:00Z"
+      },
+      {
+        "groupID": "group1",
+        "userID": "user2",
+        "role": "MEMBER",
+        "joinAtTimeStamp": "2025-03-20T11:35:00Z"
+      },
+      {
+        "groupID": "group1",
+        "userID": "user3",
+        "role": "MEMBER",
+        "joinAtTimeStamp": "2025-03-20T11:40:00Z"
+      },
+      {
+        "groupID": "group2",
+        "userID": "user4",
+        "role": "ADMIN",
+        "joinAtTimeStamp": "2025-03-20T11:45:00Z"
+      },
+      {
+        "groupID": "group2",
+        "userID": "user5",
+        "role": "MEMBER",
+        "joinAtTimeStamp": "2025-03-20T11:50:00Z"
+      },
+      {
+        "groupID": "group2",
+        "userID": "user6",
+        "role": "MEMBER",
+        "joinAtTimeStamp": "2025-03-20T11:55:00Z"
+      },
+      {
+        "groupID": "group3",
+        "userID": "user1",
+        "role": "MEMBER",
+        "joinAtTimeStamp": "2025-03-20T12:00:00Z"
+      },
+      {
+        "groupID": "group3",
+        "userID": "user7",
+        "role": "ADMIN",
+        "joinAtTimeStamp": "2025-03-20T12:05:00Z"
+      },
+      {
+        "groupID": "group3",
+        "userID": "user2",
+        "role": "MEMBER",
+        "joinAtTimeStamp": "2025-03-20T12:10:00Z"
+      }
+    ],
+    "conversations": [
+      {
+        "conversationID": "conv1",
+        "lastMessageType": "TEXT",
+        "lastMessageID": "msg3",
+        "createAtTimeStamp": "2025-03-20T12:15:00Z",
+        "updateAtTimeStamp": "2025-03-20T12:30:00Z"
+      },
+      {
+        "conversationID": "conv2",
+        "lastMessageType": "IMAGE",
+        "lastMessageID": "msg5",
+        "createAtTimeStamp": "2025-03-20T12:20:00Z",
+        "updateAtTimeStamp": "2025-03-20T12:35:00Z"
+      },
+      {
+        "conversationID": "conv3",
+        "lastMessageType": "TEXT",
+        "lastMessageID": "msg7",
+        "createAtTimeStamp": "2025-03-20T12:25:00Z",
+        "updateAtTimeStamp": "2025-03-20T12:40:00Z"
+      }
+    ],
+    "messages": [
+      {
+        "messageID": "msg1",
+        "conversationID": "conv1",
+        "senderID": "user1",
+        "messageType": "TEXT",
+        "messageContent": "Hello everyone in group 1!",
+        "createAtTimeStamp": "2025-03-20T12:15:00Z",
+        "updateAtTimeStamp": "2025-03-20T12:15:00Z"
+      },
+      {
+        "messageID": "msg2",
+        "conversationID": "conv1",
+        "senderID": "user2",
+        "messageType": "TEXT",
+        "messageContent": "Hi! How are you?",
+        "createAtTimeStamp": "2025-03-20T12:20:00Z",
+        "updateAtTimeStamp": "2025-03-20T12:20:00Z"
+      },
+      {
+        "messageID": "msg3",
+        "conversationID": "conv1",
+        "senderID": "user3",
+        "messageType": "TEXT",
+        "messageContent": "I'm good, thanks!",
+        "createAtTimeStamp": "2025-03-20T12:25:00Z",
+        "updateAtTimeStamp": "2025-03-20T12:25:00Z"
+      },
+      {
+        "messageID": "msg4",
+        "conversationID": "conv2",
+        "senderID": "user4",
+        "messageType": "TEXT",
+        "messageContent": "Check out this project update!",
+        "createAtTimeStamp": "2025-03-20T12:30:00Z",
+        "updateAtTimeStamp": "2025-03-20T12:30:00Z"
+      },
+      {
+        "messageID": "msg5",
+        "conversationID": "conv2",
+        "senderID": "user5",
+        "messageType": "IMAGE",
+        "messageContent": "https://example.com/image1.jpg",
+        "createAtTimeStamp": "2025-03-20T12:35:00Z",
+        "updateAtTimeStamp": "2025-03-20T12:35:00Z"
+      },
+      {
+        "messageID": "msg6",
+        "conversationID": "conv3",
+        "senderID": "user1",
+        "messageType": "TEXT",
+        "messageContent": "Hey, let's plan a hangout!",
+        "createAtTimeStamp": "2025-03-20T12:40:00Z",
+        "updateAtTimeStamp": "2025-03-20T12:40:00Z"
+      },
+      {
+        "messageID": "msg7",
+        "conversationID": "conv3",
+        "senderID": "user7",
+        "messageType": "TEXT",
+        "messageContent": "Sounds great! How about this weekend?",
+        "createAtTimeStamp": "2025-03-20T12:45:00Z",
+        "updateAtTimeStamp": "2025-03-20T12:45:00Z"
+      },
+      {
+        "messageID": "msg8",
+        "conversationID": "conv3",
+        "senderID": "user2",
+        "messageType": "TEXT",
+        "messageContent": "I'm in! Let's do it.",
+        "createAtTimeStamp": "2025-03-20T12:50:00Z",
+        "updateAtTimeStamp": "2025-03-20T12:50:00Z"
+      }
+    ]
+  }

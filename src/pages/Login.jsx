@@ -29,18 +29,20 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-      <div className="max-w-md w-full space-y-8 p-8 bg-white rounded-xl shadow-lg">
-        <div>
-          <h2 className="mt-6 text-center text-3xl font-bold text-gray-900">
-            Đăng nhập {APP_INFO.NAME}
-          </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
-            Kết nối với bạn bè và gia đình
-          </p>
-        </div>
+    <div className="min-h-screen bg-[#e8f3ff] flex flex-col justify-center items-center">
+      <div className="text-center mb-4">
+        <h1 className="text-[#0068ff] font-bold text-4xl">{APP_INFO.NAME}</h1>
+        <h2>Đăng nhập tài khoản {APP_INFO.NAME}</h2>
+        <h2>để kết nối với ứng dụng {APP_INFO.NAME} Web</h2>
+      </div>
+
+      <div className="max-w-md w-full p-6 bg-white rounded-xl shadow-lg">
+        <h2 className="text-center font-bold text-gray-900 mb-6">
+          Đăng nhập với mật khẩu
+        </h2>
+
         {/* Form */}
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+        <form className="space-y-6" onSubmit={handleSubmit}>
           <div className="rounded-md shadow-sm space-y-2">
             <Input
               name="phone"
@@ -97,7 +99,7 @@ const Login = () => {
           </div>
         </form>
 
-        <div className="text-center">
+        <div className="text-center mt-6">
           <p className="text-sm text-gray-600">
             Chưa có tài khoản?{" "}
             <Link
