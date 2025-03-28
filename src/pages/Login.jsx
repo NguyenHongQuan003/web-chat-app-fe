@@ -5,19 +5,25 @@ import Input from "../components/common/Input";
 import Button from "../components/common/Button";
 import { FaLock, FaPhone } from "react-icons/fa";
 import { APP_INFO } from "../constants/common.constants";
+import { useAuth } from "../utils/authUtils";
 
 const Login = () => {
   const [formData, setFormData] = useState({
-    phone: "",
-    password: "",
+    phoneNumber: "",
+    passWord: "",
   });
 
   const navigate = useNavigate();
-  const handleSubmit = (e) => {
+  const { signIn } = useAuth();
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Xử lý logic đăng nhập ở đây
     console.log("Form submitted:", formData);
-    navigate("/home");
+    try {
+      await signIn(formData);
+      navigate("/");
+    } catch (error) {
+      console.log("Loi khi dang nhap", error);
+    }
   };
 
   const handleChange = (e) => {
@@ -45,21 +51,21 @@ const Login = () => {
         <form className="space-y-6" onSubmit={handleSubmit}>
           <div className="rounded-md shadow-sm space-y-2">
             <Input
-              name="phone"
+              name="phoneNumber"
               type="tel"
               required
               placeholder="Số điện thoại"
-              value={formData.phone}
+              value={formData.phoneNumber}
               onChange={handleChange}
               icon={FaPhone}
               autoComplete="tel"
             />
             <Input
-              name="password"
+              name="passWord"
               type="password"
               required
               placeholder="Mật khẩu"
-              value={formData.password}
+              value={formData.passWord}
               onChange={handleChange}
               icon={FaLock}
               autoComplete="current-password"
