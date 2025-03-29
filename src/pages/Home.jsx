@@ -26,8 +26,7 @@ const Home = () => {
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
               >
                 <img
-                  // src={user.avatar}
-                  src="https://vcdn1-giaitri.vnecdn.net/2022/09/23/-2181-1663929656.jpg?w=0&h=0&q=100&dpr=2&fit=crop&s=wvx3Xd9YNeLA-9IvhcFllw"
+                  src={user.avatar}
                   alt="avatar"
                   className="h-6 w-6 rounded-full"
                 />

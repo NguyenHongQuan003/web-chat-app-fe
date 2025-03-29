@@ -16,10 +16,17 @@ export const getCurrentUser = async () => {
   }
 };
 
-export const register = async (userData) => {
+export const register = async (formData) => {
+  const userData = new FormData();
+  userData.append("phoneNumber", formData.phoneNumber);
+  userData.append("fullName", formData.fullName);
+  userData.append("passWord", formData.passWord);
+  userData.append("avatar", formData.avatar);
+  userData.append("gender", formData.gender);
+  userData.append("dayOfBirth", formData.dayOfBirth);
   try {
     const response = await axios.post(`${API_URL}/users/register`, userData);
-    // console.log("Du lieu tra ve tu server khi dang ky", response.data);
+    console.log("Du lieu tra ve tu server khi dang ky", response.data);
     return response.data;
   } catch (error) {
     throw new Error("Failed to register user", error);

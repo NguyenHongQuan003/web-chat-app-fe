@@ -7,6 +7,7 @@ import Button from "../components/common/Button";
 import { APP_INFO } from "../constants/common.constants";
 import { auth } from "../config/firebase"; // Import từ firebase.js
 import { RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
+import { register } from "../services/authService";
 
 const Register = () => {
   const [step, setStep] = useState(1);
@@ -163,7 +164,7 @@ const Register = () => {
     }
   };
 
-  const handleFinalSubmit = (e) => {
+  const handleFinalSubmit = async (e) => {
     e.preventDefault();
     const passwordError = validatePassword(formData.passWord);
     const confirmPasswordError = validateConfirmPassword(
@@ -173,7 +174,13 @@ const Register = () => {
 
     if (!passwordError && !confirmPasswordError && !dayOfBirthError) {
       console.log("Registration completed:", formData);
-      navigate("/");
+      try {
+        const response = await register(formData);
+        console.log("Du lieu tra ve tu server khi dang ky", response);
+        navigate("/login");
+      } catch (error) {
+        console.log("Loi khi dang ky", error);
+      }
     } else {
       setErrors({
         passWord: passwordError,
