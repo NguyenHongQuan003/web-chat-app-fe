@@ -1,12 +1,16 @@
 import { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import { AuthContext } from "../utils/authUtils";
-import { getCurrentUser, login, logout } from "../services/authService";
+import {
+  getCurrentUser,
+  login,
+  logout,
+  refreshToken,
+} from "../services/authService";
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  // Định nghĩa PropTypes
 
   useEffect(() => {
     // Kiểm tra trạng thái đăng nhập khi tải trang
@@ -14,14 +18,26 @@ export const AuthProvider = ({ children }) => {
       try {
         if (!user) {
           const res = await getCurrentUser();
-          console.log("Du lieu tra ve tu server khi lay thong tin user", res);
-          setUser(res); // Cập nhật user nếu đã đăng nhập
+          // console.info("User login:", res);
+          setUser(res);
         }
       } catch (error) {
-        console.error("Không có phiên đăng nhập:", error);
-        setUser(null); // Reset user nếu không có cookie hợp lệ
+        console.error(error.message);
+        if (error.status === 410) {
+          try {
+            await refreshToken();
+            const res = await getCurrentUser();
+            setUser(res);
+          } catch (refreshError) {
+            console.error("Error refreshing token: ", refreshError);
+            setUser(null);
+          }
+        } else {
+          console.error("Error getting user login: ", error);
+          setUser(null);
+        }
       } finally {
-        setLoading(false); // Hoàn tất kiểm tra
+        setLoading(false);
       }
     };
     checkAuth();
@@ -32,7 +48,7 @@ export const AuthProvider = ({ children }) => {
       const data = await login(userData);
       setUser(data.user);
     } catch (error) {
-      console.log("Loi khi dang nhap", error);
+      throw new Error("Phone number or password is incorrect", error);
     }
   };
 
@@ -41,7 +57,7 @@ export const AuthProvider = ({ children }) => {
       await logout();
       setUser(null);
     } catch (error) {
-      console.log("Loi khi dang xuat", error);
+      throw new Error("Logout failed", error);
     }
   };
 

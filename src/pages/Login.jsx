@@ -6,6 +6,7 @@ import Button from "../components/common/Button";
 import { FaLock, FaPhone } from "react-icons/fa";
 import { APP_INFO } from "../constants/common.constants";
 import { useAuth } from "../utils/authUtils";
+import { toast } from "react-toastify";
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -20,9 +21,10 @@ const Login = () => {
     console.log("Form submitted:", formData);
     try {
       await signIn(formData);
+      toast.success("Đăng nhập thành công!");
       navigate("/");
     } catch (error) {
-      console.log("Loi khi dang nhap", error);
+      toast.error(error.message);
     }
   };
 

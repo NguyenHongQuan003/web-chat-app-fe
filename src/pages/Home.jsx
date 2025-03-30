@@ -1,51 +1,82 @@
-import { useState } from "react";
-import { APP_INFO } from "../constants/common.constants";
+import { useEffect, useRef, useState } from "react";
 import ChatList from "../components/ChatList";
 import ChatWindow from "../components/ChatWindow";
 import { useAuth } from "../utils/authUtils";
-import { FaUser } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import { FaAddressBook, FaCommentDots, FaUser } from "react-icons/fa";
+import { Link, useNavigate } from "react-router-dom";
+import { FaGear } from "react-icons/fa6";
+import { toast } from "react-toastify";
 
 const Home = () => {
+  const navigate = useNavigate();
   const { user, signOut } = useAuth();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const userDropdownRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        userDropdownRef.current &&
+        !userDropdownRef.current.contains(event.target)
+      ) {
+        setIsDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      // Cleanup sự kiện khi component unmount
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  const handleSignOut = () => {
+    try {
+      signOut();
+      toast.success("Đăng xuất thành công!");
+      navigate("/login");
+    } catch (error) {
+      toast.error("Đăng xuất thất bại!", error.message);
+    }
+  };
+
   return (
-    <>
-      <div className="bg-blue-600 text-white p-4 flex justify-between fixed top-0 left-0 right-0 z-50">
-        <div>
-          <span className="font-bold mr-4">{APP_INFO.NAME}</span>
-          <button className="mr-4">Tin nhắn</button>
-          <button className="mr-4">Danh bạ</button>
-        </div>
-        <div>
-          {/* Login/Register */}
+    <div className=" flex h-screen bg-gray-100">
+      {/* Left Sidebar */}
+      <div className="min-w-16 bg-[#005ae0] flex flex-col items-center py-4">
+        <div className="text-white mb-6">
           {user ? (
-            <div className="relative">
+            <div className="flex" ref={userDropdownRef}>
               <button
-                className="flex items-center p-2 hover:cursor-pointer rounded-full bg-white"
+                className="flex items-center p-2 hover:cursor-pointer rounded-full "
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
               >
                 <img
                   src={user.avatar}
                   alt="avatar"
-                  className="h-6 w-6 rounded-full"
+                  className="h-12 w-12 rounded-full border-1 border-white"
                 />
-                <span className="hidden md:block text-[#0078E8] ml-1 text-xs truncate max-w-50">
-                  {`Xin chào, `}
-                  <strong>{user.fullName}</strong>
-                </span>
               </button>
               {isDropdownOpen && (
-                <div className="absolute right-0 mt-2 w-48 bg-white text-black rounded-md shadow-lg z-10">
+                <div className="absolute border border-gray-300 left-16 min-w-74 p-2 bg-white text-black rounded-md shadow-lg z-10">
+                  <div className="px-4 font-bold cursor-default mb-2">
+                    {user.fullName}
+                  </div>
                   <Link
                     to="/profile"
-                    className="block px-4 py-2 text-sm hover:bg-gray-200"
+                    className="border-t border-gray-300 block px-4 py-2 text-sm hover:bg-gray-200"
                   >
-                    Hồ sơ
+                    Hồ sơ của bạn
+                  </Link>
+                  <Link
+                    to="/setting"
+                    className="border-b border-gray-300 block px-4 py-2 text-sm hover:bg-gray-200"
+                  >
+                    Cài đặt
                   </Link>
                   <button
-                    onClick={signOut}
-                    className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-200"
+                    onClick={handleSignOut}
+                    className=" block w-full text-left px-4 py-2 text-sm hover:bg-gray-200"
                   >
                     Đăng xuất
                   </button>
@@ -57,30 +88,28 @@ const Home = () => {
               <div className="p-2 hover:cursor-pointer rounded-full bg-white">
                 <FaUser className="text-[#0078E8] h-5 w-5" />
               </div>
-              <span className="hidden md:block text-white ml-1">Đăng nhập</span>
             </Link>
           )}
         </div>
-      </div>
-      <div className="min-h-screen flex flex-col pt-16">
-        <div className="flex flex-1">
-          <ChatList />
-          <ChatWindow />
-          {/* Content sẽ được thêm sau */}
-          Trang chủ
-          <div>
-            {user ? (
-              <>
-                <h2>Xin chào, {user.fullName}</h2>
-                <button onClick={signOut}>Đăng xuất</button>
-              </>
-            ) : (
-              <p>Vui lòng đăng nhập</p>
-            )}
+        <div className="space-y-2 text-white">
+          <div className="rounded-md p-3 hover:bg-[#0043a8]">
+            <FaCommentDots className="w-6 h-6 cursor-pointer" />
+          </div>
+          <div className="rounded-md p-3 hover:bg-[#0043a8]">
+            <FaAddressBook className="w-6 h-6 cursor-pointer" />
+          </div>
+        </div>
+        <div className="mt-auto space-y-2 text-white">
+          <div className="rounded-md p-3 hover:bg-[#0043a8]">
+            <FaGear className="w-6 h-6 cursor-pointer" />
           </div>
         </div>
       </div>
-    </>
+
+      {/* Chat List */}
+      <ChatList />
+      <ChatWindow />
+    </div>
   );
 };
 

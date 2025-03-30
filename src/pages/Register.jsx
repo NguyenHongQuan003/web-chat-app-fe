@@ -45,16 +45,16 @@ const Register = () => {
 
   // Gửi OTP
   const handleSendOTP = async () => {
-    // const appVerifier = window.recaptchaVerifier;
-    // const phoneNumber = "+84" + formData.phoneNumber.slice(1);
+    const appVerifier = window.recaptchaVerifier;
+    const phoneNumber = "+84" + formData.phoneNumber.slice(1);
 
     try {
-      // const confirmationResult = await signInWithPhoneNumber(
-      //   auth,
-      //   phoneNumber,
-      //   appVerifier
-      // );
-      // window.confirmationResult = confirmationResult;
+      const confirmationResult = await signInWithPhoneNumber(
+        auth,
+        phoneNumber,
+        appVerifier
+      );
+      window.confirmationResult = confirmationResult;
       alert("OTP đã được gửi thành công!");
       setStep(2); // Chuyển bước sau khi gửi thành công
     } catch (error) {
@@ -66,8 +66,8 @@ const Register = () => {
   // Xác minh OTP
   const handleVerifyOTP = async () => {
     try {
-      // const result = await window.confirmationResult.confirm(formData.otp);
-      // alert("Xác minh OTP thành công! UID: " + result.user.uid);
+      const result = await window.confirmationResult.confirm(formData.otp);
+      alert("Xác minh OTP thành công! UID: " + result.user.uid);
       setStep(3); // Chuyển sang bước cuối
     } catch (error) {
       console.error("Lỗi xác minh OTP:", error);

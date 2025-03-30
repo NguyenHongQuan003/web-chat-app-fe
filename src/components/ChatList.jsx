@@ -1,7 +1,10 @@
 // src/components/ChatList.jsx
-import React from "react";
+
+import { useState } from "react";
+import { FaSearch } from "react-icons/fa";
 
 const ChatList = () => {
+  const [search, setSearch] = useState("Tất cả");
   const chats = [
     { id: 1, name: "Bạn A", lastMessage: "Xin chào!", time: "10:00 AM" },
     { id: 2, name: "Bạn B", lastMessage: "Hẹn gặp lại!", time: "9:45 AM" },
@@ -10,7 +13,17 @@ const ChatList = () => {
   ];
 
   return (
-    <div className="w-1/3 bg-white p-4 shadow-lg">
+    <div className="min-w-86 border-r border-gray-300 bg-white px-4 shadow-lg">
+      <div className="relative py-4">
+        <input
+          type="text"
+          placeholder="Tìm kiếm"
+          className="px-8 text-[15px] w-full p-1 rounded-md focus:outline-none focus:ring-1 focus:ring-[#0068ff] 
+            placeholder:text-gray-400 placeholder:font-medium
+            bg-[#ebecf0]"
+        />
+        <FaSearch className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-600" />
+      </div>
       <ul>
         {chats.map((chat) => (
           <li key={chat.id} className="mb-2">

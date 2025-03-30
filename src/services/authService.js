@@ -2,18 +2,10 @@ import axios from "axios";
 const API_URL = "http://localhost:8022/api/v1";
 
 export const getCurrentUser = async () => {
-  try {
-    const response = await axios.get(`${API_URL}/users/me`, {
-      withCredentials: true,
-    });
-    // console.log(
-    //   "Du lieu tra ve tu server khi lay thong tin user",
-    //   response.data
-    // );
-    return response.data;
-  } catch (error) {
-    throw new Error("Failed to get current user", error);
-  }
+  const response = await axios.get(`${API_URL}/users/me`, {
+    withCredentials: true,
+  });
+  return response.data;
 };
 
 export const register = async (formData) => {
@@ -24,36 +16,25 @@ export const register = async (formData) => {
   userData.append("avatar", formData.avatar);
   userData.append("gender", formData.gender);
   userData.append("dayOfBirth", formData.dayOfBirth);
-  try {
-    const response = await axios.post(`${API_URL}/users/register`, userData);
-    console.log("Du lieu tra ve tu server khi dang ky", response.data);
-    return response.data;
-  } catch (error) {
-    throw new Error("Failed to register user", error);
-  }
+
+  const response = await axios.post(`${API_URL}/users/register`, userData);
+  return response.data;
 };
 
 export const login = async (userData) => {
-  try {
-    const response = await axios.post(`${API_URL}/users/login`, userData, {
-      withCredentials: true,
-    });
-    console.log("Du lieu tra ve tu server khi dang nhap", response.data);
-    return response.data;
-  } catch (error) {
-    throw new Error("Failed to login user", error);
-  }
+  const response = await axios.post(`${API_URL}/users/login`, userData, {
+    withCredentials: true,
+  });
+  return response.data;
 };
 
 export const logout = async () => {
-  try {
-    const result = await axios.post(
-      `${API_URL}/users/logout`,
-      {},
-      { withCredentials: true }
-    );
-    console.log("Dang xuat thanh cong", result);
-  } catch (error) {
-    throw new Error("Failed to logout user", error);
-  }
+  await axios.post(`${API_URL}/users/logout`, {}, { withCredentials: true });
+};
+
+export const refreshToken = async () => {
+  const response = await axios.get(`${API_URL}/users/refresh-token`, {
+    withCredentials: true,
+  });
+  return response.data;
 };
