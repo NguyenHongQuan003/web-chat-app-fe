@@ -1,13 +1,14 @@
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
+
 const firebaseConfig = {
-  apiKey: "AIzaSyAZ0MczzhMNUi_u70e1Tq4RG9COZuxOA6k",
-  authDomain: "verify-otp-d40ca.firebaseapp.com",
-  projectId: "verify-otp-d40ca",
-  storageBucket: "verify-otp-d40ca.firebasestorage.app",
-  messagingSenderId: "351883525189",
-  appId: "1:351883525189:web:ba1700e79e2e9bb219772c",
-  measurementId: "G-37X0KLSEB5",
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
 };
 
 const app = initializeApp(firebaseConfig);

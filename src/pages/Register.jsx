@@ -1,5 +1,5 @@
 // src/pages/Register.jsx
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Input from "../components/common/Input";
 import { FaLock, FaPhone, FaUser } from "react-icons/fa";
@@ -8,6 +8,7 @@ import { APP_INFO } from "../constants/common.constants";
 import { auth } from "../config/firebase"; // Import từ firebase.js
 import { RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
 import { register } from "../services/authService";
+import { toast } from "react-toastify";
 
 const Register = () => {
   const [step, setStep] = useState(1);
@@ -25,28 +26,58 @@ const Register = () => {
   const [errors, setErrors] = useState({});
   const navigate = useNavigate();
 
-  // Thiết lập reCAPTCHA
-  const setupRecaptcha = () => {
-    window.recaptchaVerifier = new RecaptchaVerifier(
-      auth,
-      "recaptcha-container",
-      {
-        size: "invisible",
-        callback: () => {
-          // reCAPTCHA được giải, sẵn sàng gửi OTP
-        },
-      }
-    );
-  };
-
-  useEffect(() => {
-    setupRecaptcha();
-  }, []);
-
   // Gửi OTP
   const handleSendOTP = async () => {
+    // Khởi tạo reCAPTCHA ngay trước khi gửi OTP
+    console.log("auth", auth);
+    console.log("Bắt đầu gửi OTP...");
+    const recaptchaContainer = document.getElementById("recaptcha-container");
+    if (!recaptchaContainer) {
+      console.error("Không tìm thấy #recaptcha-container trong DOM");
+      console.error("Lỗi: Container reCAPTCHA không tồn tại");
+      return;
+    }
+
+    if (window.recaptchaVerifier) {
+      console.log("Xóa reCAPTCHA cũ...");
+      window.recaptchaVerifier.clear();
+      window.recaptchaVerifier = null;
+      recaptchaContainer.innerHTML = "";
+    }
+    // Khởi tạo reCAPTCHA nếu chưa tồn tại
+    if (!window.recaptchaVerifier) {
+      console.log("Bắt đầu khởi tạo reCAPTCHA...");
+      try {
+        window.recaptchaVerifier = new RecaptchaVerifier(
+          auth,
+          "recaptcha-container",
+          {
+            size: "invisible",
+            callback: () => {
+              console.log("reCAPTCHA đã được giải");
+            },
+            "expired-callback": () => {
+              console.log("reCAPTCHA đã hết hạn");
+              window.recaptchaVerifier = null;
+            },
+          }
+        );
+      } catch (error) {
+        console.error("Lỗi khởi tạo reCAPTCHA:", error);
+        console.error("Không thể khởi tạo reCAPTCHA: " + error.message);
+        return;
+      }
+    }
+    await window.recaptchaVerifier.render();
+    console.log("reCAPTCHA khởi tạo thành công:", window.recaptchaVerifier);
+
     const appVerifier = window.recaptchaVerifier;
+    if (!appVerifier) {
+      console.error("appVerifier vẫn undefined sau khi khởi tạo");
+      return;
+    }
     const phoneNumber = "+84" + formData.phoneNumber.slice(1);
+    console.log("Số điện thoại:", phoneNumber);
 
     try {
       const confirmationResult = await signInWithPhoneNumber(
@@ -55,20 +86,23 @@ const Register = () => {
         appVerifier
       );
       window.confirmationResult = confirmationResult;
-      alert("OTP đã được gửi thành công!");
-      setStep(2); // Chuyển bước sau khi gửi thành công
+      console.log("OTP đã được gửi thành công!");
+      toast.success("OTP đã được gửi thành công!");
+      console.log("Vui lòng kiểm tra số điện thoại để nhận mã OTP");
+      toast.info("Vui lòng kiểm tra số điện thoại để nhận mã OTP");
+      setStep(2);
     } catch (error) {
-      console.error("Lỗi gửi OTP:", error);
-      alert("Không thể gửi OTP: " + error.message);
+      console.error("Không thể gửi OTP: " + error.message);
+      toast.error("Không thể gửi OTP: " + error.message);
     }
   };
-
   // Xác minh OTP
   const handleVerifyOTP = async () => {
     try {
-      const result = await window.confirmationResult.confirm(formData.otp);
-      alert("Xác minh OTP thành công! UID: " + result.user.uid);
-      setStep(3); // Chuyển sang bước cuối
+      await window.confirmationResult.confirm(formData.otp);
+      // console.log("Xác minh OTP thành công! UID: " + result.user.uid);
+      toast.success("Xác minh OTP thành công!");
+      setStep(3);
     } catch (error) {
       console.error("Lỗi xác minh OTP:", error);
       setErrors((prev) => ({
@@ -177,9 +211,11 @@ const Register = () => {
       try {
         const response = await register(formData);
         console.log("Du lieu tra ve tu server khi dang ky", response);
+        toast.success("Đăng ký thành công!");
         navigate("/login");
       } catch (error) {
         console.log("Loi khi dang ky", error);
+        toast.error("Số điện thoại đã tồn tại!");
       }
     } else {
       setErrors({
