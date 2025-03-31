@@ -4,8 +4,8 @@ import { Link, useNavigate } from "react-router-dom";
 import Input from "../components/common/Input";
 import { FaLock, FaPhone, FaUser } from "react-icons/fa";
 import Button from "../components/common/Button";
-import { APP_INFO } from "../constants/common.constants";
-import { auth } from "../config/firebase"; // Import từ firebase.js
+import { APP_INFO } from "../constants/app.constants";
+import { auth } from "../firebase/firebase";
 import { RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
 import { register } from "../services/authService";
 import { toast } from "react-toastify";

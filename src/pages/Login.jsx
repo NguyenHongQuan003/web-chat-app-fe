@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import Input from "../components/common/Input";
 import Button from "../components/common/Button";
 import { FaLock, FaPhone } from "react-icons/fa";
-import { APP_INFO } from "../constants/common.constants";
+import { APP_INFO } from "../constants/app.constants";
 import { useAuth } from "../utils/authUtils";
 import { toast } from "react-toastify";
 
