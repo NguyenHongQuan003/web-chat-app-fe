@@ -1,8 +1,9 @@
 // src/components/ChatWindow.jsx
-import React, { useState } from "react";
+import { useState } from "react";
 import ChatInfo from "./ChatInfo";
+import PropTypes from "prop-types";
 
-const ChatWindow = () => {
+const ChatWindow = ({ currentChat }) => {
   const [messages, setMessages] = useState([
     { id: 1, sender: "Bạn A", text: "Xin chào!" },
     { id: 2, sender: "Bạn", text: "Chào bạn!" },
@@ -31,6 +32,7 @@ const ChatWindow = () => {
               <strong>{message.sender}:</strong> <span>{message.text}</span>
             </div>
           ))}
+          {currentChat}
         </div>
         <form onSubmit={handleSendMessage} className="flex">
           <input
@@ -51,6 +53,10 @@ const ChatWindow = () => {
       <ChatInfo />
     </>
   );
+};
+
+ChatWindow.propTypes = {
+  currentChat: PropTypes.object,
 };
 
 export default ChatWindow;

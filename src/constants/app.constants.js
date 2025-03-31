@@ -7,3 +7,5 @@ export const APP_INFO = {
   COPYRIGHT: "© 2025 Alo Zola. All rights reserved.",
   LICENSE: "MIT",
 };
+
+export const API_URL_8022 = "http://localhost:8022/api/v1";

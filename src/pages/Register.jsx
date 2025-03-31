@@ -1,9 +1,9 @@
 // src/pages/Register.jsx
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import Input from "../components/common/Input";
+import Input from "../components/Input";
 import { FaLock, FaPhone, FaUser } from "react-icons/fa";
-import Button from "../components/common/Button";
+import Button from "../components/Button";
 import { APP_INFO } from "../constants/app.constants";
 import { auth } from "../firebase/firebase";
 import { RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";

@@ -1,16 +1,26 @@
 import { useEffect, useRef, useState } from "react";
-import ChatList from "../components/ChatList";
-import ChatWindow from "../components/ChatWindow";
+import BoxLeft from "../components/BoxLeft";
 import { useAuth } from "../utils/authUtils";
 import { FaAddressBook, FaCommentDots, FaUser } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { FaGear } from "react-icons/fa6";
-import UserDropDown from "../components/common/UserDropDown";
-
+import UserDropDown from "../components/UserDropDown";
+import ChatWindow from "../components/ChatWindow";
 const Home = () => {
   const { user, signOut } = useAuth();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const userDropdownRef = useRef(null);
+
+  const [tab, setTab] = useState("chat");
+
+  const handleTabChange = (tabName) => {
+    setTab(tabName);
+  };
+
+  const [currentChat, setCurrentChat] = useState(null);
+  const handleChatChange = (chatID) => {
+    setCurrentChat(chatID);
+  };
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -56,10 +66,20 @@ const Home = () => {
           )}
         </div>
         <div className="space-y-2 text-white">
-          <div className="rounded-md p-3 hover:bg-[#0043a8]">
+          <div
+            className={`${
+              tab === "chat" ? "bg-[#0043a8]" : ""
+            } rounded-md p-3 hover:bg-[#0043a8]`}
+            onClick={() => handleTabChange("chat")}
+          >
             <FaCommentDots className="w-6 h-6 cursor-pointer" />
           </div>
-          <div className="rounded-md p-3 hover:bg-[#0043a8]">
+          <div
+            className={`${
+              tab === "friend" ? "bg-[#0043a8]" : ""
+            } rounded-md p-3 hover:bg-[#0043a8]`}
+            onClick={() => handleTabChange("friend")}
+          >
             <FaAddressBook className="w-6 h-6 cursor-pointer" />
           </div>
         </div>
@@ -71,8 +91,9 @@ const Home = () => {
       </div>
 
       {/* Chat List */}
-      <ChatList />
-      <ChatWindow />
+      <BoxLeft tab={tab} onChatChange={handleChatChange} />
+      {/* Chat Window */}
+      <ChatWindow currentChat={currentChat} />
     </div>
   );
 };

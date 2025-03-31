@@ -1,14 +1,22 @@
 // src/components/AddFriendModal.jsx
 import PropTypes from "prop-types";
-import { useState, useRef } from "react";
-import Input from "../components/common/Input";
+import { useState, useRef, useEffect } from "react";
+import Input from "./Input";
 import { FaPhone, FaTimes } from "react-icons/fa";
 import { toast } from "react-toastify";
+import { searchUserByPhoneNumber } from "../services/apiFunctionsUser";
+import { useAuth } from "../utils/authUtils";
 
 const AddFriendModal = ({ isOpen, onClose }) => {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const modalRef = useRef(null);
+  const { user } = useAuth();
+  const userAuth = user;
+
+  useEffect(() => {
+    console.log("searchResults", searchResults);
+  }, [searchResults]);
 
   // Hàm xử lý khi click bên ngoài modal
   const handleClickOutside = (e) => {
@@ -18,69 +26,14 @@ const AddFriendModal = ({ isOpen, onClose }) => {
   };
 
   // Hàm tìm kiếm người dùng
-  const handleSearch = () => {
+  const handleSearch = async () => {
     // Giả lập kết quả tìm kiếm, sau này sẽ gọi API thực tế
-    const mockResults = [
-      {
-        id: 1,
-        name: "Đèn Trang Trí Hùng Thắng aaaaaa",
-        phone: "0376 589 545",
-        avatar: "https://picsum.photos/id/1/50/50",
-        isFriend: false,
-      },
-      {
-        id: 2,
-        name: "Lê Minh Quang",
-        phone: "0987 654 321",
-        avatar: "https://picsum.photos/id/2/50/50",
-        isFriend: false,
-      },
-      {
-        id: 3,
-        name: "Nguyễn Tấn Vinh",
-        phone: "0912 345 678",
-        avatar: "https://picsum.photos/id/3/50/50",
-        isFriend: false,
-      },
-      {
-        id: 4,
-        name: "Phan Hoàng Tấn",
-        phone: "0923 456 789",
-        avatar: "https://picsum.photos/id/4/50/50",
-        isFriend: false,
-      },
-      {
-        id: 4,
-        name: "Phan Hoàng Tấn",
-        phone: "0923 456 789",
-        avatar: "https://picsum.photos/id/4/50/50",
-        isFriend: false,
-      },
-      {
-        id: 4,
-        name: "Phan Hoàng Tấn",
-        phone: "0923 456 789",
-        avatar: "https://picsum.photos/id/4/50/50",
-        isFriend: false,
-      },
-      {
-        id: 4,
-        name: "Phan Hoàng Tấn",
-        phone: "0923 456 789",
-        avatar: "https://picsum.photos/id/4/50/50",
-        isFriend: false,
-      },
-      {
-        id: 4,
-        name: "Phan Hoàng Tấn",
-        phone: "0923 456 789",
-        avatar: "https://picsum.photos/id/4/50/50",
-        isFriend: false,
-      },
-    ];
-
-    setSearchResults(mockResults);
-    toast.info("Đã tìm thấy một số người dùng");
+    try {
+      const res = await searchUserByPhoneNumber(phoneNumber);
+      setSearchResults([res]);
+    } catch (error) {
+      toast.error("Lỗi khi tìm kiếm người dùng", error);
+    }
   };
 
   // Hàm kết bạn
@@ -140,7 +93,7 @@ const AddFriendModal = ({ isOpen, onClose }) => {
             <div className="h-90 max-h-90 overflow-y-auto">
               {searchResults.map((user) => (
                 <div
-                  key={user.id}
+                  key={user.userID}
                   className="px-4 flex justify-between items-center hover:bg-gray-200 cursor-pointer"
                 >
                   <div className="flex items-center py-2">
@@ -154,13 +107,15 @@ const AddFriendModal = ({ isOpen, onClose }) => {
                       <p className="text-xs text-gray-500">{user.phone}</p>
                     </div>
                   </div>
-                  <button
-                    onClick={() => handleAddFriend(user.id)}
-                    className="min-w-[84px] text-[12px] px-4 py-1 rounded outline-1 text-blue-700 font-[700] hover:bg-blue-100 outline-[#0078E8]"
-                    disabled={user.isFriend}
-                  >
-                    {user.isFriend ? "Đã gửi" : "Kết bạn"}
-                  </button>
+                  {userAuth.userID !== user.userID && (
+                    <button
+                      onClick={() => handleAddFriend(user.id)}
+                      className="min-w-[84px] disabled:cursor-not-allowed text-[12px] px-4 py-1 rounded outline-1 text-blue-700 font-[700] hover:bg-blue-100 outline-[#0078E8]"
+                      disabled={user.isFriend}
+                    >
+                      {user.isFriend ? "Đã gửi" : "Kết bạn"}
+                    </button>
+                  )}
                 </div>
               ))}
 
