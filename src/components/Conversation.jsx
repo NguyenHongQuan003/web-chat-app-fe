@@ -1,12 +1,19 @@
 import PropTypes from "prop-types";
+import { useRecoilState } from "recoil";
+import { selectedConversationState } from "../recoil/leftPanelAtom";
 
-const Conversation = ({ chat, currentChat, onChatChange }) => {
+const Conversation = ({ chat }) => {
+  const [selectedConversation, setSelectedConversation] = useRecoilState(
+    selectedConversationState
+  );
   return (
     <div
       className={`px-4 py-4 cursor-pointer ${
-        currentChat === chat.id ? "bg-blue-100" : "hover:bg-gray-100"
+        selectedConversation?.id === chat.id
+          ? "bg-blue-100"
+          : "hover:bg-gray-100"
       }`}
-      onClick={() => onChatChange(chat.id)}
+      onClick={() => setSelectedConversation(chat)}
     >
       <div className="flex justify-start">
         <span className="w-12 h-12 rounded-full bg-blue-500 mr-2"></span>
@@ -22,8 +29,6 @@ const Conversation = ({ chat, currentChat, onChatChange }) => {
 
 Conversation.propTypes = {
   chat: PropTypes.object.isRequired,
-  currentChat: PropTypes.number.isRequired,
-  onChatChange: PropTypes.func.isRequired,
 };
 
 export default Conversation;

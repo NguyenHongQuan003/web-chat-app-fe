@@ -8,4 +8,4 @@ export const APP_INFO = {
   LICENSE: "MIT",
 };
 
-export const API_URL_8022 = "http://localhost:8022/api/v1";
+export const API_URL_8022 = "http://127.0.0.1:8022/api/v1";

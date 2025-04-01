@@ -6,7 +6,18 @@ import { Link } from "react-router-dom";
 import { FaGear } from "react-icons/fa6";
 import UserDropDown from "../components/UserDropDown";
 import ChatWindow from "../components/ChatWindow";
+import { useRecoilState } from "recoil";
+import { currentTabState } from "../recoil/sidebarAtom";
+import SearchTool from "../components/SearchTool";
+import LeftPanel from "../components/LeftPanel";
+import ContentArea from "../components/ContentArea";
+
 const Home = () => {
+  const [currentTab, setCurrentTab] = useRecoilState(currentTabState);
+  const tabs = [
+    { id: "chat", icon: FaCommentDots, label: "Tin nhắn" },
+    { id: "contacts", icon: FaAddressBook, label: "Danh bạ" },
+  ];
   const { user, signOut } = useAuth();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const userDropdownRef = useRef(null);
@@ -66,7 +77,7 @@ const Home = () => {
           )}
         </div>
         <div className="space-y-2 text-white">
-          <div
+          {/* <div
             className={`${
               tab === "chat" ? "bg-[#0043a8]" : ""
             } rounded-md p-3 hover:bg-[#0043a8]`}
@@ -81,7 +92,18 @@ const Home = () => {
             onClick={() => handleTabChange("friend")}
           >
             <FaAddressBook className="w-6 h-6 cursor-pointer" />
-          </div>
+          </div> */}
+          {tabs.map((tab) => (
+            <div
+              key={tab.id}
+              onClick={() => setCurrentTab(tab.id)}
+              className={`p-3 rounded-lg ${
+                currentTab === tab.id ? "bg-[#0043a8]" : "hover:bg-[#0043a8]"
+              }`}
+            >
+              <tab.icon className="w-6 h-6 text-white" />
+            </div>
+          ))}
         </div>
         <div className="mt-auto space-y-2 text-white">
           <div className="rounded-md p-3 hover:bg-[#0043a8]">
@@ -90,10 +112,16 @@ const Home = () => {
         </div>
       </div>
 
+      <div className="flex flex-col h-full">
+        <SearchTool />
+        <LeftPanel />
+      </div>
+      <ContentArea />
+
       {/* Chat List */}
-      <BoxLeft tab={tab} onChatChange={handleChatChange} />
+      {/* <BoxLeft tab={tab} onChatChange={handleChatChange} /> */}
       {/* Chat Window */}
-      <ChatWindow currentChat={currentChat} />
+      {/* <ChatWindow currentChat={currentChat} /> */}
     </div>
   );
 };
