@@ -3,15 +3,8 @@ import { FaSearch, FaUserPlus } from "react-icons/fa";
 import AddFriendModal from "./AddFriendModel";
 
 const SearchTool = () => {
-  //   const [filtered, setFiltered] = useState("Tất cả");
   const [isAddFriendModalOpen, setAddFriendModalOpen] = useState(false);
 
-  //   const choices = ["Tất cả", "Chưa đọc"];
-  //   const isActiveFilter = (choice) => {
-  //     return filtered === choice
-  //       ? "relative px-2 py-1 text-[#005ae0] cursor-pointer after:absolute after:bottom-0 after:left-0 after:w-full after:h-[2px] after:bg-[#005ae0] after:transform after:scale-x-100 after:origin-center after:transition-transform after:duration-500 after:ease-in-out"
-  //       : "relative px-2 py-1 cursor-pointer after:absolute after:bottom-0 after:left-0 after:w-full after:h-[2px] after:bg-[#005ae0] after:transform after:scale-x-0 after:origin-center after:transition-transform after:duration-500 after:ease-in-out";
-  //   };
   return (
     <>
       <div className="min-w-86 border border-b-0 border-gray-300 bg-white">

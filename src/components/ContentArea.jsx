@@ -5,6 +5,9 @@ import {
 } from "../recoil/leftPanelAtom";
 import { useEffect } from "react";
 import ChatWindow from "./ChatWindow";
+import FriendList from "./FriendList";
+import FriendRequestList from "./FriendRequestList";
+import Welcome from "./Welcome";
 
 const ContentArea = () => {
   const [selectedMenuItem, setSelectedMenuItem] = useRecoilState(
@@ -38,15 +41,15 @@ const ContentArea = () => {
   const renderMenuContent = () => {
     switch (selectedMenuItem) {
       case "friends":
-        return <div>Friends</div>;
+        return <FriendList />;
       case "groups":
         return <div>Groups</div>;
       case "friendRequests":
-        return <div>Friend Requests</div>;
+        return <FriendRequestList />;
       case "groupInvites":
         return <div>Group Invites</div>;
       default:
-        return <div>Màn hình welcome</div>;
+        return <Welcome />;
     }
   };
 

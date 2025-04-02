@@ -6,28 +6,25 @@ import { FaPhone, FaTimes } from "react-icons/fa";
 import { toast } from "react-toastify";
 import { searchUserByPhoneNumber } from "../services/apiFunctionsUser";
 import { useAuth } from "../utils/authUtils";
+import { sendFriendRequest } from "../services/apiFunctionFriend";
 
 const AddFriendModal = ({ isOpen, onClose }) => {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const modalRef = useRef(null);
-  const { user } = useAuth();
-  const userAuth = user;
+  const { user: userAuth } = useAuth();
 
   useEffect(() => {
     console.log("searchResults", searchResults);
   }, [searchResults]);
 
-  // Hàm xử lý khi click bên ngoài modal
   const handleClickOutside = (e) => {
     if (modalRef.current && !modalRef.current.contains(e.target)) {
       onClose();
     }
   };
 
-  // Hàm tìm kiếm người dùng
   const handleSearch = async () => {
-    // Giả lập kết quả tìm kiếm, sau này sẽ gọi API thực tế
     try {
       const res = await searchUserByPhoneNumber(phoneNumber);
       setSearchResults([res]);
@@ -37,16 +34,15 @@ const AddFriendModal = ({ isOpen, onClose }) => {
   };
 
   // Hàm kết bạn
-  const handleAddFriend = (userId) => {
-    // Gọi API kết bạn thực tế ở đây
-    toast.success("Đã gửi lời mời kết bạn!");
-
-    // Cập nhật UI
-    setSearchResults((prev) =>
-      prev.map((user) =>
-        user.id === userId ? { ...user, isFriend: true } : user
-      )
-    );
+  const handleAddFriend = async (receiverID) => {
+    try {
+      console.log("receiverID", receiverID);
+      await sendFriendRequest(receiverID);
+      toast.success("Đã gửi lời mời kết bạn!");
+    } catch (error) {
+      toast.error("Lỗi khi gửi lời mời kết bạn", error);
+      console.log("error", error);
+    }
   };
 
   if (!isOpen) return null;
@@ -99,21 +95,22 @@ const AddFriendModal = ({ isOpen, onClose }) => {
                   <div className="flex items-center py-2">
                     <img
                       src={user.avatar}
-                      alt={user.name}
+                      alt={user.avatar}
                       className="w-10 h-10 rounded-full mr-3"
                     />
                     <div>
-                      <p className="text-[14px]">{user.name}</p>
-                      <p className="text-xs text-gray-500">{user.phone}</p>
+                      <p className="text-[14px]">{user.fullName}</p>
+                      <p className="text-xs text-gray-500">
+                        {user.phoneNumber}
+                      </p>
                     </div>
                   </div>
                   {userAuth.userID !== user.userID && (
                     <button
-                      onClick={() => handleAddFriend(user.id)}
+                      onClick={() => handleAddFriend(user.userID)}
                       className="min-w-[84px] disabled:cursor-not-allowed text-[12px] px-4 py-1 rounded outline-1 text-blue-700 font-[700] hover:bg-blue-100 outline-[#0078E8]"
-                      disabled={user.isFriend}
                     >
-                      {user.isFriend ? "Đã gửi" : "Kết bạn"}
+                      Kết bạn
                     </button>
                   )}
                 </div>

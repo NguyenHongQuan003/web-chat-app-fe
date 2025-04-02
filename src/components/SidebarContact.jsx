@@ -42,11 +42,9 @@ const SidebarContact = () => {
             } flex items-center px-4 py-3 cursor-pointer`}
           >
             <div className="w-8 h-8 flex items-center justify-center rounded-full bg-blue-50">
-              <item.icon className="text-blue-600 w-5 h-5" />
+              <item.icon className="text-blue-600 w-6 h-6" />
             </div>
-            <span className="ml-3 text-gray-700 text-sm font-medium">
-              {item.label}
-            </span>
+            <span className="ml-3">{item.label}</span>
           </div>
         ))}
       </div>

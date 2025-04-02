@@ -12,6 +12,8 @@ export const searchUserByPhoneNumber = async (phoneNumber) => {
 
 // Lấy thông tin người dùng theo ID
 export const getUserById = async (userId) => {
-  const response = await axios.get(`${API_URL_8022}/users/user/${userId}`);
+  const response = await axios.get(`${API_URL_8022}/users/user/${userId}`, {
+    withCredentials: true,
+  });
   return response;
 };
