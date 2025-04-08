@@ -9,9 +9,7 @@ import axiosInstance from "../utils/axiosConfig";
 //   return response.data;
 // };
 export const searchUserByPhoneNumber = async (phoneNumber) => {
-  const response = await axiosInstance.get(
-    `/users/search/${phoneNumber}`
-  );
+  const response = await axiosInstance.get(`/users/search/${phoneNumber}`);
   return response.data;
 };
 
@@ -25,4 +23,40 @@ export const searchUserByPhoneNumber = async (phoneNumber) => {
 export const getUserById = async (userId) => {
   const response = await axiosInstance.get(`/users/user/${userId}`);
   return response;
+};
+
+// Forgot Password
+export const forgetPassword = async (data) => {
+  const dataUpdate = {
+    phoneNumber: data.phoneNumber,
+    newPassWord: data.passWord,
+    reNewPassWord: data.confirm_password,
+  };
+  try {
+    const response = await axiosInstance.put(
+      "/users/forget-password",
+      dataUpdate
+    );
+    return response.status === 200;
+  } catch (error) {
+    if (error.response.status === 404) {
+      return false;
+    }
+    throw error;
+  }
+};
+
+// Kiểm tra số điện thoại có tồn tại
+export const checkPhoneNumber = async (phoneNumber) => {
+  try {
+    const response = await axiosInstance.get(
+      `/users/checkPhoneNumber/${phoneNumber}`
+    );
+    return response.status === 200;
+  } catch (error) {
+    if (error.response.status === 404) {
+      return false;
+    }
+    throw error;
+  }
 };

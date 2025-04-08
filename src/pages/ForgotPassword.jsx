@@ -2,31 +2,26 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Input from "../components/Input";
-import { FaLock, FaPhone, FaUser } from "react-icons/fa";
+import { FaLock, FaPhone } from "react-icons/fa";
 import Button from "../components/Button";
 import { APP_INFO } from "../constants/app.constants";
 import { auth } from "../firebase/firebase";
 import { RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
-import { register } from "../services/authService";
 import { toast } from "react-toastify";
 import OTPInput from "../components/OTPInput";
+import { checkPhoneNumber, forgetPassword } from "../services/apiFunctionsUser";
 
-const Register = () => {
+const ForgotPassword = () => {
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
     phoneNumber: "",
-    fullName: "",
     passWord: "",
-    avatar: null,
-    gender: true,
-    dayOfBirth: "",
     otp: "",
     confirm_password: "",
   });
   useEffect(() => {
     console.log("formData OTP", formData);
   }, [formData]);
-  const [avatarPreview, setAvatarPreview] = useState("");
   const [errors, setErrors] = useState({});
   const navigate = useNavigate();
 
@@ -110,10 +105,10 @@ const Register = () => {
       setStep(3);
     } catch (error) {
       console.error("Lỗi xác minh OTP:", error);
-      // setErrors((prev) => ({
-      //   ...prev,
-      //   otp: "Mã OTP không đúng hoặc đã hết hạn",
-      // }));
+      //   setErrors((prev) => ({
+      //     ...prev,
+      //     otp: "Mã OTP không đúng hoặc đã hết hạn",
+      //   }));
       toast.warning("Mã OTP không đúng hoặc đã hết hạn");
     }
   };
@@ -134,12 +129,6 @@ const Register = () => {
 
   const validateConfirmPassword = (confirm_password) => {
     return confirm_password === formData.passWord ? "" : "Mật khẩu không khớp";
-  };
-
-  const validateDayOfBirth = (dayOfBirth) => {
-    const today = new Date();
-    const birthDate = new Date(dayOfBirth);
-    return birthDate < today ? "" : "Ngày sinh không hợp lệ";
   };
 
   const handleChange = (e) => {
@@ -167,28 +156,25 @@ const Register = () => {
           confirm_password: validateConfirmPassword(value),
         }));
         break;
-      case "dayOfBirth":
-        setErrors((prev) => ({
-          ...prev,
-          dayOfBirth: validateDayOfBirth(value),
-        }));
-        break;
       default:
         break;
     }
-  };
-
-  const handleAvatarChange = (e) => {
-    const selectedFile = e.target.files[0];
-    setFormData((prev) => ({ ...prev, avatar: selectedFile }));
-    setAvatarPreview(URL.createObjectURL(selectedFile));
   };
 
   const handleStep1Submit = async (e) => {
     e.preventDefault();
     const phoneError = validatePhone(formData.phoneNumber);
     if (!phoneError) {
-      await handleSendOTP();
+      try {
+        const isExists = await checkPhoneNumber(formData.phoneNumber);
+        if (isExists) {
+          await handleSendOTP();
+        } else {
+          toast.warning("Số điện thoại không tồn tại");
+        }
+      } catch (error) {
+        console.log("Lỗi khi kiểm tra số điện thoại", error);
+      }
     } else {
       setErrors((prev) => ({ ...prev, phoneNumber: phoneError }));
     }
@@ -211,24 +197,22 @@ const Register = () => {
     const confirmPasswordError = validateConfirmPassword(
       formData.confirm_password
     );
-    const dayOfBirthError = validateDayOfBirth(formData.dayOfBirth);
 
-    if (!passwordError && !confirmPasswordError && !dayOfBirthError) {
+    if (!passwordError && !confirmPasswordError) {
       console.log("Registration completed:", formData);
       try {
-        const response = await register(formData);
-        console.log("Du lieu tra ve tu server khi dang ky", response);
-        toast.success("Đăng ký thành công!");
+        const response = await forgetPassword(formData);
+        console.log("Du lieu tra ve tu server khi update mat khau", response);
+        toast.success("Đổi mật khẩu thành công!");
         navigate("/login");
       } catch (error) {
-        console.log("Loi khi dang ky", error);
-        toast.error("Số điện thoại đã tồn tại!");
+        console.log("Loi khi update mat khau", error);
+        toast.error("Lỗi khi đổi mật khẩu!");
       }
     } else {
       setErrors({
         passWord: passwordError,
         confirm_password: confirmPasswordError,
-        dayOfBirth: dayOfBirthError,
       });
     }
   };
@@ -287,90 +271,10 @@ const Register = () => {
       case 3:
         return (
           <form onSubmit={handleFinalSubmit} className="mt-8 space-y-6">
-            {/* Avatar Upload */}
-            <div className="flex flex-col items-center">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Ảnh đại diện
-              </label>
-              {avatarPreview ? (
-                <img
-                  src={avatarPreview}
-                  alt="Avatar Preview"
-                  className="w-24 h-24 rounded-full object-cover mb-4 border border-gray-300"
-                />
-              ) : (
-                <div className="w-24 h-24 rounded-full bg-gray-200 flex items-center justify-center mb-4">
-                  <span className="text-gray-500">No Image</span>
-                </div>
-              )}
-              <input
-                type="file"
-                name="avatar"
-                required
-                onChange={handleAvatarChange}
-                className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-              />
-            </div>
-            <Input
-              type="text"
-              name="fullName"
-              placeholder="Tên người dùng"
-              icon={FaUser}
-              required
-              onChange={handleChange}
-              value={formData.fullName}
-            />
-
-            <div className="flex flex-row gap-x-3">
-              <div className="flex items-center gap-x-3">
-                <input
-                  defaultChecked
-                  id="gender-male"
-                  name="gender"
-                  type="radio"
-                  className="relative size-4 appearance-none rounded-full border border-gray-300 bg-white before:absolute before:inset-1 before:rounded-full before:bg-white not-checked:before:hidden checked:border-indigo-600 checked:bg-indigo-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:border-gray-300 disabled:bg-gray-100 disabled:before:bg-gray-400 forced-colors:appearance-auto forced-colors:before:hidden"
-                  onChange={handleChange}
-                  value="true"
-                />
-                <label
-                  htmlFor="gender-male"
-                  className="block font-medium text-gray-600"
-                >
-                  Nam
-                </label>
-              </div>
-              <div className="flex items-center gap-x-3">
-                <input
-                  id="gender-female"
-                  name="gender"
-                  type="radio"
-                  className="relative size-4 appearance-none rounded-full border border-gray-300 bg-white before:absolute before:inset-1 before:rounded-full before:bg-white not-checked:before:hidden checked:border-indigo-600 checked:bg-indigo-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:border-gray-300 disabled:bg-gray-100 disabled:before:bg-gray-400 forced-colors:appearance-auto forced-colors:before:hidden"
-                  onChange={handleChange}
-                  value="false"
-                />
-                <label
-                  htmlFor="gender-female"
-                  className="block font-medium text-gray-600"
-                >
-                  Nữ
-                </label>
-              </div>
-            </div>
-
-            <Input
-              label="Ngày sinh"
-              type="date"
-              name="dayOfBirth"
-              placeholder="Ngày sinh"
-              required
-              onChange={handleChange}
-              value={formData.dayOfBirth}
-              error={errors.dayOfBirth}
-            />
             <Input
               type="password"
               name="passWord"
-              placeholder="Mật khẩu"
+              placeholder="Mật khẩu mới"
               icon={FaLock}
               required
               onChange={handleChange}
@@ -380,7 +284,7 @@ const Register = () => {
             <Input
               type="password"
               name="confirm_password"
-              placeholder="Xác nhận mật khẩu"
+              placeholder="Xác nhận mật khẩu mới"
               icon={FaLock}
               required
               onChange={handleChange}
@@ -390,11 +294,7 @@ const Register = () => {
             <Button
               type="submit"
               fullWidth
-              disabled={
-                !!errors.passWord ||
-                !!errors.confirm_password ||
-                !!errors.dayOfBirth
-              }
+              disabled={!!errors.passWord || !!errors.confirm_password}
             >
               Hoàn tất
             </Button>
@@ -422,8 +322,8 @@ const Register = () => {
       </div>
       <div className="max-w-md w-full p-6 bg-white rounded-xl shadow-lg">
         <div>
-          <h2 className="text-center font-bold text-gray-900">
-            Đăng ký tài khoản mới
+          <h2 className="text-center text-2xl font-bold text-gray-900">
+            Quên mật khẩu
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600">
             Bước {step} / 3
@@ -444,4 +344,4 @@ const Register = () => {
   );
 };
 
-export default Register;
+export default ForgotPassword;
