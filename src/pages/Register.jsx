@@ -1,5 +1,5 @@
 // src/pages/Register.jsx
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Input from "../components/Input";
 import { FaLock, FaPhone, FaUser } from "react-icons/fa";
@@ -9,6 +9,7 @@ import { auth } from "../firebase/firebase";
 import { RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
 import { register } from "../services/authService";
 import { toast } from "react-toastify";
+import OTPInput from "../components/OTPInput";
 
 const Register = () => {
   const [step, setStep] = useState(1);
@@ -22,60 +23,61 @@ const Register = () => {
     otp: "",
     confirm_password: "",
   });
+  useEffect(() => {
+    console.log("formData OTP", formData);
+  }, [formData]);
   const [avatarPreview, setAvatarPreview] = useState("");
   const [errors, setErrors] = useState({});
   const navigate = useNavigate();
 
   // Gửi OTP
   const handleSendOTP = async () => {
-    // Khởi tạo reCAPTCHA ngay trước khi gửi OTP
-    console.log("auth", auth);
     console.log("Bắt đầu gửi OTP...");
+
     const recaptchaContainer = document.getElementById("recaptcha-container");
     if (!recaptchaContainer) {
       console.error("Không tìm thấy #recaptcha-container trong DOM");
-      console.error("Lỗi: Container reCAPTCHA không tồn tại");
       return;
     }
 
+    // Nếu reCAPTCHA đã được khởi tạo trước đó, xóa nó để tránh lỗi render trùng lặp
     if (window.recaptchaVerifier) {
-      console.log("Xóa reCAPTCHA cũ...");
-      window.recaptchaVerifier.clear();
-      window.recaptchaVerifier = null;
-      recaptchaContainer.innerHTML = "";
-    }
-    // Khởi tạo reCAPTCHA nếu chưa tồn tại
-    if (!window.recaptchaVerifier) {
-      console.log("Bắt đầu khởi tạo reCAPTCHA...");
       try {
-        window.recaptchaVerifier = new RecaptchaVerifier(
-          auth,
-          "recaptcha-container",
-          {
-            size: "invisible",
-            callback: () => {
-              console.log("reCAPTCHA đã được giải");
-            },
-            "expired-callback": () => {
-              console.log("reCAPTCHA đã hết hạn");
-              window.recaptchaVerifier = null;
-            },
-          }
-        );
-      } catch (error) {
-        console.error("Lỗi khởi tạo reCAPTCHA:", error);
-        console.error("Không thể khởi tạo reCAPTCHA: " + error.message);
-        return;
+        console.log("Xóa reCAPTCHA cũ...");
+        window.recaptchaVerifier.clear();
+      } catch (err) {
+        console.warn("Không thể clear reCAPTCHA cũ:", err.message);
       }
+      window.recaptchaVerifier = null;
+      recaptchaContainer.innerHTML = ""; // Clear DOM
     }
-    await window.recaptchaVerifier.render();
-    console.log("reCAPTCHA khởi tạo thành công:", window.recaptchaVerifier);
+
+    // Tạo mới reCAPTCHA
+    try {
+      window.recaptchaVerifier = new RecaptchaVerifier(
+        auth,
+        "recaptcha-container",
+        {
+          size: "invisible",
+          callback: (response) => {
+            console.log("reCAPTCHA đã được giải", response);
+          },
+          "expired-callback": () => {
+            console.log("reCAPTCHA hết hạn, cần khởi tạo lại");
+            window.recaptchaVerifier = null;
+          },
+        }
+      );
+
+      await window.recaptchaVerifier.render();
+      console.log("reCAPTCHA khởi tạo thành công");
+    } catch (error) {
+      console.error("Lỗi khởi tạo reCAPTCHA:", error.message);
+      toast.error("Lỗi khi tạo reCAPTCHA, vui lòng thử lại sau");
+      return;
+    }
 
     const appVerifier = window.recaptchaVerifier;
-    if (!appVerifier) {
-      console.error("appVerifier vẫn undefined sau khi khởi tạo");
-      return;
-    }
     const phoneNumber = "+84" + formData.phoneNumber.slice(1);
     console.log("Số điện thoại:", phoneNumber);
 
@@ -86,20 +88,23 @@ const Register = () => {
         appVerifier
       );
       window.confirmationResult = confirmationResult;
-      console.log("OTP đã được gửi thành công!");
+
       toast.success("OTP đã được gửi thành công!");
-      console.log("Vui lòng kiểm tra số điện thoại để nhận mã OTP");
       toast.info("Vui lòng kiểm tra số điện thoại để nhận mã OTP");
-      setStep(2);
+
+      setStep(2); // Chuyển sang bước nhập OTP
     } catch (error) {
-      console.error("Không thể gửi OTP: " + error.message);
+      console.error("Không thể gửi OTP:", error.message);
       toast.error("Không thể gửi OTP: " + error.message);
     }
   };
+
   // Xác minh OTP
   const handleVerifyOTP = async () => {
     try {
       await window.confirmationResult.confirm(formData.otp);
+      setFormData((prev) => ({ ...prev, otp: "" }));
+      window.recaptchaVerifier.clear();
       // console.log("Xác minh OTP thành công! UID: " + result.user.uid);
       toast.success("Xác minh OTP thành công!");
       setStep(3);
@@ -190,6 +195,7 @@ const Register = () => {
 
   const handleStep2Submit = async (e) => {
     e.preventDefault();
+    console.log("formData OTP", formData);
     const otpError = validateOTP(formData.otp);
     if (!otpError) {
       await handleVerifyOTP();
@@ -251,16 +257,20 @@ const Register = () => {
       case 2:
         return (
           <form onSubmit={handleStep2Submit} className="mt-8 space-y-6">
-            <Input
-              type="text"
-              name="otp"
-              placeholder="Nhập mã OTP"
-              required
-              onChange={handleChange}
-              value={formData.otp}
+            <OTPInput
+              length={6}
+              onChangeOTP={(otp) => {
+                setFormData({ ...formData, otp });
+                console.log("OTP hiện tại OTP input:", otp);
+                handleChange({ target: { name: "otp", value: otp } });
+              }}
               error={errors.otp}
             />
-            <Button type="submit" fullWidth disabled={!!errors.otp}>
+            <Button
+              type="submit"
+              fullWidth
+              disabled={errors.otp !== "" || formData.otp === "" ? true : false}
+            >
               Xác nhận
             </Button>
             <Button

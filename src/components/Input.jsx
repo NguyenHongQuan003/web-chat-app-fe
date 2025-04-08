@@ -6,8 +6,8 @@ const Input = ({
   label,
   type = "text",
   name,
-  value,
-  onChange,
+  value = "",
+  onChange = () => {},
   placeholder,
   error,
   required = false,
@@ -122,15 +122,6 @@ Input.propTypes = {
   className: PropTypes.string,
   icon: PropTypes.elementType,
   autoComplete: PropTypes.string,
-};
-
-Input.defaultProps = {
-  type: "text",
-  required: false,
-  disabled: false,
-  className: "",
-  value: "",
-  onChange: () => {},
 };
 
 export default Input;

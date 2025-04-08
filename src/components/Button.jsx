@@ -80,13 +80,4 @@ Button.propTypes = {
   icon: PropTypes.elementType,
 };
 
-Button.defaultProps = {
-  variant: "primary",
-  size: "medium",
-  fullWidth: false,
-  disabled: false,
-  className: "",
-  type: "button",
-};
-
 export default Button;
