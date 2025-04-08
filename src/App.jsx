@@ -10,8 +10,9 @@ import { RecoilRoot } from "recoil";
 const App = () => {
   return (
     <RecoilRoot>
-      <AuthProvider>
-        <Router>
+
+      <Router>
+        <AuthProvider>
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />
@@ -28,9 +29,8 @@ const App = () => {
             draggable
             pauseOnHover
             theme="light"
-          />
-        </Router>
-      </AuthProvider>
+          /></AuthProvider>
+      </Router>
     </RecoilRoot>
   );
 };

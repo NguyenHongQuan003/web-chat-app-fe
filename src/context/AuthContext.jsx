@@ -5,12 +5,26 @@ import {
   getCurrentUser,
   login,
   logout,
-  refreshToken,
 } from "../services/authService";
+import { setupInterceptors } from "../utils/axiosConfig";
+import { useNavigate } from "react-router-dom";
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+
+  const setAccessToken = (token) => {
+    if (token) {
+      localStorage.setItem("accessToken", token);
+    } else {
+      localStorage.removeItem("accessToken");
+    }
+  };
+
+  useEffect(() => {
+    setupInterceptors(navigate, setAccessToken);
+  }, [navigate]);
 
   useEffect(() => {
     // Kiểm tra trạng thái đăng nhập khi tải trang
@@ -23,19 +37,6 @@ export const AuthProvider = ({ children }) => {
         }
       } catch (error) {
         console.error(error.message);
-        if (error.status === 410) {
-          try {
-            await refreshToken();
-            const res = await getCurrentUser();
-            setUser(res);
-          } catch (refreshError) {
-            console.error("Error refreshing token: ", refreshError);
-            setUser(null);
-          }
-        } else {
-          console.error("Error getting user login: ", error);
-          setUser(null);
-        }
       } finally {
         setLoading(false);
       }
@@ -46,6 +47,7 @@ export const AuthProvider = ({ children }) => {
   const signIn = async (userData) => {
     try {
       const data = await login(userData);
+      setAccessToken(data.accessToken);
       setUser(data.user);
     } catch (error) {
       throw new Error("Phone number or password is incorrect", error);
@@ -55,7 +57,9 @@ export const AuthProvider = ({ children }) => {
   const signOut = async () => {
     try {
       await logout();
+      setAccessToken(null);
       setUser(null);
+      navigate("/login");
     } catch (error) {
       throw new Error("Logout failed", error);
     }

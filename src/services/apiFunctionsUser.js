@@ -1,19 +1,28 @@
-import axios from "axios";
-import { API_URL_8022 } from "../constants/app.constants";
+import axiosInstance from "../utils/axiosConfig";
 
 // Tìm kiếm người dùng theo số điện thoại
+// export const searchUserByPhoneNumber = async (phoneNumber) => {
+//   const response = await axios.get(
+//     `${API_URL_8022}/users/search/${phoneNumber}`,
+//     { withCredentials: true }
+//   );
+//   return response.data;
+// };
 export const searchUserByPhoneNumber = async (phoneNumber) => {
-  const response = await axios.get(
-    `${API_URL_8022}/users/search/${phoneNumber}`,
-    { withCredentials: true }
+  const response = await axiosInstance.get(
+    `/users/search/${phoneNumber}`
   );
   return response.data;
 };
 
 // Lấy thông tin người dùng theo ID
+// export const getUserById = async (userId) => {
+//   const response = await axios.get(`${API_URL_8022}/users/user/${userId}`, {
+//     withCredentials: true,
+//   });
+//   return response;
+// };
 export const getUserById = async (userId) => {
-  const response = await axios.get(`${API_URL_8022}/users/user/${userId}`, {
-    withCredentials: true,
-  });
+  const response = await axiosInstance.get(`/users/user/${userId}`);
   return response;
 };
