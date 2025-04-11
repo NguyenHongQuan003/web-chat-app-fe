@@ -9,7 +9,7 @@ const Loading = ({ size = "md", className = "" }) => {
 
   return (
     <div className={`inline-block ${sizeClasses[size]} ${className}`}>
-      <div className="animate-spin rounded-full h-full w-full border-2 border-t border-gray-200 border-blue-500"></div>
+      <div className="animate-spin rounded-full h-full w-full border-2 border-t border-blue-500"></div>
     </div>
   );
 };

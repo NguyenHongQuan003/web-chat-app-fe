@@ -52,3 +52,13 @@ export const updateAvatarUser = async (formData) => {
   const response = await axiosInstance.put("/users/update", userData);
   return response.data;
 };
+
+export const updateProfileUser = async (formData) => {
+  const userData = new FormData();
+  userData.append("fullName", formData.fullName);
+  userData.append("gender", formData.gender);
+  userData.append("dayOfBirth", formData.dayOfBirth);
+
+  const response = await axiosInstance.put("/users/update", userData);
+  return response.data;
+};
