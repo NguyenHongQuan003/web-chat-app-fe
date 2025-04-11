@@ -4,9 +4,9 @@ import { useState, useRef, useEffect } from "react";
 import Input from "./Input";
 import { FaPhone, FaTimes } from "react-icons/fa";
 import { toast } from "react-toastify";
-import { searchUserByPhoneNumber } from "../services/apiFunctionsUser";
+import { searchUserByPhoneNumber } from "../services/userService";
 import { useAuth } from "../utils/authUtils";
-import { sendFriendRequest } from "../services/apiFunctionFriend";
+import { sendFriendRequest } from "../services/friendService";
 
 const AddFriendModal = ({ isOpen, onClose }) => {
   const [phoneNumber, setPhoneNumber] = useState("");

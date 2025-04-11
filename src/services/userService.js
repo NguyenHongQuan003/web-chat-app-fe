@@ -1,31 +1,15 @@
 import axiosInstance from "../utils/axiosConfig";
 
-// Tìm kiếm người dùng theo số điện thoại
-// export const searchUserByPhoneNumber = async (phoneNumber) => {
-//   const response = await axios.get(
-//     `${API_URL_8022}/users/search/${phoneNumber}`,
-//     { withCredentials: true }
-//   );
-//   return response.data;
-// };
 export const searchUserByPhoneNumber = async (phoneNumber) => {
   const response = await axiosInstance.get(`/users/search/${phoneNumber}`);
   return response.data;
 };
 
-// Lấy thông tin người dùng theo ID
-// export const getUserById = async (userId) => {
-//   const response = await axios.get(`${API_URL_8022}/users/user/${userId}`, {
-//     withCredentials: true,
-//   });
-//   return response;
-// };
 export const getUserById = async (userId) => {
   const response = await axiosInstance.get(`/users/user/${userId}`);
   return response;
 };
 
-// Forgot Password
 export const forgetPassword = async (data) => {
   const dataUpdate = {
     phoneNumber: data.phoneNumber,
@@ -59,4 +43,12 @@ export const checkPhoneNumber = async (phoneNumber) => {
     }
     throw error;
   }
+};
+
+export const updateAvatarUser = async (formData) => {
+  const userData = new FormData();
+  userData.append("avatar", formData.avatar);
+
+  const response = await axiosInstance.put("/users/update", userData);
+  return response.data;
 };

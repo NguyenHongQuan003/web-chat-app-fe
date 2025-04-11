@@ -9,7 +9,7 @@ import { auth } from "../firebase/firebase";
 import { RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
 import { toast } from "react-toastify";
 import OTPInput from "../components/OTPInput";
-import { checkPhoneNumber, forgetPassword } from "../services/apiFunctionsUser";
+import { checkPhoneNumber, forgetPassword } from "../services/userService";
 
 const ForgotPassword = () => {
   const [step, setStep] = useState(1);
@@ -296,7 +296,7 @@ const ForgotPassword = () => {
               fullWidth
               disabled={!!errors.passWord || !!errors.confirm_password}
             >
-              Hoàn tất
+              Xác nhận
             </Button>
             <Button
               type="button"

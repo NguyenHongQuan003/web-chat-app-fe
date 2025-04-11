@@ -2,7 +2,7 @@ import { toast } from "react-toastify";
 import {
   acceptFriendRequest,
   declineFriendRequest,
-} from "../services/apiFunctionFriend";
+} from "../services/friendService";
 import Button from "./Button";
 import PropTypes from "prop-types";
 

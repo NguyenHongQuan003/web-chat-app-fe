@@ -12,9 +12,7 @@ import axiosInstance from "../utils/axiosConfig";
 //   return response.data;
 // };
 export const sendFriendRequest = async (receiverId) => {
-  const response = await axiosInstance.post(
-    `/friends/${receiverId}`, {}
-  );
+  const response = await axiosInstance.post(`/friends/${receiverId}`, {});
   return response.data;
 };
 
@@ -28,13 +26,10 @@ export const sendFriendRequest = async (receiverId) => {
 //   return response.data;
 // };
 export const cancelFriendRequest = async (receiverId) => {
-  const response = await axiosInstance.get(
-    `/friends/${receiverId}/cancel`,
-  );
+  const response = await axiosInstance.get(`/friends/${receiverId}/cancel`);
   console.log("cancelFriendRequest", response);
   return response.data;
 };
-
 
 // Chấp nhận lời mời kết bạn
 // export const acceptFriendRequest = async (senderId) => {
@@ -46,9 +41,7 @@ export const cancelFriendRequest = async (receiverId) => {
 // };
 
 export const acceptFriendRequest = async (senderId) => {
-  const response = await axiosInstance.get(
-    `/friends/${senderId}/accept`,
-  );
+  const response = await axiosInstance.get(`/friends/${senderId}/accept`);
   return response.data;
 };
 
@@ -61,9 +54,7 @@ export const acceptFriendRequest = async (senderId) => {
 //   return response.data;
 // };
 export const declineFriendRequest = async (senderId) => {
-  const response = await axiosInstance.get(
-    `/friends/${senderId}/decline`,
-  );
+  const response = await axiosInstance.get(`/friends/${senderId}/decline`);
   return response.data;
 };
 
@@ -89,8 +80,7 @@ export const getFriendRequests = async () => {
 //   return response.data;
 // };
 export const getSentFriendRequests = async () => {
-  const response = await axiosInstance.get(`/friends/requests/sent`, {
-  });
+  const response = await axiosInstance.get(`/friends/requests/sent`, {});
   return response.data;
 };
 

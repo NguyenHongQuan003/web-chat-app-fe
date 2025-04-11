@@ -1,5 +1,5 @@
 // src/pages/Register.jsx
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Input from "../components/Input";
 import { FaLock, FaPhone, FaUser } from "react-icons/fa";
@@ -23,9 +23,6 @@ const Register = () => {
     otp: "",
     confirm_password: "",
   });
-  useEffect(() => {
-    console.log("formData OTP", formData);
-  }, [formData]);
   const [avatarPreview, setAvatarPreview] = useState("");
   const [errors, setErrors] = useState({});
   const navigate = useNavigate();

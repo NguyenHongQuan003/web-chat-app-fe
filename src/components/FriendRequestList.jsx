@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import {
   getFriendRequests,
   getSentFriendRequests,
-} from "../services/apiFunctionFriend";
+} from "../services/friendService";
 import ResponseCard from "./ResponseCard";
 import CancelCard from "./CancelCard";
 

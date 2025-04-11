@@ -1,10 +1,10 @@
 // import React from "react";
 import { useEffect, useState } from "react";
 import { FaUserFriends } from "react-icons/fa";
-import { getFriendList } from "../services/apiFunctionFriend";
+import { getFriendList } from "../services/friendService";
 import { data } from "react-router-dom";
 
-  // Danh sách bạn bè lấy trạng thái accept
+// Danh sách bạn bè lấy trạng thái accept
 
 const FriendList = () => {
   const list = [

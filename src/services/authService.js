@@ -1,4 +1,3 @@
-
 import axiosInstance from "../utils/axiosConfig";
 
 // export const getCurrentUser = async () => {
@@ -56,9 +55,7 @@ export const login = async (userData) => {
 //   );
 // };
 export const logout = async () => {
-  await axiosInstance.post(
-    "/users/logout", {},
-  );
+  await axiosInstance.post("/users/logout", {});
 };
 
 // export const refreshToken = async () => {

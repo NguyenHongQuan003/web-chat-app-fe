@@ -11,7 +11,6 @@ import { RecoilRoot } from "recoil";
 const App = () => {
   return (
     <RecoilRoot>
-
       <Router>
         <AuthProvider>
           <Routes>
@@ -31,7 +30,8 @@ const App = () => {
             draggable
             pauseOnHover
             theme="light"
-          /></AuthProvider>
+          />
+        </AuthProvider>
       </Router>
     </RecoilRoot>
   );

@@ -1,11 +1,7 @@
 import { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import { AuthContext } from "../utils/authUtils";
-import {
-  getCurrentUser,
-  login,
-  logout,
-} from "../services/authService";
+import { getCurrentUser, login, logout } from "../services/authService";
 import { setupInterceptors } from "../utils/axiosConfig";
 import { useNavigate } from "react-router-dom";
 
@@ -13,6 +9,15 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+
+  // useEffect(() => {
+  //   console.log("User state:", user);
+  // }, [user]);
+
+  const updateUser = (userData) => {
+    // console.log("User data update:", userData);
+    setUser(userData);
+  };
 
   const setAccessToken = (token) => {
     if (token) {
@@ -70,7 +75,7 @@ export const AuthProvider = ({ children }) => {
   }
 
   return (
-    <AuthContext.Provider value={{ user, signIn, signOut }}>
+    <AuthContext.Provider value={{ user, signIn, signOut, updateUser }}>
       {children}
     </AuthContext.Provider>
   );

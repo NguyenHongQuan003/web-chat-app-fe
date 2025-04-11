@@ -1,7 +1,7 @@
 import { toast } from "react-toastify";
 import Button from "./Button";
 import PropTypes from "prop-types";
-import { cancelFriendRequest } from "../services/apiFunctionFriend";
+import { cancelFriendRequest } from "../services/friendService";
 
 const CancelCard = ({ infomation }) => {
   const handleCancel = async () => {
