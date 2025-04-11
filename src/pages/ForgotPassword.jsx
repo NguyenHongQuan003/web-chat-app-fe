@@ -1,5 +1,5 @@
 // src/pages/Register.jsx
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Input from "../components/Input";
 import { FaLock, FaPhone } from "react-icons/fa";
@@ -10,18 +10,17 @@ import { RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
 import { toast } from "react-toastify";
 import OTPInput from "../components/OTPInput";
 import { checkPhoneNumber, forgetPassword } from "../services/userService";
+import Loading from "../components/Loading";
 
 const ForgotPassword = () => {
   const [step, setStep] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     phoneNumber: "",
     passWord: "",
     otp: "",
     confirm_password: "",
   });
-  useEffect(() => {
-    console.log("formData OTP", formData);
-  }, [formData]);
   const [errors, setErrors] = useState({});
   const navigate = useNavigate();
 
@@ -31,7 +30,7 @@ const ForgotPassword = () => {
 
     const recaptchaContainer = document.getElementById("recaptcha-container");
     if (!recaptchaContainer) {
-      console.error("Không tìm thấy #recaptcha-container trong DOM");
+      // console.error("Không tìm thấy #recaptcha-container trong DOM");
       return;
     }
 
@@ -41,7 +40,7 @@ const ForgotPassword = () => {
         console.log("Xóa reCAPTCHA cũ...");
         window.recaptchaVerifier.clear();
       } catch (err) {
-        console.warn("Không thể clear reCAPTCHA cũ:", err.message);
+        console.error("Không thể clear reCAPTCHA cũ:", err.message);
       }
       window.recaptchaVerifier = null;
       recaptchaContainer.innerHTML = ""; // Clear DOM
@@ -54,8 +53,8 @@ const ForgotPassword = () => {
         "recaptcha-container",
         {
           size: "invisible",
-          callback: (response) => {
-            console.log("reCAPTCHA đã được giải", response);
+          callback: () => {
+            console.log("reCAPTCHA đã được giải");
           },
           "expired-callback": () => {
             console.log("reCAPTCHA hết hạn, cần khởi tạo lại");
@@ -68,7 +67,7 @@ const ForgotPassword = () => {
       console.log("reCAPTCHA khởi tạo thành công");
     } catch (error) {
       console.error("Lỗi khởi tạo reCAPTCHA:", error.message);
-      toast.error("Lỗi khi tạo reCAPTCHA, vui lòng thử lại sau");
+      // toast.error("Lỗi khi tạo reCAPTCHA, vui lòng thử lại sau");
       return;
     }
 
@@ -85,7 +84,7 @@ const ForgotPassword = () => {
       window.confirmationResult = confirmationResult;
 
       toast.success("OTP đã được gửi thành công!");
-      toast.info("Vui lòng kiểm tra số điện thoại để nhận mã OTP");
+      toast.success("Vui lòng kiểm tra số điện thoại để nhận mã OTP");
 
       setStep(2); // Chuyển sang bước nhập OTP
     } catch (error) {
@@ -100,23 +99,17 @@ const ForgotPassword = () => {
       await window.confirmationResult.confirm(formData.otp);
       setFormData((prev) => ({ ...prev, otp: "" }));
       window.recaptchaVerifier.clear();
-      // console.log("Xác minh OTP thành công! UID: " + result.user.uid);
       toast.success("Xác minh OTP thành công!");
       setStep(3);
     } catch (error) {
-      console.error("Lỗi xác minh OTP:", error);
-      //   setErrors((prev) => ({
-      //     ...prev,
-      //     otp: "Mã OTP không đúng hoặc đã hết hạn",
-      //   }));
-      toast.warning("Mã OTP không đúng hoặc đã hết hạn");
+      toast.warning(error.code);
     }
   };
 
   // Validation functions
   const validatePhone = (phoneNumber) => {
     const phoneRegex = /(0[3|5|7|8|9])+([0-9]{8})\b/;
-    return phoneRegex.test(phoneNumber) ? "" : "Số điện thoại không hợp lệ";
+    return phoneRegex.test(phoneNumber) ? "" : "Bắt đầu bằng 0 và có 10 chữ số";
   };
 
   const validateOTP = (otp) => {
@@ -163,57 +156,42 @@ const ForgotPassword = () => {
 
   const handleStep1Submit = async (e) => {
     e.preventDefault();
-    const phoneError = validatePhone(formData.phoneNumber);
-    if (!phoneError) {
-      try {
-        const isExists = await checkPhoneNumber(formData.phoneNumber);
-        if (isExists) {
-          await handleSendOTP();
-        } else {
-          toast.warning("Số điện thoại không tồn tại");
-        }
-      } catch (error) {
-        console.log("Lỗi khi kiểm tra số điện thoại", error);
+    setIsLoading(true);
+    try {
+      const isExists = await checkPhoneNumber(formData.phoneNumber);
+      if (isExists) {
+        await handleSendOTP();
+      } else {
+        toast.warning("Số điện thoại không tồn tại");
       }
-    } else {
-      setErrors((prev) => ({ ...prev, phoneNumber: phoneError }));
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleStep2Submit = async (e) => {
     e.preventDefault();
-    console.log("formData OTP", formData);
-    const otpError = validateOTP(formData.otp);
-    if (!otpError) {
+    setIsLoading(true);
+    try {
       await handleVerifyOTP();
-    } else {
-      setErrors((prev) => ({ ...prev, otp: otpError }));
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleFinalSubmit = async (e) => {
     e.preventDefault();
-    const passwordError = validatePassword(formData.passWord);
-    const confirmPasswordError = validateConfirmPassword(
-      formData.confirm_password
-    );
-
-    if (!passwordError && !confirmPasswordError) {
-      console.log("Registration completed:", formData);
-      try {
-        const response = await forgetPassword(formData);
-        console.log("Du lieu tra ve tu server khi update mat khau", response);
-        toast.success("Đổi mật khẩu thành công!");
-        navigate("/login");
-      } catch (error) {
-        console.log("Loi khi update mat khau", error);
-        toast.error("Lỗi khi đổi mật khẩu!");
-      }
-    } else {
-      setErrors({
-        passWord: passwordError,
-        confirm_password: confirmPasswordError,
-      });
+    setIsLoading(true);
+    try {
+      await forgetPassword(formData);
+      toast.success("Đổi mật khẩu thành công!");
+      navigate("/login");
+    } catch (error) {
+      console.error(error);
     }
   };
 
@@ -234,8 +212,19 @@ const ForgotPassword = () => {
             />
             <div id="recaptcha-container"></div>{" "}
             {/* Thêm container cho reCAPTCHA */}
-            <Button type="submit" fullWidth disabled={!!errors.phoneNumber}>
-              Tiếp tục
+            <Button
+              type="submit"
+              fullWidth
+              disabled={!!errors.phoneNumber || isLoading}
+            >
+              {isLoading ? (
+                <div className="flex items-center justify-center gap-2">
+                  <Loading size="sm" />
+                  <span>Đang xử lý...</span>
+                </div>
+              ) : (
+                "Tiếp tục"
+              )}
             </Button>
           </form>
         );
@@ -254,9 +243,19 @@ const ForgotPassword = () => {
             <Button
               type="submit"
               fullWidth
-              disabled={errors.otp !== "" || formData.otp === "" ? true : false}
+              disabled={
+                (errors.otp !== "" || formData.otp === "" ? true : false) ||
+                isLoading
+              }
             >
-              Xác nhận
+              {isLoading ? (
+                <div className="flex items-center justify-center gap-2">
+                  <Loading size="sm" />
+                  <span>Đang xử lý...</span>
+                </div>
+              ) : (
+                "Xác nhận"
+              )}
             </Button>
             <Button
               type="button"
@@ -294,9 +293,18 @@ const ForgotPassword = () => {
             <Button
               type="submit"
               fullWidth
-              disabled={!!errors.passWord || !!errors.confirm_password}
+              disabled={
+                !!errors.passWord || !!errors.confirm_password || isLoading
+              }
             >
-              Xác nhận
+              {isLoading ? (
+                <div className="flex items-center justify-center gap-2">
+                  <Loading size="sm" />
+                  <span>Đang xử lý...</span>
+                </div>
+              ) : (
+                "Xác nhận"
+              )}
             </Button>
             <Button
               type="button"
