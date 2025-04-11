@@ -7,17 +7,23 @@ import UserDropDown from "../components/UserDropDown";
 
 import { useRecoilState } from "recoil";
 import { currentTabState } from "../recoil/sidebarAtom";
-import { isProfileModalOpenState } from "../recoil/leftPanelAtom";
+import {
+  isProfileModalOpenState,
+  isChangePasswordModalOpenState,
+} from "../recoil/leftPanelAtom";
 import SearchTool from "../components/SearchTool";
 import LeftPanel from "../components/LeftPanel";
 import ContentArea from "../components/ContentArea";
 import ProfileModal from "../components/ProfileModal";
+import ChangePasswordModal from "../components/ChangePasswordModal";
 
 const Home = () => {
   const [currentTab, setCurrentTab] = useRecoilState(currentTabState);
   const [isProfileModalOpen, setIsProfileModalOpen] = useRecoilState(
     isProfileModalOpenState
   );
+  const [isChangePasswordModalOpen, setIsChangePasswordModalOpen] =
+    useRecoilState(isChangePasswordModalOpenState);
 
   const tabs = [
     { id: "chat", icon: FaCommentDots, label: "Tin nhắn" },
@@ -100,6 +106,10 @@ const Home = () => {
       <ProfileModal
         isOpen={isProfileModalOpen}
         onClose={() => setIsProfileModalOpen(false)}
+      />
+      <ChangePasswordModal
+        isOpen={isChangePasswordModalOpen}
+        onClose={() => setIsChangePasswordModalOpen(false)}
       />
     </div>
   );

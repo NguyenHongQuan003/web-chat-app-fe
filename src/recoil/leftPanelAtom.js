@@ -14,3 +14,8 @@ export const isProfileModalOpenState = atom({
   key: "isProfileModalOpenState",
   default: false,
 });
+
+export const isChangePasswordModalOpenState = atom({
+  key: "isChangePasswordModalOpenState",
+  default: false,
+});

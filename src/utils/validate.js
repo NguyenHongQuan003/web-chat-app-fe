@@ -8,7 +8,7 @@ export const validateOTP = (otp) => {
 };
 
 export const validatePassword = (passWord) => {
-  return passWord.length >= 8 ? "" : "Mật khẩu phải có ít nhất 8 ký tự";
+  return passWord.length >= 6 ? "" : "Mật khẩu phải có ít nhất 6 ký tự";
 };
 
 export const validateConfirmPassword = (confirm_password, password) => {
@@ -19,4 +19,22 @@ export const validateDayOfBirth = (dayOfBirth) => {
   const today = new Date();
   const birthDate = new Date(dayOfBirth);
   return birthDate < today ? "" : "Ngày sinh phải nhỏ hơn ngày hiện tại";
+};
+
+export const formatDateForInput = (dateString) => {
+  if (!dateString) return "";
+  const date = new Date(dateString);
+  const yyyy = date.getFullYear();
+  const mm = String(date.getMonth() + 1).padStart(2, "0");
+  const dd = String(date.getDate()).padStart(2, "0");
+  return `${yyyy}-${mm}-${dd}`;
+};
+
+export const formatDateToVietnamese = (dateString) => {
+  if (!dateString) return "";
+  const date = new Date(dateString);
+  const day = date.getDate();
+  const month = date.getMonth() + 1;
+  const year = date.getFullYear();
+  return `${day} tháng ${month}, ${year}`;
 };

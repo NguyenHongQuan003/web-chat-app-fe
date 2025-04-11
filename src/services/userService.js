@@ -62,4 +62,11 @@ export const updateProfileUser = async (formData) => {
   return response.data;
 };
 
-// export const updatePasswordUser = async (password) => {};
+export const updateNewPassword = async (formData) => {
+  const userData = new FormData();
+  userData.append("currentPassWord", formData.currentPassWord);
+  userData.append("newPassWord", formData.newPassWord);
+
+  const response = await axiosInstance.put("/users/update", userData);
+  return response.data;
+};

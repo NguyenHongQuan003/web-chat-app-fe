@@ -8,7 +8,11 @@ import Loading from "../components/Loading";
 import { updateAvatarUser, updateProfileUser } from "../services/userService";
 import { toast } from "react-toastify";
 import Input from "./Input";
-import { validateDayOfBirth } from "../utils/validate";
+import {
+  formatDateForInput,
+  formatDateToVietnamese,
+  validateDayOfBirth,
+} from "../utils/validate";
 
 const ProfileModal = ({ isOpen, onClose }) => {
   const [isEdit, setIsEdit] = useState(false);
@@ -67,9 +71,9 @@ const ProfileModal = ({ isOpen, onClose }) => {
     }
   };
 
-  useEffect(() => {
-    console.log("Form data:", formData);
-  }, [formData]);
+  // useEffect(() => {
+  //   console.log("Form data:", formData);
+  // }, [formData]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -163,7 +167,9 @@ const ProfileModal = ({ isOpen, onClose }) => {
                 </tr>
                 <tr>
                   <td>Ngày sinh</td>
-                  <td className="py-2 pl-10">{user?.dayOfBirth}</td>
+                  <td className="py-2 pl-10">
+                    {formatDateToVietnamese(user?.dayOfBirth)}
+                  </td>
                 </tr>
                 <tr>
                   <td>Điện thoại</td>
@@ -249,7 +255,10 @@ const ProfileModal = ({ isOpen, onClose }) => {
           <div className="flex items-center -ml-4">
             <button
               className="mr-1 cursor-pointer bg-gray-100 p-3 rounded-full hover:bg-gray-200"
-              onClick={() => setIsEdit(false)}
+              onClick={() => {
+                setIsEdit(false);
+                initValue();
+              }}
             >
               <FaArrowLeft className="h-4 w-4" />
             </button>
@@ -324,31 +333,13 @@ const ProfileModal = ({ isOpen, onClose }) => {
             name="dayOfBirth"
             placeholder="Ngày sinh"
             onChange={handleChange}
-            value={formData.dayOfBirth}
+            value={formatDateForInput(formData.dayOfBirth)}
             error={errors.dayOfBirth}
           />
         </div>
 
         {/* Footer */}
         <div className="flex justify-between p-4 border-t border-gray-300">
-          {editAvatar && (
-            <div className="flex justify-end">
-              <Button
-                disabled={isLoading}
-                className="text-sm"
-                onClick={handleSaveAvatar}
-              >
-                {isLoading ? (
-                  <div className="flex items-center justify-center gap-2">
-                    <Loading size="sm" />
-                    <span>Đang xử lý...</span>
-                  </div>
-                ) : (
-                  "Lưu"
-                )}
-              </Button>
-            </div>
-          )}
           <div className="space-x-2 ml-auto">
             <button
               onClick={() => {
