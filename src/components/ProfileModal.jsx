@@ -238,6 +238,7 @@ const ProfileModal = ({ isOpen, onClose }) => {
         });
         toast.success("Cập nhật thông tin cá nhân thành công");
         setIsEdit(false);
+        initValue();
       }
     } catch (error) {
       console.error("Error updating profile:", error);
