@@ -7,8 +7,10 @@ import { FaLock, FaPhone } from "react-icons/fa";
 import { APP_INFO } from "../constants/app.constants";
 import { useAuth } from "../utils/authUtils";
 import { toast } from "react-toastify";
+import Loading from "../components/Loading";
 
 const Login = () => {
+  const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     phoneNumber: "",
     passWord: "",
@@ -18,13 +20,15 @@ const Login = () => {
   const { signIn } = useAuth();
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Form submitted:", formData);
+    setIsLoading(true);
     try {
       await signIn(formData);
       toast.success("Đăng nhập thành công!");
       navigate("/");
     } catch (error) {
-      toast.error(error.message);
+      toast.error(error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -101,8 +105,15 @@ const Login = () => {
           </div>
 
           <div>
-            <Button type="submit" fullWidth>
-              Đăng nhập
+            <Button type="submit" fullWidth disabled={isLoading}>
+              {isLoading ? (
+                <div className="flex items-center justify-center gap-2">
+                  <Loading size="sm" />
+                  <span>Đang xử lý...</span>
+                </div>
+              ) : (
+                "Đăng nhập"
+              )}
             </Button>
           </div>
         </form>

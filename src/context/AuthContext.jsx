@@ -55,7 +55,7 @@ export const AuthProvider = ({ children }) => {
       setAccessToken(data.accessToken);
       setUser(data.user);
     } catch (error) {
-      throw new Error("Phone number or password is incorrect", error);
+      throw error.response.data.message;
     }
   };
 

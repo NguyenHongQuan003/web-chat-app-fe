@@ -13,7 +13,7 @@ import OTPInput from "../components/OTPInput";
 import Loading from "../components/Loading";
 
 const Register = () => {
-  const [step, setStep] = useState(3);
+  const [step, setStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     phoneNumber: "0373644380",
