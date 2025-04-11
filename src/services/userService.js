@@ -30,7 +30,6 @@ export const forgetPassword = async (data) => {
   }
 };
 
-// Kiểm tra số điện thoại có tồn tại
 export const checkPhoneNumber = async (phoneNumber) => {
   try {
     const response = await axiosInstance.get(
@@ -62,3 +61,5 @@ export const updateProfileUser = async (formData) => {
   const response = await axiosInstance.put("/users/update", userData);
   return response.data;
 };
+
+// export const updatePasswordUser = async (password) => {};

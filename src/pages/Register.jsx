@@ -10,11 +10,13 @@ import { RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
 import { register } from "../services/authService";
 import { toast } from "react-toastify";
 import OTPInput from "../components/OTPInput";
+import Loading from "../components/Loading";
 
 const Register = () => {
-  const [step, setStep] = useState(1);
+  const [step, setStep] = useState(3);
+  const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
-    phoneNumber: "",
+    phoneNumber: "0373644380",
     fullName: "",
     passWord: "",
     avatar: null,
@@ -33,7 +35,7 @@ const Register = () => {
 
     const recaptchaContainer = document.getElementById("recaptcha-container");
     if (!recaptchaContainer) {
-      console.error("Không tìm thấy #recaptcha-container trong DOM");
+      // console.error("Không tìm thấy #recaptcha-container trong DOM");
       return;
     }
 
@@ -56,8 +58,8 @@ const Register = () => {
         "recaptcha-container",
         {
           size: "invisible",
-          callback: (response) => {
-            console.log("reCAPTCHA đã được giải", response);
+          callback: () => {
+            console.log("reCAPTCHA đã được giải");
           },
           "expired-callback": () => {
             console.log("reCAPTCHA hết hạn, cần khởi tạo lại");
@@ -70,7 +72,7 @@ const Register = () => {
       console.log("reCAPTCHA khởi tạo thành công");
     } catch (error) {
       console.error("Lỗi khởi tạo reCAPTCHA:", error.message);
-      toast.error("Lỗi khi tạo reCAPTCHA, vui lòng thử lại sau");
+      // toast.error("Lỗi khi tạo reCAPTCHA, vui lòng thử lại sau");
       return;
     }
 
@@ -87,7 +89,7 @@ const Register = () => {
       window.confirmationResult = confirmationResult;
 
       toast.success("OTP đã được gửi thành công!");
-      toast.info("Vui lòng kiểm tra số điện thoại để nhận mã OTP");
+      toast.success("Vui lòng kiểm tra số điện thoại để nhận mã OTP");
 
       setStep(2); // Chuyển sang bước nhập OTP
     } catch (error) {
@@ -102,23 +104,17 @@ const Register = () => {
       await window.confirmationResult.confirm(formData.otp);
       setFormData((prev) => ({ ...prev, otp: "" }));
       window.recaptchaVerifier.clear();
-      // console.log("Xác minh OTP thành công! UID: " + result.user.uid);
       toast.success("Xác minh OTP thành công!");
       setStep(3);
     } catch (error) {
-      console.error("Lỗi xác minh OTP:", error);
-      // setErrors((prev) => ({
-      //   ...prev,
-      //   otp: "Mã OTP không đúng hoặc đã hết hạn",
-      // }));
-      toast.warning("Mã OTP không đúng hoặc đã hết hạn");
+      toast.warning(error.code);
     }
   };
 
   // Validation functions
   const validatePhone = (phoneNumber) => {
     const phoneRegex = /(0[3|5|7|8|9])+([0-9]{8})\b/;
-    return phoneRegex.test(phoneNumber) ? "" : "Số điện thoại không hợp lệ";
+    return phoneRegex.test(phoneNumber) ? "" : "Bắt đầu bằng 0 và có 10 chữ số";
   };
 
   const validateOTP = (otp) => {
@@ -183,50 +179,44 @@ const Register = () => {
 
   const handleStep1Submit = async (e) => {
     e.preventDefault();
-    const phoneError = validatePhone(formData.phoneNumber);
-    if (!phoneError) {
+    setIsLoading(true);
+    try {
       await handleSendOTP();
-    } else {
-      setErrors((prev) => ({ ...prev, phoneNumber: phoneError }));
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleStep2Submit = async (e) => {
     e.preventDefault();
-    console.log("formData OTP", formData);
-    const otpError = validateOTP(formData.otp);
-    if (!otpError) {
+    setIsLoading(true);
+    try {
       await handleVerifyOTP();
-    } else {
-      setErrors((prev) => ({ ...prev, otp: otpError }));
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleFinalSubmit = async (e) => {
     e.preventDefault();
-    const passwordError = validatePassword(formData.passWord);
-    const confirmPasswordError = validateConfirmPassword(
-      formData.confirm_password
-    );
-    const dayOfBirthError = validateDayOfBirth(formData.dayOfBirth);
-
-    if (!passwordError && !confirmPasswordError && !dayOfBirthError) {
-      console.log("Registration completed:", formData);
-      try {
-        const response = await register(formData);
-        console.log("Du lieu tra ve tu server khi dang ky", response);
-        toast.success("Đăng ký thành công!");
-        navigate("/login");
-      } catch (error) {
-        console.log("Loi khi dang ky", error);
-        toast.error("Số điện thoại đã tồn tại!");
-      }
-    } else {
-      setErrors({
-        passWord: passwordError,
-        confirm_password: confirmPasswordError,
-        dayOfBirth: dayOfBirthError,
-      });
+    setIsLoading(true);
+    try {
+      await register(formData);
+      toast.success("Đăng ký thành công!");
+      navigate("/login");
+    } catch (error) {
+      // Lỗi kết nối server
+      console.error(error.message);
+      toast.error(error.message);
+      // Lỗi từ form đăng ký
+      console.error(error.response.data.message);
+      toast.error(error.response.data.message);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -247,8 +237,19 @@ const Register = () => {
             />
             <div id="recaptcha-container"></div>{" "}
             {/* Thêm container cho reCAPTCHA */}
-            <Button type="submit" fullWidth disabled={!!errors.phoneNumber}>
-              Tiếp tục
+            <Button
+              type="submit"
+              fullWidth
+              disabled={!!errors.phoneNumber || isLoading}
+            >
+              {isLoading ? (
+                <div className="flex items-center justify-center gap-2">
+                  <Loading size="sm" />
+                  <span>Đang xử lý...</span>
+                </div>
+              ) : (
+                "Tiếp tục"
+              )}
             </Button>
           </form>
         );
@@ -259,7 +260,7 @@ const Register = () => {
               length={6}
               onChangeOTP={(otp) => {
                 setFormData({ ...formData, otp });
-                console.log("OTP hiện tại OTP input:", otp);
+                // console.log("OTP hiện tại OTP input:", otp);
                 handleChange({ target: { name: "otp", value: otp } });
               }}
               error={errors.otp}
@@ -267,9 +268,19 @@ const Register = () => {
             <Button
               type="submit"
               fullWidth
-              disabled={errors.otp !== "" || formData.otp === "" ? true : false}
+              disabled={
+                (errors.otp !== "" || formData.otp === "" ? true : false) ||
+                isLoading
+              }
             >
-              Xác nhận
+              {isLoading ? (
+                <div className="flex items-center justify-center gap-2">
+                  <Loading size="sm" />
+                  <span>Đang xử lý...</span>
+                </div>
+              ) : (
+                "Xác nhận"
+              )}
             </Button>
             <Button
               type="button"
@@ -390,10 +401,18 @@ const Register = () => {
               disabled={
                 !!errors.passWord ||
                 !!errors.confirm_password ||
-                !!errors.dayOfBirth
+                !!errors.dayOfBirth ||
+                isLoading
               }
             >
-              Hoàn tất
+              {isLoading ? (
+                <div className="flex items-center justify-center gap-2">
+                  <Loading size="sm" />
+                  <span>Đang xử lý...</span>
+                </div>
+              ) : (
+                "Hoàn tất"
+              )}
             </Button>
             <Button
               type="button"
