@@ -10,9 +10,11 @@ import { validateConfirmPassword, validatePassword } from "../utils/validate";
 import Button from "./Button";
 import { isChangePasswordModalOpenState } from "../recoil/leftPanelAtom";
 import { useSetRecoilState } from "recoil";
+import { useNavigate } from "react-router-dom";
 
 const ForgotPasswordModal = ({ isOpen, onClose }) => {
   const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
   const [errors, setErrors] = useState({});
   const setIsChangePasswordModalOpen = useSetRecoilState(
     isChangePasswordModalOpenState
@@ -77,6 +79,7 @@ const ForgotPasswordModal = ({ isOpen, onClose }) => {
       toast.success("Cập nhật mật khẩu thành công");
       setIsChangePasswordModalOpen(false);
       initValue();
+      navigate("/login");
     } catch (error) {
       console.error(error.response.data.message);
       toast.error(error.response.data.message);
