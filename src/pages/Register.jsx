@@ -11,6 +11,14 @@ import { register } from "../services/authService";
 import { toast } from "react-toastify";
 import OTPInput from "../components/OTPInput";
 import Loading from "../components/Loading";
+import {
+  validateConfirmPassword,
+  validateDayOfBirth,
+  validateFullName,
+  validateOTP,
+  validatePassword,
+  validatePhone,
+} from "../utils/validate";
 
 const Register = () => {
   const [step, setStep] = useState(1);
@@ -111,36 +119,18 @@ const Register = () => {
     }
   };
 
-  // Validation functions
-  const validatePhone = (phoneNumber) => {
-    const phoneRegex = /(0[3|5|7|8|9])+([0-9]{8})\b/;
-    return phoneRegex.test(phoneNumber) ? "" : "Bắt đầu bằng 0 và có 10 chữ số";
-  };
-
-  const validateOTP = (otp) => {
-    return otp.length === 6 ? "" : "Mã OTP phải có 6 chữ số";
-  };
-
-  const validatePassword = (passWord) => {
-    return passWord.length >= 6 ? "" : "Mật khẩu phải có ít nhất 6 ký tự";
-  };
-
-  const validateConfirmPassword = (confirm_password) => {
-    return confirm_password === formData.passWord ? "" : "Mật khẩu không khớp";
-  };
-
-  const validateDayOfBirth = (dayOfBirth) => {
-    const today = new Date();
-    const birthDate = new Date(dayOfBirth);
-    return birthDate < today ? "" : "Ngày sinh không hợp lệ";
-  };
-
   const handleChange = (e) => {
     const { name, value } = e.target;
 
     setFormData((prev) => ({ ...prev, [name]: value }));
 
     switch (name) {
+      case "fullName":
+        setErrors((prev) => ({
+          ...prev,
+          fullName: validateFullName(value),
+        }));
+        break;
       case "phoneNumber":
         setErrors((prev) => ({ ...prev, phoneNumber: validatePhone(value) }));
         break;
@@ -150,14 +140,17 @@ const Register = () => {
       case "passWord":
         setErrors((prev) => ({
           ...prev,
-          confirm_password: validateConfirmPassword(value),
+          confirm_password: validateConfirmPassword(
+            formData.confirm_password,
+            value
+          ),
         }));
         setErrors((prev) => ({ ...prev, passWord: validatePassword(value) }));
         break;
       case "confirm_password":
         setErrors((prev) => ({
           ...prev,
-          confirm_password: validateConfirmPassword(value),
+          confirm_password: validateConfirmPassword(value, formData.passWord),
         }));
         break;
       case "dayOfBirth":
@@ -327,6 +320,7 @@ const Register = () => {
               required
               onChange={handleChange}
               value={formData.fullName}
+              error={errors.fullName}
             />
 
             <div className="flex flex-row gap-x-3">

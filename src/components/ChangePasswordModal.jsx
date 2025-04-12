@@ -34,12 +34,6 @@ const ForgotPasswordModal = ({ isOpen, onClose }) => {
     setFormData((prev) => ({ ...prev, [name]: value }));
 
     switch (name) {
-      case "currentPassWord":
-        setErrors((prev) => ({
-          ...prev,
-          currentPassWord: validatePassword(value),
-        }));
-        break;
       case "newPassWord":
         setErrors((prev) => ({
           ...prev,

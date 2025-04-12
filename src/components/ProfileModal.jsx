@@ -8,7 +8,7 @@ import Loading from "../components/Loading";
 import { updateAvatarUser, updateProfileUser } from "../services/userService";
 import { toast } from "react-toastify";
 import Input from "./Input";
-import { validateDayOfBirth } from "../utils/validate";
+import { validateDayOfBirth, validateFullName } from "../utils/validate";
 
 const ProfileModal = ({ isOpen, onClose }) => {
   const [isEdit, setIsEdit] = useState(false);
@@ -77,6 +77,12 @@ const ProfileModal = ({ isOpen, onClose }) => {
     setFormData((prev) => ({ ...prev, [name]: value }));
 
     switch (name) {
+      case "fullName":
+        setErrors((prev) => ({
+          ...prev,
+          fullName: validateFullName(value),
+        }));
+        break;
       case "dayOfBirth":
         setErrors((prev) => ({
           ...prev,
@@ -284,6 +290,7 @@ const ProfileModal = ({ isOpen, onClose }) => {
             required
             onChange={handleChange}
             value={formData.fullName}
+            error={errors.fullName}
           />
           <div className="mb-4">
             <h3 className="mt-4">Thông tin cá nhân</h3>
