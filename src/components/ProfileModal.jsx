@@ -8,11 +8,7 @@ import Loading from "../components/Loading";
 import { updateAvatarUser, updateProfileUser } from "../services/userService";
 import { toast } from "react-toastify";
 import Input from "./Input";
-import {
-  formatDateForInput,
-  formatDateToVietnamese,
-  validateDayOfBirth,
-} from "../utils/validate";
+import { validateDayOfBirth } from "../utils/validate";
 
 const ProfileModal = ({ isOpen, onClose }) => {
   const [isEdit, setIsEdit] = useState(false);
@@ -168,7 +164,8 @@ const ProfileModal = ({ isOpen, onClose }) => {
                 <tr>
                   <td>Ngày sinh</td>
                   <td className="py-2 pl-10">
-                    {formatDateToVietnamese(user?.dayOfBirth)}
+                    {/* {formatDateToVietnamese(user?.dayOfBirth)} */}
+                    {user?.dayOfBirth}
                   </td>
                 </tr>
                 <tr>
@@ -334,7 +331,7 @@ const ProfileModal = ({ isOpen, onClose }) => {
             name="dayOfBirth"
             placeholder="Ngày sinh"
             onChange={handleChange}
-            value={formatDateForInput(formData.dayOfBirth)}
+            value={formData.dayOfBirth}
             error={errors.dayOfBirth}
           />
         </div>
