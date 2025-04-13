@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 import { FaGear } from "react-icons/fa6";
 import UserDropDown from "../components/UserDropDown";
 
-import { useRecoilState } from "recoil";
+import { useRecoilState, useSetRecoilState } from "recoil";
 import { currentTabState } from "../recoil/sidebarAtom";
 import {
   isProfileModalOpenState,
@@ -18,6 +18,8 @@ import ProfileModal from "../components/ProfileModal";
 import ChangePasswordModal from "../components/ChangePasswordModal";
 import { useSocket } from "../context/SocketContext";
 import useSocketOnlineStatus from "../hooks/useSocketOnlineStatus";
+import { sentRequestListState } from "../recoil/sentRequestList";
+import useFriendRequestSocket from "../hooks/useFriendRequestSocket";
 
 const Home = () => {
   const socket = useSocket();
@@ -36,6 +38,10 @@ const Home = () => {
   ];
   // hook kiểm tra trạng thái online + gán list người dùng online
   const onlineStatus = useSocketOnlineStatus(socket, user?.userID);
+  const setSentRequestListRecoil = useSetRecoilState(sentRequestListState);
+
+  const { sentRequestList } = useFriendRequestSocket(socket, user?.userID);
+  setSentRequestListRecoil(sentRequestList);
 
   useEffect(() => {
     const handleClickOutside = (event) => {

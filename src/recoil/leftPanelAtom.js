@@ -19,3 +19,11 @@ export const isChangePasswordModalOpenState = atom({
   key: "isChangePasswordModalOpenState",
   default: false,
 });
+
+export const typeContentState = atom({
+  key: "typeContentState",
+  default: {
+    contentName: null,
+    chat: {},
+  },
+});

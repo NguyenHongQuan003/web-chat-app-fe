@@ -13,8 +13,8 @@ const FriendRequestList = () => {
     socket,
     user?.userID
   );
-  console.log("requestList", requestList);
-  console.log("sentRequestList", sentRequestList);
+  // console.log("requestList", requestList);
+  // console.log("sentRequestList", sentRequestList);
   return (
     <div className="flex-1 bg-gray-200 flex flex-col">
       <div className="bg-white border border-l-0 border-gray-300 p-4 font-[500] flex items-center">

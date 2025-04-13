@@ -11,7 +11,7 @@ const useFriendRequestSocket = (socket, userID) => {
       const results = await getFriendRequests();
       setRequestList(results);
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       if (error.response.data.statusCode === 404) {
         setRequestList([]);
       }
@@ -24,7 +24,7 @@ const useFriendRequestSocket = (socket, userID) => {
       const results = await getSentFriendRequests();
       setSentRequestList(results);
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       if (error.response.data.statusCode === 404) {
         setSentRequestList([]);
       }

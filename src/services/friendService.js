@@ -33,6 +33,6 @@ export const getSentFriendRequests = async () => {
 
 export const getFriendList = async () => {
   const response = await axiosInstance.get(`/friends`);
-  console.log("getFriendList", response);
+  // console.log("getFriendList", response);
   return response.data;
 };

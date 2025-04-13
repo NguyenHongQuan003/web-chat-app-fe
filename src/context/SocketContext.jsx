@@ -36,9 +36,9 @@ export const SocketProvider = ({ children }) => {
     }
   }, [user]);
 
-  useEffect(() => {
-    console.log("Socket state:", socket);
-  }, [socket]);
+  // useEffect(() => {
+  //   console.log("Socket state:", socket);
+  // }, [socket]);
 
   return (
     <SocketContext.Provider value={socket}>{children}</SocketContext.Provider>

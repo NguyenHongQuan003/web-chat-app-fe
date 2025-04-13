@@ -6,13 +6,26 @@ import { FaPhone, FaTimes } from "react-icons/fa";
 import { toast } from "react-toastify";
 import { searchUserByPhoneNumber } from "../services/userService";
 import { useAuth } from "../utils/authUtils";
-import { sendFriendRequest } from "../services/friendService";
+import {
+  cancelFriendRequest,
+  sendFriendRequest,
+} from "../services/friendService";
+import { useRecoilValue } from "recoil";
+import { sentRequestListState } from "../recoil/sentRequestList";
+import Loading from "./Loading";
 
 const AddFriendModal = ({ isOpen, onClose }) => {
+  const sentRequestList = useRecoilValue(sentRequestListState);
+  const [isLoadingSearch, setIsLoadingSearch] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [phoneNumber, setPhoneNumber] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const modalRef = useRef(null);
   const { user: userAuth } = useAuth();
+
+  const checkIfUserIsSentRequest = (userID) => {
+    return sentRequestList.some((request) => request.userID === userID);
+  };
 
   const handleClickOutside = (e) => {
     if (modalRef.current && !modalRef.current.contains(e.target)) {
@@ -21,16 +34,20 @@ const AddFriendModal = ({ isOpen, onClose }) => {
   };
 
   const handleSearch = async () => {
+    setIsLoadingSearch(true);
     try {
       const res = await searchUserByPhoneNumber(phoneNumber);
       setSearchResults([res]);
     } catch (error) {
       toast.error("Lỗi khi tìm kiếm người dùng", error);
+    } finally {
+      setIsLoadingSearch(false);
     }
   };
 
   // Hàm kết bạn
   const handleAddFriend = async (receiverID) => {
+    setIsLoading(true);
     try {
       console.log("receiverID", receiverID);
       await sendFriendRequest(receiverID);
@@ -38,7 +55,27 @@ const AddFriendModal = ({ isOpen, onClose }) => {
     } catch (error) {
       toast.error("Lỗi khi gửi lời mời kết bạn", error);
       console.log("error", error);
+    } finally {
+      setIsLoading(false);
     }
+  };
+
+  const handleCancelAddFriend = async (userID) => {
+    setIsLoading(true);
+    try {
+      const res = await cancelFriendRequest(userID);
+      console.log("handleCancel", res);
+      toast.success("Đã hủy yêu cầu");
+    } catch (error) {
+      console.log("handleCancel", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleOpenWindowChat = (userID) => {
+    console.log("open chat window", userID);
+    onClose();
   };
 
   if (!isOpen) return null;
@@ -79,7 +116,7 @@ const AddFriendModal = ({ isOpen, onClose }) => {
 
         {/* Search results */}
         <div>
-          <h3 className="text-xs px-4 text-gray-500 mb-2">Kết quả gần nhất</h3>
+          <h3 className="text-xs px-4 text-gray-500 mb-2">Kết quả tìm kiếm</h3>
 
           {searchResults.length > 0 ? (
             <div className="h-90 max-h-90 overflow-y-auto">
@@ -101,21 +138,61 @@ const AddFriendModal = ({ isOpen, onClose }) => {
                       </p>
                     </div>
                   </div>
-                  {userAuth.userID !== user.userID && (
-                    <button
-                      onClick={() => handleAddFriend(user.userID)}
-                      className="min-w-[84px] disabled:cursor-not-allowed text-[12px] px-4 py-1 rounded outline-1 text-blue-700 font-[700] hover:bg-blue-100 outline-[#0078E8]"
-                    >
-                      Kết bạn
-                    </button>
-                  )}
+                  {userAuth.userID !== user.userID &&
+                    (checkIfUserIsSentRequest(user.userID) ? (
+                      <div>
+                        <button
+                          onClick={() => handleOpenWindowChat(user.userID)}
+                          className="min-w-[84px] text-[12px] px-4 py-1 rounded text-red-600 font-[700] hover:bg-red-100"
+                        >
+                          Nhắn tin
+                        </button>
+                        <button
+                          onClick={() => handleCancelAddFriend(user.userID)}
+                          className="min-w-[84px] text-[12px] px-4 py-1 rounded text-red-600 font-[700] hover:bg-red-100"
+                          disabled={isLoading}
+                        >
+                          {isLoading ? (
+                            <div className="flex items-center justify-center gap-2">
+                              <Loading size="sm" />
+                              <span>Đang xử lý...</span>
+                            </div>
+                          ) : (
+                            "Hủy lời mời"
+                          )}
+                        </button>
+                      </div>
+                    ) : (
+                      <div>
+                        <button
+                          onClick={() => handleOpenWindowChat(user.userID)}
+                          className="min-w-[84px] text-[12px] px-4 py-1 rounded text-red-600 font-[700] hover:bg-red-100"
+                        >
+                          Nhắn tin
+                        </button>
+                        <button
+                          onClick={() => handleAddFriend(user.userID)}
+                          className="min-w-[84px] text-[12px] px-4 py-1 rounded text-blue-700 font-[700] hover:bg-blue-100"
+                          disabled={isLoading}
+                        >
+                          {isLoading ? (
+                            <div className="flex items-center justify-center gap-2">
+                              <Loading size="sm" />
+                              <span>Đang xử lý...</span>
+                            </div>
+                          ) : (
+                            "Kết bạn"
+                          )}
+                        </button>
+                      </div>
+                    ))}
                 </div>
               ))}
 
               <div className="py-2 text-center">
-                <button className="cursor-pointer text-blue-500 hover:underline text-sm">
+                {/* <button className="cursor-pointer text-blue-500 hover:underline text-sm">
                   Xem thêm
-                </button>
+                </button> */}
               </div>
             </div>
           ) : (
@@ -137,7 +214,14 @@ const AddFriendModal = ({ isOpen, onClose }) => {
             onClick={handleSearch}
             className="cursor-pointer px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
           >
-            Tìm kiếm
+            {isLoadingSearch ? (
+              <div className="flex items-center justify-center gap-2">
+                <Loading size="sm" />
+                <span>Đang tìm...</span>
+              </div>
+            ) : (
+              "Tìm kiếm"
+            )}
           </button>
         </div>
       </div>
