@@ -44,20 +44,19 @@ const useFriendRequestSocket = (socket, userID) => {
     };
     fetchSentRequestList();
 
-    socket.on("friendRequest", handleFiendRequest);
-    socket.on("sentFriendRequest", handleSentFiendRequest);
-    socket.on("friendRequestAccepted", () => {
+    const handleFriendRequestAccepted = () => {
       fetchRequestList();
       fetchSentRequestList();
-    });
+    };
+
+    socket.on("friendRequest", handleFiendRequest);
+    socket.on("sentFriendRequest", handleSentFiendRequest);
+    socket.on("friendRequestAccepted", handleFriendRequestAccepted);
 
     return () => {
       socket.off("friendRequest", handleFiendRequest);
       socket.off("sentFriendRequest", handleSentFiendRequest);
-      socket.off("friendRequestAccepted", () => {
-        fetchRequestList();
-        fetchSentRequestList();
-      });
+      socket.off("friendRequestAccepted", handleFriendRequestAccepted);
     };
   }, [socket, userID]);
   return { requestList, sentRequestList };

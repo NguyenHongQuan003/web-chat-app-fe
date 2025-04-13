@@ -1,7 +1,7 @@
 import axiosInstance from "../utils/axiosConfig";
 
 export const sendFriendRequest = async (receiverId) => {
-  const response = await axiosInstance.post(`/friends/${receiverId}`, {});
+  const response = await axiosInstance.post(`/friends/${receiverId}`);
   return response.data;
 };
 
@@ -22,17 +22,17 @@ export const declineFriendRequest = async (senderId) => {
 };
 
 export const getFriendRequests = async () => {
-  const response = await axiosInstance.get(`/friends/requests`, {});
+  const response = await axiosInstance.get(`/friends/requests`);
   return response.data;
 };
 
 export const getSentFriendRequests = async () => {
-  const response = await axiosInstance.get(`/friends/requests/sent`, {});
+  const response = await axiosInstance.get(`/friends/requests/sent`);
   return response.data;
 };
 
 export const getFriendList = async () => {
-  const response = await axiosInstance.get(`/friends`, {});
+  const response = await axiosInstance.get(`/friends`);
   console.log("getFriendList", response);
   return response.data;
 };
