@@ -23,7 +23,6 @@ export const declineFriendRequest = async (senderId) => {
 
 export const getFriendRequests = async () => {
   const response = await axiosInstance.get(`/friends/requests`, {});
-  console.log("response", response);
   return response.data;
 };
 

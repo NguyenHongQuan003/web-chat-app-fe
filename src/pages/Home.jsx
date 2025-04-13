@@ -34,7 +34,7 @@ const Home = () => {
     { id: "chat", icon: FaCommentDots, label: "Tin nhắn" },
     { id: "contacts", icon: FaAddressBook, label: "Danh bạ" },
   ];
-  // hook kiểm tra trạng thái online
+  // hook kiểm tra trạng thái online + gán list người dùng online
   const onlineStatus = useSocketOnlineStatus(socket, user?.userID);
 
   useEffect(() => {
