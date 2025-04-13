@@ -17,13 +17,13 @@ import ContentArea from "../components/ContentArea";
 import ProfileModal from "../components/ProfileModal";
 import ChangePasswordModal from "../components/ChangePasswordModal";
 import { useSocket } from "../context/SocketContext";
+import useSocketOnlineStatus from "../hooks/useSocketOnlineStatus";
 
 const Home = () => {
   const socket = useSocket();
   const { user, signOut } = useAuth();
   const userDropdownRef = useRef(null);
   const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
-  const [onlineStatus, setOnlineStatus] = useState(false);
   const [currentTab, setCurrentTab] = useRecoilState(currentTabState);
   const [isProfileModalOpen, setIsProfileModalOpen] = useRecoilState(
     isProfileModalOpenState
@@ -34,20 +34,8 @@ const Home = () => {
     { id: "chat", icon: FaCommentDots, label: "Tin nhắn" },
     { id: "contacts", icon: FaAddressBook, label: "Danh bạ" },
   ];
-
-  useEffect(() => {
-    if (!socket) return;
-
-    socket.on("getOnlineUsers", (users) => {
-      console.log("Online users:", users);
-
-      users.includes(user.userID)
-        ? setOnlineStatus(true)
-        : setOnlineStatus(false);
-    });
-
-    return () => socket.off("getOnlineUsers");
-  }, [socket, user]);
+  // hook kiểm tra trạng thái online
+  const onlineStatus = useSocketOnlineStatus(socket, user?.userID);
 
   useEffect(() => {
     const handleClickOutside = (event) => {

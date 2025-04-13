@@ -13,23 +13,27 @@ export const SocketProvider = ({ children }) => {
   const [socket, setSocket] = useState(null);
   const { user } = useAuth();
   useEffect(() => {
-    if (!user?.userID) return;
+    try {
+      if (!user?.userID) return;
 
-    const connectSocket = io("http://127.0.0.1:8022", {
-      query: {
-        userId: user.userID,
-      },
-    });
-    connectSocket.on("connect", () => {
-      console.log("Connected to socket server");
-    });
+      const connectSocket = io("http://127.0.0.1:8022", {
+        query: {
+          userId: user.userID,
+        },
+      });
+      connectSocket.on("connect", () => {
+        console.log("Connected to socket server");
+      });
 
-    setSocket(connectSocket);
+      setSocket(connectSocket);
 
-    // Cleanup khi component unmount
-    return () => {
-      connectSocket.disconnect();
-    };
+      // Cleanup khi component unmount
+      return () => {
+        connectSocket.disconnect();
+      };
+    } catch (error) {
+      console.error("Error connecting to socket server:", error);
+    }
   }, [user]);
 
   useEffect(() => {
