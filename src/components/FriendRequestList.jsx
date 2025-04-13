@@ -2,7 +2,7 @@ import { FaEnvelope, FaPaperPlane } from "react-icons/fa";
 import ResponseCard from "./ResponseCard";
 import CancelCard from "./CancelCard";
 import { useAuth } from "../utils/authUtils";
-import { useFriendRequestSocket } from "../hooks/useFriendRequestSocket";
+import useFriendRequestSocket from "../hooks/useFriendRequestSocket";
 import { useSocket } from "../context/SocketContext";
 
 const FriendRequestList = () => {

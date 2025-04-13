@@ -4,7 +4,7 @@ import {
   getSentFriendRequests,
 } from "../services/friendService";
 
-export const useFriendRequestSocket = (socket, userID) => {
+const useFriendRequestSocket = (socket, userID) => {
   const [requestList, setRequestList] = useState([]);
   const fetchRequestList = async () => {
     try {
