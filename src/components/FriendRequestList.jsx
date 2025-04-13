@@ -6,8 +6,10 @@ import {
 } from "../services/friendService";
 import ResponseCard from "./ResponseCard";
 import CancelCard from "./CancelCard";
+import { useAuth } from "../utils/authUtils";
 
 const FriendRequestList = () => {
+  const { user } = useAuth();
   // const data = [
   //   {
   //     id: "1",
@@ -207,6 +209,9 @@ const FriendRequestList = () => {
       setRequestList(results);
     } catch (error) {
       console.log(error);
+      if (error.response.data.statusCode === 404) {
+        setRequestList([]);
+      }
     }
   };
 
@@ -217,13 +222,22 @@ const FriendRequestList = () => {
       setSentRequestList(results);
     } catch (error) {
       console.log(error);
+      if (error.response.data.statusCode === 404) {
+        setSentRequestList([]);
+      }
     }
   };
 
   useEffect(() => {
-    fetchRequestList();
-    fetchSentRequestList();
-  }, [requestList]);
+    if (!user) return;
+
+    const interval = setInterval(() => {
+      fetchRequestList();
+      fetchSentRequestList();
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, [user]);
 
   return (
     <div className="flex-1 bg-gray-200 flex flex-col">

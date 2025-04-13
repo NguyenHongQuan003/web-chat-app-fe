@@ -1,6 +1,6 @@
 // src/components/AddFriendModal.jsx
 import PropTypes from "prop-types";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import Input from "./Input";
 import { FaPhone, FaTimes } from "react-icons/fa";
 import { toast } from "react-toastify";
@@ -13,10 +13,6 @@ const AddFriendModal = ({ isOpen, onClose }) => {
   const [searchResults, setSearchResults] = useState([]);
   const modalRef = useRef(null);
   const { user: userAuth } = useAuth();
-
-  useEffect(() => {
-    console.log("searchResults", searchResults);
-  }, [searchResults]);
 
   const handleClickOutside = (e) => {
     if (modalRef.current && !modalRef.current.contains(e.target)) {

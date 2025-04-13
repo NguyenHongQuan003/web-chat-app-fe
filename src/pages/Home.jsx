@@ -16,22 +16,38 @@ import LeftPanel from "../components/LeftPanel";
 import ContentArea from "../components/ContentArea";
 import ProfileModal from "../components/ProfileModal";
 import ChangePasswordModal from "../components/ChangePasswordModal";
+import { useSocket } from "../context/SocketContext";
 
 const Home = () => {
+  const socket = useSocket();
+  const { user, signOut } = useAuth();
+  const userDropdownRef = useRef(null);
+  const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
+  const [onlineStatus, setOnlineStatus] = useState(false);
   const [currentTab, setCurrentTab] = useRecoilState(currentTabState);
   const [isProfileModalOpen, setIsProfileModalOpen] = useRecoilState(
     isProfileModalOpenState
   );
   const [isChangePasswordModalOpen, setIsChangePasswordModalOpen] =
     useRecoilState(isChangePasswordModalOpenState);
-
   const tabs = [
     { id: "chat", icon: FaCommentDots, label: "Tin nhắn" },
     { id: "contacts", icon: FaAddressBook, label: "Danh bạ" },
   ];
-  const { user, signOut } = useAuth();
-  const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
-  const userDropdownRef = useRef(null);
+
+  useEffect(() => {
+    if (!socket) return;
+
+    socket.on("getOnlineUsers", (users) => {
+      console.log("Online users:", users);
+
+      users.includes(user.userID)
+        ? setOnlineStatus(true)
+        : setOnlineStatus(false);
+    });
+
+    return () => socket.off("getOnlineUsers");
+  }, [socket, user]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -57,7 +73,7 @@ const Home = () => {
           {user ? (
             <div className="flex" ref={userDropdownRef}>
               <button
-                className="flex items-center p-2 hover:cursor-pointer rounded-full "
+                className="relative flex items-center p-2 hover:cursor-pointer rounded-full "
                 onClick={() => setIsUserDropdownOpen(!isUserDropdownOpen)}
               >
                 <img
@@ -65,16 +81,26 @@ const Home = () => {
                   alt="avatar"
                   className="h-12 w-12 rounded-full border-1 border-white object-cover"
                 />
+                <div
+                  className={`absolute ${
+                    onlineStatus ? "bg-green-500" : "bg-red-500"
+                  } right-2 bottom-2 w-4 h-4 border-2 border-[#005ae0] rounded-full `}
+                ></div>
               </button>
               {isUserDropdownOpen && (
                 <UserDropDown user={user} signOut={signOut} />
               )}
             </div>
           ) : (
-            <Link to="/login" className="flex items-center">
+            <Link to="/login" className="relative flex items-center">
               <div className="p-2 hover:cursor-pointer rounded-full bg-white">
                 <FaUser className="text-[#0078E8] h-5 w-5" />
               </div>
+              <div
+                className={`absolute ${
+                  onlineStatus ? "bg-green-500" : "bg-red-500"
+                } right-0 bottom-0 w-4 h-4 border-2 border-[#005ae0] rounded-full `}
+              ></div>
             </Link>
           )}
         </div>
