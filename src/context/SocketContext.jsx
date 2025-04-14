@@ -20,6 +20,9 @@ export const SocketProvider = ({ children }) => {
         query: {
           userId: user.userID,
         },
+        reconnection: true,
+        reconnectionAttempts: 5, // số lần thử lại
+        reconnectionDelay: 1000,
       });
       connectSocket.on("connect", () => {
         console.log("Connected to socket server");
@@ -34,7 +37,7 @@ export const SocketProvider = ({ children }) => {
     } catch (error) {
       console.error("Error connecting to socket server:", error);
     }
-  }, [user]);
+  }, [user?.userID]);
 
   // useEffect(() => {
   //   console.log("Socket state:", socket);
