@@ -1,6 +1,6 @@
 // src/components/AddFriendModal.jsx
 import PropTypes from "prop-types";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import Input from "./Input";
 import { FaPhone, FaTimes } from "react-icons/fa";
 import { toast } from "react-toastify";
@@ -8,11 +8,13 @@ import { searchUserByPhoneNumber } from "../services/userService";
 import { useAuth } from "../utils/authUtils";
 import {
   cancelFriendRequest,
+  getFriendList,
   sendFriendRequest,
 } from "../services/friendService";
-import { useRecoilValue } from "recoil";
-import { sentRequestListState } from "../recoil/sentRequestList";
+import { useRecoilValue, useSetRecoilState } from "recoil";
 import Loading from "./Loading";
+import { typeContentState } from "../recoil/leftPanelAtom";
+import { sentRequestListState } from "../recoil/sentRequestList";
 
 const AddFriendModal = ({ isOpen, onClose }) => {
   const sentRequestList = useRecoilValue(sentRequestListState);
@@ -22,9 +24,33 @@ const AddFriendModal = ({ isOpen, onClose }) => {
   const [searchResults, setSearchResults] = useState([]);
   const modalRef = useRef(null);
   const { user: userAuth } = useAuth();
+  const setTypeContent = useSetRecoilState(typeContentState);
 
-  const checkIfUserIsSentRequest = (userID) => {
-    return sentRequestList.some((request) => request.userID === userID);
+  const [friendList, setFriendList] = useState([]);
+  useEffect(() => {
+    const fetchFriendList = async () => {
+      try {
+        const results = await getFriendList();
+        setFriendList(results);
+      } catch (error) {
+        // console.log(error);
+        if (error.response.data.statusCode === 404) {
+          setFriendList([]);
+        }
+      }
+    };
+
+    fetchFriendList();
+  }, [searchResults]);
+
+  const checkFriend = (userID) => {
+    const isFriend = friendList.some((friend) => friend.userID === userID);
+    if (isFriend) return 0;
+    const isSentRequest = sentRequestList.some(
+      (request) => request.userID === userID
+    );
+    if (isSentRequest) return 1;
+    return 2;
   };
 
   const handleClickOutside = (e) => {
@@ -39,7 +65,8 @@ const AddFriendModal = ({ isOpen, onClose }) => {
       const res = await searchUserByPhoneNumber(phoneNumber);
       setSearchResults([res]);
     } catch (error) {
-      toast.error("Lỗi khi tìm kiếm người dùng", error);
+      toast.error(error.response.data.message);
+      setSearchResults([]);
     } finally {
       setIsLoadingSearch(false);
     }
@@ -73,9 +100,17 @@ const AddFriendModal = ({ isOpen, onClose }) => {
     }
   };
 
-  const handleOpenWindowChat = (userID) => {
-    console.log("open chat window", userID);
+  const handleOpenWindowChat = (user) => {
     onClose();
+    console.log("Open chat with user", user.userID);
+    setTypeContent({
+      contentName: "conversation",
+      chat: {
+        receiver: user,
+        type: "single",
+        currentChat: {},
+      },
+    });
   };
 
   if (!isOpen) return null;
@@ -105,6 +140,7 @@ const AddFriendModal = ({ isOpen, onClose }) => {
           <div className="flex">
             <Input
               type="tel"
+              name="phoneNumber"
               className="flex-1 p-2 border-b border-gray-300 focus:border-[#005ae0] text-sm focus:outline-none"
               placeholder="Số điện thoại"
               value={phoneNumber}
@@ -138,15 +174,15 @@ const AddFriendModal = ({ isOpen, onClose }) => {
                       </p>
                     </div>
                   </div>
-                  {userAuth.userID !== user.userID &&
-                    (checkIfUserIsSentRequest(user.userID) ? (
-                      <div>
-                        <button
-                          onClick={() => handleOpenWindowChat(user.userID)}
-                          className="min-w-[84px] text-[12px] px-4 py-1 rounded text-red-600 font-[700] hover:bg-red-100"
-                        >
-                          Nhắn tin
-                        </button>
+                  {userAuth.userID !== user.userID && (
+                    <div>
+                      <button
+                        onClick={() => handleOpenWindowChat(user)}
+                        className="min-w-[84px] text-[12px] px-4 py-1 rounded text-red-600 font-[700] hover:bg-red-100"
+                      >
+                        Nhắn tin
+                      </button>
+                      {checkFriend(user.userID) === 1 && (
                         <button
                           onClick={() => handleCancelAddFriend(user.userID)}
                           className="min-w-[84px] text-[12px] px-4 py-1 rounded text-red-600 font-[700] hover:bg-red-100"
@@ -161,15 +197,8 @@ const AddFriendModal = ({ isOpen, onClose }) => {
                             "Hủy lời mời"
                           )}
                         </button>
-                      </div>
-                    ) : (
-                      <div>
-                        <button
-                          onClick={() => handleOpenWindowChat(user.userID)}
-                          className="min-w-[84px] text-[12px] px-4 py-1 rounded text-red-600 font-[700] hover:bg-red-100"
-                        >
-                          Nhắn tin
-                        </button>
+                      )}
+                      {checkFriend(user.userID) === 2 && (
                         <button
                           onClick={() => handleAddFriend(user.userID)}
                           className="min-w-[84px] text-[12px] px-4 py-1 rounded text-blue-700 font-[700] hover:bg-blue-100"
@@ -184,8 +213,9 @@ const AddFriendModal = ({ isOpen, onClose }) => {
                             "Kết bạn"
                           )}
                         </button>
-                      </div>
-                    ))}
+                      )}
+                    </div>
+                  )}
                 </div>
               ))}
 

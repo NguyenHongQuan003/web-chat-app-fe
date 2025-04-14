@@ -23,7 +23,7 @@ const FriendRequestList = () => {
       </div>
       <div className=" flex gap-4 flex-wrap p-2 overflow-y-auto h-[calc(100vh-4rem)]">
         {requestList.map((request) => (
-          <ResponseCard key={request.id} infomation={request} />
+          <ResponseCard key={request.userID} infomation={request} />
         ))}
       </div>
       <div className="bg-white border border-l-0 border-gray-300 p-4 font-[500] flex items-center">
@@ -32,7 +32,7 @@ const FriendRequestList = () => {
       </div>
       <div className="flex gap-4 flex-wrap p-2 overflow-y-auto h-[calc(100vh-4rem)]">
         {sentRequestList.map((request) => (
-          <CancelCard key={request.id} infomation={request} />
+          <CancelCard key={request.userID} infomation={request} />
         ))}
       </div>
     </div>

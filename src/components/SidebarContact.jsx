@@ -1,11 +1,15 @@
 import { FaUserFriends, FaUserPlus, FaUsers, FaUsersCog } from "react-icons/fa";
 import { useRecoilState } from "recoil";
-import { selectedMenuItemState } from "../recoil/leftPanelAtom";
+import { typeContentState } from "../recoil/leftPanelAtom";
 
 const SidebarContact = () => {
-  const [selectedMenuItem, setSelectedMenuItem] = useRecoilState(
-    selectedMenuItemState
-  );
+  const [typeContent, setTypeContent] = useRecoilState(typeContentState);
+  const handleClick = (id) => {
+    setTypeContent({
+      contentName: id,
+      chat: typeContent.chat,
+    });
+  };
   const menuItems = [
     {
       id: "friends",
@@ -36,9 +40,11 @@ const SidebarContact = () => {
         {menuItems.map((item) => (
           <div
             key={item.id}
-            onClick={() => setSelectedMenuItem(item.id)}
+            onClick={() => handleClick(item.id)}
             className={`${
-              selectedMenuItem === item.id ? "bg-blue-100" : "hover:bg-gray-100"
+              typeContent.contentName === item.id
+                ? "bg-blue-100"
+                : "hover:bg-gray-100"
             } flex items-center px-4 py-3 cursor-pointer`}
           >
             <div className="w-8 h-8 flex items-center justify-center rounded-full bg-blue-50">

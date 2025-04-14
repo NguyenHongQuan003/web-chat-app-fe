@@ -5,11 +5,12 @@ import { Link } from "react-router-dom";
 import { FaGear } from "react-icons/fa6";
 import UserDropDown from "../components/UserDropDown";
 
-import { useRecoilState, useSetRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import { currentTabState } from "../recoil/sidebarAtom";
 import {
   isProfileModalOpenState,
   isChangePasswordModalOpenState,
+  typeContentState,
 } from "../recoil/leftPanelAtom";
 import SearchTool from "../components/SearchTool";
 import LeftPanel from "../components/LeftPanel";
@@ -41,7 +42,16 @@ const Home = () => {
   const setSentRequestListRecoil = useSetRecoilState(sentRequestListState);
 
   const { sentRequestList } = useFriendRequestSocket(socket, user?.userID);
-  setSentRequestListRecoil(sentRequestList);
+  // setSentRequestListRecoil(sentRequestList);
+
+  useEffect(() => {
+    setSentRequestListRecoil(sentRequestList);
+  }, [sentRequestList, setSentRequestListRecoil]);
+
+  const typeContent = useRecoilValue(typeContentState);
+  useEffect(() => {
+    console.log("typeContent", typeContent);
+  }, [typeContent]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {

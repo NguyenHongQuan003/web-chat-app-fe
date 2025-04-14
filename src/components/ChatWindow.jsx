@@ -1,9 +1,27 @@
 // src/components/ChatWindow.jsx
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ChatInfo from "./ChatInfo";
 import PropTypes from "prop-types";
+import {
+  BsThreeDotsVertical,
+  BsTelephone,
+  BsCameraVideo,
+} from "react-icons/bs";
+import { IoMdImages } from "react-icons/io";
+import { FaRegSmile } from "react-icons/fa";
+import { IoSend } from "react-icons/io5";
+import { useRecoilValue } from "recoil";
+import { typeContentState } from "../recoil/leftPanelAtom";
 
-const ChatWindow = ({ currentChat }) => {
+const ChatWindow = () => {
+  const typeContent = useRecoilValue(typeContentState);
+  const currentChat = typeContent.chat.currentChat;
+  const [receiver, setReceiver] = useState({});
+
+  useEffect(() => {
+    console.log("typeContent.chat.receiver", typeContent.chat.receiver);
+    setReceiver(typeContent.chat.receiver);
+  }, [typeContent.chat.receiver]);
   const [messages, setMessages] = useState([
     { id: 1, sender: "Bạn A", text: "Xin chào!" },
     { id: 2, sender: "Bạn", text: "Chào bạn!" },
@@ -54,38 +72,80 @@ const ChatWindow = ({ currentChat }) => {
 
   return (
     <div className="flex flex-grow">
-      <div className=" bg-gray-100 flex flex-col flex-grow">
-        <div className="flex-1 overflow-y-auto mb-4">
+      <div className="bg-white flex flex-col flex-grow">
+        {/* Header */}
+        <div className="flex items-center justify-between px-4 py-2 border-b border-gray-300">
+          <div className="flex items-center gap-3">
+            <div className="w-14 h-14 rounded-full bg-gray-300">
+              <img
+                src={receiver?.avatar}
+                alt="avatar"
+                className="w-full h-full rounded-full object-cover"
+              />
+            </div>
+            <div>
+              <h3 className="font-semibold">
+                {receiver?.fullName || "Không có cuộc trò chuyện"}
+              </h3>
+              <span className="text-sm text-gray-500">
+                {currentChat?.status || "Offline"}
+              </span>
+            </div>
+          </div>
+          <div className="flex items-center gap-4 text-gray-600">
+            <BsTelephone className="w-5 h-5 cursor-pointer" />
+            <BsCameraVideo className="w-5 h-5 cursor-pointer" />
+            <BsThreeDotsVertical className="w-5 h-5 cursor-pointer" />
+          </div>
+        </div>
+
+        {/* Messages */}
+        <div className="flex-1 overflow-y-auto p-4 space-y-4">
           {messages.map((message) => (
             <div
               key={message.id}
-              className={`mb-2 mx-4 ${
-                message.sender === "Bạn" ? "text-right" : "text-left"
+              className={`flex ${
+                message.sender === "Bạn" ? "justify-end" : "justify-start"
               }`}
             >
-              <strong>{message.sender}:</strong> <span>{message.text}</span>
+              <div
+                className={`max-w-[70%] rounded-2xl px-4 py-2 ${
+                  message.sender === "Bạn"
+                    ? "bg-blue-500 text-white"
+                    : "bg-gray-100"
+                }`}
+              >
+                <p>{message.text}</p>
+              </div>
             </div>
           ))}
-          {currentChat?.id}
         </div>
-        <form onSubmit={handleSendMessage} className="flex">
-          <input
-            type="text"
-            value={newMessage}
-            onChange={(e) => setNewMessage(e.target.value)}
-            placeholder="Nhập tin nhắn..."
-            className="flex-1 p-2 border border-gray-300 rounded-l"
-          />
-          <button
-            type="submit"
-            className="bg-blue-600 text-white p-2 rounded-r"
+
+        {/* Input area */}
+        <div className="border-t border-gray-300 p-3">
+          <form
+            onSubmit={handleSendMessage}
+            className="flex items-center gap-2"
           >
-            Gửi
-          </button>
-        </form>
+            <div className="flex items-center gap-2">
+              <IoMdImages className="w-6 h-6 text-gray-500 cursor-pointer" />
+              <FaRegSmile className="w-6 h-6 text-gray-500 cursor-pointer" />
+            </div>
+            <input
+              type="text"
+              value={newMessage}
+              onChange={(e) => setNewMessage(e.target.value)}
+              placeholder="Aa"
+              className="flex-1 p-2 rounded-full bg-gray-100 focus:outline-none"
+            />
+            <button type="submit" className="text-blue-500 hover:text-blue-600">
+              <IoSend className="w-6 h-6" />
+            </button>
+          </form>
+        </div>
       </div>
 
-      <ChatInfo />
+      {/* <ChatInfo /> */}
     </div>
   );
 };

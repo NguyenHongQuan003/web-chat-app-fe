@@ -147,7 +147,7 @@ const FriendList = () => {
       </div>
       <div className="overflow-y-auto py-4 h-[calc(100vh-4rem)]">
         {friendList.map((item) => (
-          <div key={item.id} className="flex p-2 items-center ">
+          <div key={item.userID} className="flex p-2 items-center ">
             <img
               src={item.avatar}
               className="w-12 h-12 rounded-full object-cover border border-gray-600"

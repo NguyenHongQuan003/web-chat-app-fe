@@ -1,61 +1,34 @@
-import { useRecoilState } from "recoil";
-import {
-  selectedMenuItemState,
-  selectedConversationState,
-} from "../recoil/leftPanelAtom";
-import { useEffect } from "react";
+import { useRecoilValue } from "recoil";
+import { typeContentState } from "../recoil/leftPanelAtom";
+
 import ChatWindow from "./ChatWindow";
 import FriendList from "./FriendList";
 import FriendRequestList from "./FriendRequestList";
 import Welcome from "./Welcome";
 
 const ContentArea = () => {
-  const [selectedMenuItem, setSelectedMenuItem] = useRecoilState(
-    selectedMenuItemState
-  );
-  const [selectedConversation, setSelectedConversation] = useRecoilState(
-    selectedConversationState
-  );
+  const typeContent = useRecoilValue(typeContentState);
 
-  // Reset selectedConversation khi selectedMenuItem thay đổi
-  useEffect(() => {
-    if (selectedMenuItem !== null && selectedConversation !== null) {
-      setSelectedConversation(null);
+  const renderContent = () => {
+    if (typeContent.contentName === "conversation") {
+      return <ChatWindow currentChat={typeContent.chat} />;
     }
-  }, [selectedMenuItem, selectedConversation, setSelectedConversation]);
-
-  // Reset selectedMenuItem khi selectedConversation thay đổi
-  useEffect(() => {
-    if (selectedConversation !== null && selectedMenuItem !== null) {
-      setSelectedMenuItem(null);
+    if (typeContent.contentName === "friends") {
+      return <FriendList />;
     }
-  }, [selectedConversation, selectedMenuItem, setSelectedMenuItem]);
-
-  const renderConversation = () => {
-    if (selectedConversation) {
-      return <ChatWindow currentChat={selectedConversation} />;
+    if (typeContent.contentName === "groups") {
+      return <div>Groups</div>;
     }
-    return null;
+    if (typeContent.contentName === "friendRequests") {
+      return <FriendRequestList />;
+    }
+    if (typeContent.contentName === "groupInvites") {
+      return <div>Group Invites</div>;
+    }
+    return <Welcome />;
   };
 
-  const renderMenuContent = () => {
-    switch (selectedMenuItem) {
-      case "friends":
-        return <FriendList />;
-      case "groups":
-        return <div>Groups</div>;
-      case "friendRequests":
-        return <FriendRequestList />;
-      case "groupInvites":
-        return <div>Group Invites</div>;
-      default:
-        return <Welcome />;
-    }
-  };
-
-  return (
-    <>{selectedConversation ? renderConversation() : renderMenuContent()}</>
-  );
+  return <>{renderContent()}</>;
 };
 
 export default ContentArea;
