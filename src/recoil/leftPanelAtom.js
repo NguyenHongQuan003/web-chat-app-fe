@@ -24,6 +24,6 @@ export const typeContentState = atom({
   key: "typeContentState",
   default: {
     contentName: null,
-    chat: {},
+    conversation: null,
   },
 });

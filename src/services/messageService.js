@@ -1,6 +1,8 @@
 import axiosInstance from "../utils/axiosConfig";
 
 export const sendTextMessage = async (receiverId, message) => {
+  console.log("Sending message:", message);
+  console.log("Receiver ID:", receiverId);
   const response = await axiosInstance.post(`/messages/send/${receiverId}`, {
     message,
   });

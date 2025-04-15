@@ -1,6 +1,4 @@
-// src/components/ChatWindow.jsx
-import { useEffect, useState } from "react";
-// import ChatInfo from "./ChatInfo";
+import { useEffect, useRef, useState } from "react";
 import PropTypes from "prop-types";
 import {
   BsThreeDotsVertical,
@@ -9,70 +7,88 @@ import {
 } from "react-icons/bs";
 import { IoMdImages } from "react-icons/io";
 import { FaRegSmile } from "react-icons/fa";
-import { IoSend } from "react-icons/io5";
-import { useRecoilValue } from "recoil";
+import { IoNotifications, IoSend } from "react-icons/io5";
+import { useRecoilState, useRecoilValue } from "recoil";
 import { typeContentState } from "../recoil/leftPanelAtom";
 import { onlineUsersState } from "../recoil/onlineUsersAtom";
-import { sendTextMessage } from "../services/messageService";
-// import { useAuth } from "../utils/authUtils";
-
+import {
+  getMessagesByConversation,
+  sendTextMessage,
+} from "../services/messageService";
+import { useAuth } from "../utils/authUtils";
+import { parseTimestamp } from "../utils/parse";
+import { messageListState } from "../recoil/messageAtom";
+import MessageInput from "./MessageInput";
+import { hasNewMessageState } from "../recoil/hasNewMessageAtom";
 const ChatWindow = () => {
   const typeContent = useRecoilValue(typeContentState);
-  // const user = useAuth();
-  // const currentChat = typeContent.chat.currentChat;
-  const [receiver, setReceiver] = useState({});
+  const { user: userAuth } = useAuth();
+  const [receiverID, setReceiverID] = useState("");
   const [receiverOnline, setReceiverOnline] = useState(false);
   const onlineUsers = useRecoilValue(onlineUsersState);
 
+  const [messages, setMessages] = useRecoilState(messageListState);
+
+  const [hasNewMessage, setHasNewMessage] = useRecoilState(hasNewMessageState);
+  const messagesEndRef = useRef(null);
+  const scrollContainerRef = useRef(null);
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
   useEffect(() => {
-    console.log("typeContent.chat.receiver", typeContent.chat.receiver);
-    setReceiver(typeContent.chat.receiver);
-  }, [typeContent.chat.receiver]);
+    if (messages.length > 0) {
+      const container = scrollContainerRef.current;
+      const isAtBottom =
+        container.scrollHeight - container.scrollTop <=
+        container.clientHeight + 50;
+
+      if (isAtBottom) {
+        scrollToBottom();
+        setHasNewMessage(false);
+      } else {
+        setHasNewMessage(true);
+      }
+    }
+  }, [messages, setHasNewMessage]);
+  useEffect(() => {
+    console.log("messages", messages);
+    const findIIdReceiver = messages.find(
+      (item) => item.senderID !== userAuth.userID
+    );
+    console.log("findIIdReceiver", findIIdReceiver);
+    if (findIIdReceiver) {
+      setReceiverID(findIIdReceiver);
+    }
+  }, [messages, userAuth.userID]);
+
+  useEffect(() => {
+    const fetchedMessages = async () => {
+      const conversationID =
+        typeContent.conversation.conversation.conversationID;
+      if (!conversationID) return;
+      try {
+        const fetchedMessages = await getMessagesByConversation(conversationID);
+        const sortedMessages = fetchedMessages.sort(
+          (a, b) => new Date(a.createdAt) - new Date(b.createdAt)
+        );
+        setMessages(sortedMessages);
+      } catch (err) {
+        console.error("Lỗi khi lấy tin nhắn:", err);
+        setMessages([]);
+      }
+    };
+    fetchedMessages();
+  }, [typeContent.conversation, setMessages]);
 
   useEffect(() => {
     if (onlineUsers.length > 0) {
       const isReceiverOnline = onlineUsers.some(
-        (userID) => userID === receiver.userID
+        (userID) => userID === receiverID.senderID
       );
       console.log("isReceiverOnline", isReceiverOnline);
       setReceiverOnline(isReceiverOnline);
     }
-  }, [onlineUsers, receiver.userID]);
-
-  const [messages, setMessages] = useState([
-    { id: 1, sender: "Bạn A", text: "Xin chào!" },
-    { id: 2, sender: "Bạn", text: "Chào bạn!" },
-    // { id: 3, sender: "Bạn A", text: "Xin chào!" },
-    // { id: 4, sender: "Bạn", text: "Chào bạn!" },
-    // { id: 5, sender: "Bạn A", text: "Xin chào!" },
-    // { id: 6, sender: "Bạn", text: "Chào bạn!" },
-    // { id: 7, sender: "Bạn A", text: "Xin chào!" },
-    // { id: 8, sender: "Bạn", text: "Chào bạn!" },
-    // { id: 9, sender: "Bạn A", text: "Xin chào!" },
-    // { id: 10, sender: "Bạn", text: "Chào bạn!" },
-    // { id: 11, sender: "Bạn A", text: "Xin chào!" },
-    // { id: 12, sender: "Bạn", text: "Chào bạn!" },
-    // { id: 13, sender: "Bạn A", text: "Xin chào!" },
-    // { id: 14, sender: "Bạn", text: "Chào bạn!" },
-    // { id: 15, sender: "Bạn A", text: "Xin chào!" },
-    // { id: 16, sender: "Bạn", text: "Chào bạn!" },
-    // { id: 17, sender: "Bạn A", text: "Xin chào!" },
-    // { id: 18, sender: "Bạn", text: "Chào bạn!" },
-    // { id: 19, sender: "Bạn A", text: "Xin chào!" },
-    // { id: 20, sender: "Bạn", text: "Chào bạn!" },
-    // { id: 21, sender: "Bạn A", text: "Xin chào!" },
-    // { id: 22, sender: "Bạn", text: "Chào bạn!" },
-    // { id: 23, sender: "Bạn A", text: "Xin chào!" },
-    // { id: 24, sender: "Bạn", text: "Chào bạn!" },
-    // { id: 25, sender: "Bạn A", text: "Xin chào!" },
-    // { id: 26, sender: "Bạn", text: "Chào bạn!" },
-    // { id: 27, sender: "Bạn A", text: "Xin chào!" },
-    // { id: 28, sender: "Bạn", text: "Chào bạn!" },
-    // { id: 29, sender: "Bạn A", text: "Xin chào!" },
-    // { id: 30, sender: "Bạn", text: "Chào bạn!" },
-    // { id: 31, sender: "Bạn A", text: "Xin chào!" },
-    // { id: 32, sender: "Bạn", text: "Chào bạn!" },
-  ]);
+  }, [onlineUsers, receiverID]);
 
   const [newMessage, setNewMessage] = useState("");
 
@@ -91,23 +107,68 @@ const ChatWindow = () => {
     if (!newMessage.trim()) return;
 
     try {
-      const response = await sendTextMessage(receiver.userID, newMessage);
-      console.log("phan hoi khi gửi tin nhắn", response);
-
-      // Cập nhật tin nhắn vào danh sách hiển thị
-      // setMessages((prev) => [
-      //   ...prev,
-      //   {
-      //     id: response.messageID, // hoặc response.id nếu khác
-      //     sender: user?.userID,
-      //     text: newMessage,
-      //   },
-      // ]);
-      // setNewMessage("");
+      await sendTextMessage(receiverID.senderID, newMessage);
+      setNewMessage("");
     } catch (err) {
       console.error("Lỗi khi gửi tin nhắn:", err);
     }
   };
+
+  // const handleFileChange = async (e) => {
+  //   const files = Array.from(e.target.files);
+  //   if (files.length === 0) return;
+
+  //   try {
+  //     const response = await sendFiles(receiver.userID, files);
+
+  //     // Tùy vào response trả về, bạn có thể cập nhật tin nhắn
+  //     // response.forEach((fileMsg) => {
+  //     //   setMessages((prev) => [
+  //     //     ...prev,
+  //     //     {
+  //     //       id: fileMsg.messageID,
+  //     //       sender: "Bạn",
+  //     //       text: `Đã gửi tệp: ${fileMsg.fileName || "File"}`,
+  //     //     },
+  //     //   ]);
+  //     // });
+  //   } catch (err) {
+  //     console.error("Lỗi gửi file:", err);
+  //   }
+  // };
+
+  // const handleRevoke = async (messageID) => {
+  //   try {
+  //     await revokeMessage(receiver.userID, messageID);
+  //     setMessages((prev) =>
+  //       prev.map((msg) =>
+  //         msg.id === messageID ? { ...msg, text: "[Đã thu hồi]" } : msg
+  //       )
+  //     );
+  //   } catch (err) {
+  //     console.error("Lỗi thu hồi tin nhắn:", err);
+  //   }
+  // };
+  // const handleDelete = async (messageID) => {
+  //   try {
+  //     await deleteMessage(messageID);
+  //     setMessages((prev) => prev.filter((msg) => msg.id !== messageID));
+  //   } catch (err) {
+  //     console.error("Lỗi xoá tin nhắn:", err);
+  //   }
+  // };
+
+  // const handleShare = async (messageID) => {
+  //   const receiverIds = prompt("Nhập ID người nhận, cách nhau bởi dấu phẩy");
+  //   if (!receiverIds) return;
+
+  //   try {
+  //     await shareMessage(messageID, receiverIds.split(","));
+  //     alert("Chia sẻ thành công!");
+  //   } catch (err) {
+  //     console.error("Lỗi chia sẻ:", err);
+  //   }
+  // };
 
   return (
     <div className="flex flex-grow">
@@ -117,14 +178,15 @@ const ChatWindow = () => {
           <div className="flex items-center gap-3">
             <div className="w-14 h-14 rounded-full bg-gray-300">
               <img
-                src={receiver?.avatar}
+                src={typeContent.conversation.conversation?.conversationAvatar}
                 alt="avatar"
                 className="w-full h-full rounded-full object-cover"
               />
             </div>
             <div>
               <h3 className="font-semibold">
-                {receiver?.fullName || "Không có cuộc trò chuyện"}
+                {typeContent.conversation.conversation.conversationName ||
+                  "Không có cuộc trò chuyện"}
               </h3>
               <span className="text-sm text-gray-500 flex items-center gap-1">
                 <div
@@ -144,25 +206,54 @@ const ChatWindow = () => {
         </div>
 
         {/* Messages */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-4">
+        <div
+          ref={scrollContainerRef}
+          className="flex-1 overflow-y-auto p-4 space-y-4"
+        >
+          {hasNewMessage && (
+            <div className="absolute bottom-16 right-4">
+              <button
+                onClick={() => {
+                  scrollToBottom();
+                  setHasNewMessage(false);
+                }}
+                className="border border-gray-100 bg-amber-300 text-white p-2 rounded-full shadow-lg"
+              >
+                <IoNotifications className="w-6 h-6" />
+              </button>
+            </div>
+          )}
+
           {messages.map((message) => (
             <div
-              key={message.id}
+              key={message?.messageID}
               className={`flex ${
-                message.sender === "Bạn" ? "justify-end" : "justify-start"
+                message.senderID === userAuth.userID
+                  ? "justify-end"
+                  : "justify-start"
               }`}
             >
               <div
                 className={`max-w-[70%] rounded-2xl px-4 py-2 ${
-                  message.sender === "Bạn"
+                  message.senderID === userAuth.userID
                     ? "bg-blue-500 text-white"
                     : "bg-gray-100"
                 }`}
               >
-                <p>{message.text}</p>
+                <p>{message?.messageContent}</p>
+                <div
+                  className={`text-sm ${
+                    message.senderID === userAuth.userID
+                      ? "text-gray-300"
+                      : "text-gray-500"
+                  }`}
+                >
+                  {parseTimestamp(message?.createdAt)}
+                </div>
               </div>
             </div>
           ))}
+          <div ref={messagesEndRef} />
         </div>
 
         {/* Input area */}
@@ -175,12 +266,12 @@ const ChatWindow = () => {
               <IoMdImages className="w-6 h-6 text-gray-500 cursor-pointer" />
               <FaRegSmile className="w-6 h-6 text-gray-500 cursor-pointer" />
             </div>
-            <input
-              type="text"
+            <MessageInput
               value={newMessage}
               onChange={(e) => setNewMessage(e.target.value)}
-              placeholder="Aa"
-              className="flex-1 p-2 rounded-full bg-gray-100 focus:outline-none"
+              onSend={handleSendMessage}
+              placeholder="Nhập tin nhắn..."
+              className="flex-1"
             />
             <button type="submit" className="text-blue-500 hover:text-blue-600">
               <IoSend className="w-6 h-6" />
