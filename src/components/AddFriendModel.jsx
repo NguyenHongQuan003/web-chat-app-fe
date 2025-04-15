@@ -11,10 +11,11 @@ import {
   getFriendList,
   sendFriendRequest,
 } from "../services/friendService";
-import { useRecoilValue, useSetRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import Loading from "./Loading";
 import { typeContentState } from "../recoil/leftPanelAtom";
 import { sentRequestListState } from "../recoil/sentRequestList";
+import { haveTheyChatted } from "../services/conversationService";
 
 const AddFriendModal = ({ isOpen, onClose }) => {
   const sentRequestList = useRecoilValue(sentRequestListState);
@@ -24,7 +25,8 @@ const AddFriendModal = ({ isOpen, onClose }) => {
   const [searchResults, setSearchResults] = useState([]);
   const modalRef = useRef(null);
   const { user: userAuth } = useAuth();
-  const setTypeContent = useSetRecoilState(typeContentState);
+  // const setTypeContent = useSetRecoilState(typeContentState);
+  const [typeContent, setTypeContent] = useRecoilState(typeContentState);
 
   const [friendList, setFriendList] = useState([]);
   useEffect(() => {
@@ -100,18 +102,36 @@ const AddFriendModal = ({ isOpen, onClose }) => {
     }
   };
 
-  const handleOpenWindowChat = (user) => {
+  const handleOpenWindowChat = async (user) => {
     onClose();
-    console.log("Open chat with user", user.userID);
-    setTypeContent({
-      contentName: "conversation",
-      chat: {
+    console.log("Open chat with user", user);
+    // Lấy conversation theo userAuth và receiver
+    // Gọi API để lấy conversationID Nếu chưa có
+    // setTypeContent với conversation = null và receiver là user
+    // Ngươc lại
+    // setTypeContent với conversation là conversation
+    const response = await haveTheyChatted(user.userID);
+    if (response === null) {
+      console.log("Chưa có cuộc trò chuyện nào");
+      setTypeContent({
+        contentName: "conversation",
+        conversation: null,
         receiver: user,
-        type: "single",
-        currentChat: {},
-      },
-    });
+      });
+    } else {
+      console.log("Đã có cuộc trò chuyện");
+      setTypeContent({
+        contentName: "conversation",
+        conversation: {
+          conversation: response.convDetails,
+        },
+      });
+    }
   };
+
+  useEffect(() => {
+    console.log("typeContent", typeContent);
+  }, [typeContent]);
 
   if (!isOpen) return null;
 

@@ -20,10 +20,12 @@ import { parseTimestamp } from "../utils/parse";
 import { messageListState } from "../recoil/messageAtom";
 import MessageInput from "./MessageInput";
 import { hasNewMessageState } from "../recoil/hasNewMessageAtom";
+import { getReceiver } from "../services/conversationService";
 const ChatWindow = () => {
   const typeContent = useRecoilValue(typeContentState);
   const { user: userAuth } = useAuth();
-  const [receiverID, setReceiverID] = useState("");
+  const [receiver, setReceiver] = useState("");
+  const [selectedMessageID, setSelectedMessageID] = useState(null);
   const [receiverOnline, setReceiverOnline] = useState(false);
   const onlineUsers = useRecoilValue(onlineUsersState);
 
@@ -50,45 +52,45 @@ const ChatWindow = () => {
       }
     }
   }, [messages, setHasNewMessage]);
-  useEffect(() => {
-    console.log("messages", messages);
-    const findIIdReceiver = messages.find(
-      (item) => item.senderID !== userAuth.userID
-    );
-    console.log("findIIdReceiver", findIIdReceiver);
-    if (findIIdReceiver) {
-      setReceiverID(findIIdReceiver);
-    }
-  }, [messages, userAuth.userID]);
 
   useEffect(() => {
-    const fetchedMessages = async () => {
-      const conversationID =
-        typeContent.conversation.conversation.conversationID;
-      if (!conversationID) return;
+    console.log("typeContent", typeContent);
+    const fetchReceiver = async () => {
       try {
+        const conversationID =
+          typeContent.conversation.conversation.conversationID;
+        const receiver = await getReceiver(conversationID);
+        setReceiver(receiver);
+      } catch {
+        setReceiver(typeContent.receiver);
+      }
+    };
+    fetchReceiver();
+    const fetchedMessages = async () => {
+      try {
+        const conversationID =
+          typeContent.conversation.conversation.conversationID;
         const fetchedMessages = await getMessagesByConversation(conversationID);
         const sortedMessages = fetchedMessages.sort(
           (a, b) => new Date(a.createdAt) - new Date(b.createdAt)
         );
         setMessages(sortedMessages);
-      } catch (err) {
-        console.error("Lỗi khi lấy tin nhắn:", err);
+      } catch {
         setMessages([]);
       }
     };
     fetchedMessages();
-  }, [typeContent.conversation, setMessages]);
+  }, [typeContent.conversation, setMessages, typeContent.receiver]);
 
   useEffect(() => {
     if (onlineUsers.length > 0) {
       const isReceiverOnline = onlineUsers.some(
-        (userID) => userID === receiverID.senderID
+        (userID) => userID === receiver.userID
       );
       console.log("isReceiverOnline", isReceiverOnline);
       setReceiverOnline(isReceiverOnline);
     }
-  }, [onlineUsers, receiverID]);
+  }, [onlineUsers, receiver]);
 
   const [newMessage, setNewMessage] = useState("");
 
@@ -107,7 +109,7 @@ const ChatWindow = () => {
     if (!newMessage.trim()) return;
 
     try {
-      await sendTextMessage(receiverID.senderID, newMessage);
+      await sendTextMessage(receiver.userID, newMessage);
       setNewMessage("");
     } catch (err) {
       console.error("Lỗi khi gửi tin nhắn:", err);
@@ -178,15 +180,14 @@ const ChatWindow = () => {
           <div className="flex items-center gap-3">
             <div className="w-14 h-14 rounded-full bg-gray-300">
               <img
-                src={typeContent.conversation.conversation?.conversationAvatar}
+                src={receiver?.avatar || ""}
                 alt="avatar"
                 className="w-full h-full rounded-full object-cover"
               />
             </div>
             <div>
               <h3 className="font-semibold">
-                {typeContent.conversation.conversation.conversationName ||
-                  "Không có cuộc trò chuyện"}
+                {receiver?.fullName || "Không có cuộc trò chuyện"}
               </h3>
               <span className="text-sm text-gray-500 flex items-center gap-1">
                 <div
@@ -226,33 +227,43 @@ const ChatWindow = () => {
 
           {messages.map((message) => (
             <div
+              onClick={() =>
+                setSelectedMessageID(
+                  selectedMessageID === message.messageID
+                    ? null
+                    : message.messageID
+                )
+              }
               key={message?.messageID}
               className={`flex ${
-                message.senderID === userAuth.userID
+                message?.senderID === userAuth?.userID
                   ? "justify-end"
                   : "justify-start"
               }`}
             >
               <div
-                className={`max-w-[70%] rounded-2xl px-4 py-2 ${
+                className={`max-w-[70%] rounded-2xl px-4 py-2 cursor-pointer ${
                   message.senderID === userAuth.userID
                     ? "bg-blue-500 text-white"
                     : "bg-gray-100"
                 }`}
               >
-                <p>{message?.messageContent}</p>
-                <div
-                  className={`text-sm ${
-                    message.senderID === userAuth.userID
-                      ? "text-gray-300"
-                      : "text-gray-500"
-                  }`}
-                >
-                  {parseTimestamp(message?.createdAt)}
+                <div className="">
+                  <p>{message?.messageContent}</p>
+                  <div
+                    className={`text-sm ${
+                      message.senderID === userAuth.userID
+                        ? "text-gray-300"
+                        : "text-gray-500"
+                    }`}
+                  >
+                    {parseTimestamp(message?.createdAt)}
+                  </div>
                 </div>
               </div>
             </div>
           ))}
+
           <div ref={messagesEndRef} />
         </div>
 
