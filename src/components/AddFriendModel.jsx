@@ -11,7 +11,7 @@ import {
   getFriendList,
   sendFriendRequest,
 } from "../services/friendService";
-import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import Loading from "./Loading";
 import { typeContentState } from "../recoil/leftPanelAtom";
 import { sentRequestListState } from "../recoil/sentRequestList";

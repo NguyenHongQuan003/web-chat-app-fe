@@ -15,15 +15,14 @@ import {
   getMessagesByConversation,
   sendTextMessage,
 } from "../services/messageService";
-import { useAuth } from "../utils/authUtils";
-import { parseTimestamp } from "../utils/parse";
+
 import { messageListState } from "../recoil/messageAtom";
 import MessageInput from "./MessageInput";
 import { hasNewMessageState } from "../recoil/hasNewMessageAtom";
 import { getReceiver } from "../services/conversationService";
+import DisplayMessage from "./DisplayMessage";
 const ChatWindow = () => {
   const typeContent = useRecoilValue(typeContentState);
-  const { user: userAuth } = useAuth();
   const [receiver, setReceiver] = useState("");
   const [selectedMessageID, setSelectedMessageID] = useState(null);
   const [receiverOnline, setReceiverOnline] = useState(false);
@@ -209,8 +208,16 @@ const ChatWindow = () => {
         {/* Messages */}
         <div
           ref={scrollContainerRef}
-          className="flex-1 overflow-y-auto p-4 space-y-4"
+          className="flex-1 overflow-y-auto p-4 space-y-3 overflow-x-hidden"
         >
+          {messages.map((message) => (
+            <DisplayMessage
+              key={message.messageID}
+              message={message}
+              selectedMessageID={selectedMessageID}
+              setSelectedMessageID={setSelectedMessageID}
+            />
+          ))}
           {hasNewMessage && (
             <div className="absolute bottom-16 right-4">
               <button
@@ -224,46 +231,6 @@ const ChatWindow = () => {
               </button>
             </div>
           )}
-
-          {messages.map((message) => (
-            <div
-              onClick={() =>
-                setSelectedMessageID(
-                  selectedMessageID === message.messageID
-                    ? null
-                    : message.messageID
-                )
-              }
-              key={message?.messageID}
-              className={`flex ${
-                message?.senderID === userAuth?.userID
-                  ? "justify-end"
-                  : "justify-start"
-              }`}
-            >
-              <div
-                className={`max-w-[70%] rounded-2xl px-4 py-2 cursor-pointer ${
-                  message.senderID === userAuth.userID
-                    ? "bg-blue-500 text-white"
-                    : "bg-gray-100"
-                }`}
-              >
-                <div className="">
-                  <p>{message?.messageContent}</p>
-                  <div
-                    className={`text-sm ${
-                      message.senderID === userAuth.userID
-                        ? "text-gray-300"
-                        : "text-gray-500"
-                    }`}
-                  >
-                    {parseTimestamp(message?.createdAt)}
-                  </div>
-                </div>
-              </div>
-            </div>
-          ))}
-
           <div ref={messagesEndRef} />
         </div>
 
