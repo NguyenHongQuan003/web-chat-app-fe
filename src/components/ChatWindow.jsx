@@ -16,19 +16,24 @@ import {
   sendTextMessage,
 } from "../services/messageService";
 
-import { messageListState } from "../recoil/messageAtom";
+import { useSocket } from "../context/SocketContext";
 import MessageInput from "./MessageInput";
 import { hasNewMessageState } from "../recoil/hasNewMessageAtom";
 import { getReceiver } from "../services/conversationService";
 import DisplayMessage from "./DisplayMessage";
+import useMessageSocket from "../hooks/useMessageSocket";
+import { useAuth } from "../utils/authUtils";
 const ChatWindow = () => {
+  const socket = useSocket();
+  const { user } = useAuth();
   const typeContent = useRecoilValue(typeContentState);
   const [receiver, setReceiver] = useState("");
   const [selectedMessageID, setSelectedMessageID] = useState(null);
   const [receiverOnline, setReceiverOnline] = useState(false);
   const onlineUsers = useRecoilValue(onlineUsersState);
 
-  const [messages, setMessages] = useRecoilState(messageListState);
+  const [messages, setMessages] = useState([]);
+  useMessageSocket(socket, user?.userID, messages, setMessages);
 
   const [hasNewMessage, setHasNewMessage] = useRecoilState(hasNewMessageState);
   const messagesEndRef = useRef(null);

@@ -22,8 +22,6 @@ import useSocketOnlineStatus from "../hooks/useSocketOnlineStatus";
 import { sentRequestListState } from "../recoil/sentRequestList";
 import useFriendRequestSocket from "../hooks/useFriendRequestSocket";
 import useConversationSocket from "../hooks/useConversationSocket";
-import useMessageSocket from "../hooks/useMessageSocket";
-import { messageListState } from "../recoil/messageAtom";
 
 const Home = () => {
   const socket = useSocket();
@@ -43,8 +41,8 @@ const Home = () => {
 
   // hook lấy danh sách cuộc trò chuyện
   useConversationSocket(socket, user?.userID);
-  const [messages, setMessages] = useRecoilState(messageListState);
-  useMessageSocket(socket, user?.userID, messages, setMessages);
+  // const [messages, setMessages] = useRecoilState(messageListState);
+  // useMessageSocket(socket, user?.userID, messages, setMessages);
   // hook kiểm tra trạng thái online + gán list người dùng online
   const onlineStatus = useSocketOnlineStatus(socket, user?.userID);
   const setSentRequestListRecoil = useSetRecoilState(sentRequestListState);
