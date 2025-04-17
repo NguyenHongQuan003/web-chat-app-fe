@@ -4,6 +4,9 @@ import { useAuth } from "../utils/authUtils";
 import { FaShare, FaTrash, FaUndo } from "react-icons/fa";
 import { deleteMessage, revokeMessage } from "../services/messageService";
 import { useEffect, useRef } from "react";
+import { isShareModalOpenState } from "../recoil/leftPanelAtom";
+import { selectedMessageState } from "../recoil/shareAtom";
+import { useSetRecoilState } from "recoil";
 
 const DisplayMessage = ({
   message,
@@ -13,6 +16,8 @@ const DisplayMessage = ({
 }) => {
   const { user: userAuth } = useAuth();
   const messageRef = useRef(null);
+  const setIsShareModalOpen = useSetRecoilState(isShareModalOpenState);
+  const setSelectedMessage = useSetRecoilState(selectedMessageState);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -48,6 +53,11 @@ const DisplayMessage = ({
     } catch (error) {
       console.log("Error deleting message:", error);
     }
+  };
+
+  const handleShareMessage = () => {
+    setSelectedMessage({ message });
+    setIsShareModalOpen(true);
   };
 
   const renderMessageContent = () => {
@@ -149,9 +159,7 @@ const DisplayMessage = ({
               </>
             )}
             <button
-              onClick={() => {
-                console.log("Share message");
-              }}
+              onClick={handleShareMessage}
               className="hover:bg-gray-200 p-1 rounded-full cursor-pointer"
             >
               <FaShare className="w-3 h-3 text-gray-400" />

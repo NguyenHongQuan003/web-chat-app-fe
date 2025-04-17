@@ -44,10 +44,13 @@ export const deleteMessage = async (messageID, conversationID) => {
   return response.data;
 };
 
-export const shareMessage = async (messageID, receiverIds) => {
+export const shareMessage = async (messageID, receiverIds, conversationID) => {
+  console.log("messageID", messageID);
+  console.log("receiverIds", receiverIds);
   const response = await axiosInstance.post("/messages/share", {
     messageID,
     receiverIds,
+    conversationID,
   });
   return response.data;
 };

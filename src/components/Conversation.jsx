@@ -4,10 +4,13 @@ import { typeContentState } from "../recoil/leftPanelAtom";
 import { useEffect, useState } from "react";
 import { getReceiver } from "../services/conversationService";
 import { parseTimestamp } from "../utils/parse";
+import { useAuth } from "../utils/authUtils";
 // import { parseTimestamp } from "../utils/parse";
 const Conversation = ({ obj }) => {
   const [typeContent, setTypeContent] = useRecoilState(typeContentState);
   const [receiver, setReceiver] = useState("");
+  const { user: userAuth } = useAuth();
+
   useEffect(() => {
     console.log("obj", obj);
     const fetchReceiver = async () => {
@@ -29,6 +32,7 @@ const Conversation = ({ obj }) => {
     });
     console.log("obj", obj);
   };
+  const isSender = obj.lastMessage?.senderID === userAuth?.userID;
   return (
     <div
       className={`px-4 py-4 cursor-pointer ${
@@ -50,6 +54,7 @@ const Conversation = ({ obj }) => {
         <div className="space-y-1">
           <p>{receiver?.fullName}</p>
           <p className="text-sm text-gray-600">
+            {isSender ? "Bạn: " : receiver?.fullName + ": "}
             {obj?.lastMessage?.messageContent}
           </p>
         </div>

@@ -20,6 +20,11 @@ export const isChangePasswordModalOpenState = atom({
   default: false,
 });
 
+export const isShareModalOpenState = atom({
+  key: "isShareModalOpenState",
+  default: false,
+});
+
 export const typeContentState = atom({
   key: "typeContentState",
   default: {

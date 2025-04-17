@@ -11,6 +11,7 @@ import {
   isProfileModalOpenState,
   isChangePasswordModalOpenState,
   typeContentState,
+  isShareModalOpenState,
 } from "../recoil/leftPanelAtom";
 import SearchTool from "../components/SearchTool";
 import LeftPanel from "../components/LeftPanel";
@@ -22,6 +23,7 @@ import useSocketOnlineStatus from "../hooks/useSocketOnlineStatus";
 import { sentRequestListState } from "../recoil/sentRequestList";
 import useFriendRequestSocket from "../hooks/useFriendRequestSocket";
 import useConversationSocket from "../hooks/useConversationSocket";
+import ShareModal from "../components/ShareModal";
 
 const Home = () => {
   const socket = useSocket();
@@ -34,6 +36,9 @@ const Home = () => {
   );
   const [isChangePasswordModalOpen, setIsChangePasswordModalOpen] =
     useRecoilState(isChangePasswordModalOpenState);
+  const [isShareModalOpen, setIsShareModalOpen] = useRecoilState(
+    isShareModalOpenState
+  );
   const tabs = [
     { id: "chat", icon: FaCommentDots, label: "Tin nhắn" },
     { id: "contacts", icon: FaAddressBook, label: "Danh bạ" },
@@ -146,6 +151,10 @@ const Home = () => {
       <ChangePasswordModal
         isOpen={isChangePasswordModalOpen}
         onClose={() => setIsChangePasswordModalOpen(false)}
+      />
+      <ShareModal
+        isOpen={isShareModalOpen}
+        onClose={() => setIsShareModalOpen(false)}
       />
     </div>
   );
