@@ -49,56 +49,88 @@ const DisplayMessage = ({
       console.log("Error deleting message:", error);
     }
   };
+
+  const renderMessageContent = () => {
+    const imageTypes = ["jpg", "jpeg", "png", "gif", "webp"];
+    const videoTypes = ["mp4", "webm", "mov"];
+    const isImage = imageTypes.includes(message.messageType?.toLowerCase());
+    const isVideo = videoTypes.includes(message.messageType?.toLowerCase());
+    const isPDF = message.messageType?.toLowerCase() === "pdf";
+
+    if (isImage && message.messageUrl) {
+      return (
+        <img
+          src={message.messageUrl}
+          alt={message.messageContent}
+          className="rounded-lg max-w-full max-h-60 object-cover"
+        />
+      );
+    }
+
+    if (isVideo && message.messageUrl) {
+      return (
+        <video
+          controls
+          src={message.messageUrl}
+          className="rounded-lg max-w-full max-h-60"
+        />
+      );
+    }
+
+    if (isPDF && message.messageUrl) {
+      return (
+        <a
+          href={message.messageUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-blue-500 underline"
+        >
+          📄 {message.messageContent}
+        </a>
+      );
+    }
+
+    // Default fallback: text
+    return <p>{message?.messageContent}</p>;
+  };
+
+  const isSender = message?.senderID === userAuth?.userID;
+  const isRevoked = message.revoke;
+  const isDeletedBySender = message.senderDelete && isSender;
+
   return (
-    <div
-      className={`flex ${
-        message?.senderID === userAuth?.userID
-          ? "justify-end "
-          : "justify-start"
-      }`}
-    >
+    <div className={`flex ${isSender ? "justify-end" : "justify-start"}`}>
       <div
         ref={messageRef}
         onClick={() => {
-          if (
-            message.revoke ||
-            (message.senderDelete && message.senderID === userAuth.userID)
-          )
-            return;
+          if (isRevoked || isDeletedBySender) return;
           setSelectedMessageID(
             selectedMessageID === message.messageID ? null : message.messageID
           );
         }}
         className={`relative max-w-[70%] rounded-2xl px-4 py-2 cursor-pointer shadow-2xl ${
-          message.senderID === userAuth.userID
-            ? "bg-blue-500 text-white"
-            : "bg-gray-100"
+          isSender ? "bg-blue-500 text-white" : "bg-gray-100"
         }`}
       >
-        {message.revoke ? (
+        {isRevoked ? (
           <p className="text-gray-400 italic">Tin nhắn đã được thu hồi</p>
-        ) : message.senderDelete && message.senderID === userAuth.userID ? (
+        ) : isDeletedBySender ? (
           <p className="text-gray-400 italic">Bạn đã xoá tin nhắn này</p>
         ) : (
-          <p>{message?.messageContent}</p>
+          renderMessageContent()
         )}
+
         <div
-          className={`text-sm ${
-            message.senderID === userAuth.userID
-              ? "text-gray-300"
-              : "text-gray-500"
-          }`}
+          className={`text-sm ${isSender ? "text-gray-300" : "text-gray-500"}`}
         >
           {parseTimestamp(message?.createdAt)}
         </div>
+
         {selectedMessageID === message.messageID && (
           <div
-            className={`absolute top-0 flex gap-x-6 cursor-default
-                ${
-                  message.senderID === userAuth.userID
-                    ? "-left-28"
-                    : "-right-28"
-                }`}
+            className={`absolute top-0 flex gap-x-6 cursor-default ${
+              isSender ? "-left-28" : "-right-28"
+            }`}
           >
             <button
               onClick={handleDeleteMessage}
@@ -131,7 +163,7 @@ DisplayMessage.propTypes = {
   message: PropTypes.object.isRequired,
   selectedMessageID: PropTypes.string,
   setSelectedMessageID: PropTypes.func.isRequired,
-  participantId: PropTypes.string.isRequired,
+  participantId: PropTypes.string,
 };
 
 export default DisplayMessage;

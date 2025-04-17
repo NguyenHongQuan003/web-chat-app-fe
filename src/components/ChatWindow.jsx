@@ -5,14 +5,13 @@ import {
   BsTelephone,
   BsCameraVideo,
 } from "react-icons/bs";
-import { IoMdImages } from "react-icons/io";
-import { FaRegSmile } from "react-icons/fa";
-import { IoNotifications, IoSend } from "react-icons/io5";
+import { IoNotifications } from "react-icons/io5";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { typeContentState } from "../recoil/leftPanelAtom";
 import { onlineUsersState } from "../recoil/onlineUsersAtom";
 import {
   getMessagesByConversation,
+  sendFiles,
   sendTextMessage,
 } from "../services/messageService";
 
@@ -126,9 +125,26 @@ const ChatWindow = () => {
   //   }
   // };
 
-  const handleSend = async (e) => {
-    if (newMessage.trim() !== "") {
-      handleSendTextMessage(e);
+  const handleSend = async (e, files = []) => {
+    e.preventDefault();
+    const hasText = newMessage.trim() !== "";
+    const hasFiles = files.length > 0;
+
+    if (!hasText && !hasFiles) return;
+
+    try {
+      // Gửi text (nếu có)
+      if (hasText) {
+        await handleSendTextMessage(e);
+        setNewMessage(""); // reset input
+      }
+
+      // Gửi file trước (nếu có)
+      if (hasFiles) {
+        await sendFiles(receiver.userID, files);
+      }
+    } catch (err) {
+      console.error("Lỗi khi gửi tin nhắn:", err);
     }
   };
 
@@ -164,27 +180,6 @@ const ChatWindow = () => {
   //     // });
   //   } catch (err) {
   //     console.error("Lỗi gửi file:", err);
-  //   }
-  // };
-
-  // const handleRevoke = async (messageID) => {
-  //   try {
-  //     await revokeMessage(receiver.userID, messageID);
-  //     setMessages((prev) =>
-  //       prev.map((msg) =>
-  //         msg.id === messageID ? { ...msg, text: "[Đã thu hồi]" } : msg
-  //       )
-  //     );
-  //   } catch (err) {
-  //     console.error("Lỗi thu hồi tin nhắn:", err);
-  //   }
-  // };
-  // const handleDelete = async (messageID) => {
-  //   try {
-  //     await deleteMessage(messageID);
-  //     setMessages((prev) => prev.filter((msg) => msg.id !== messageID));
-  //   } catch (err) {
-  //     console.error("Lỗi xoá tin nhắn:", err);
   //   }
   // };
 
@@ -245,7 +240,7 @@ const ChatWindow = () => {
               message={message}
               selectedMessageID={selectedMessageID}
               setSelectedMessageID={setSelectedMessageID}
-              participantId={receiver.userID}
+              participantId={receiver?.userID}
             />
           ))}
           {hasNewMessage && (
@@ -268,7 +263,7 @@ const ChatWindow = () => {
         <div className="relative border-t border-gray-300 p-3">
           <div ref={pickerRef}>
             {showPicker && (
-              <div className="absolute bottom-18 left-4">
+              <div className="absolute bottom-24 right-12">
                 <Picker
                   data={data}
                   onEmojiSelect={(emoji) => {
@@ -279,23 +274,14 @@ const ChatWindow = () => {
             )}
           </div>
           <form className="flex items-center gap-2">
-            <div className="flex items-center gap-2">
-              <IoMdImages className="w-6 h-6 text-gray-500 cursor-pointer" />
-              <FaRegSmile
-                onClick={() => setShowPicker((prev) => !prev)}
-                className="w-6 h-6 text-gray-500 cursor-pointer"
-              />
-            </div>
             <MessageInput
               value={newMessage}
               onChange={(e) => setNewMessage(e.target.value)}
               onSend={handleSend}
+              onShowPicker={() => setShowPicker(!showPicker)}
               placeholder="Nhập tin nhắn..."
               className="flex-1"
             />
-            <button type="submit" className="text-blue-500 hover:text-blue-600">
-              <IoSend className="w-6 h-6" />
-            </button>
           </form>
         </div>
       </div>

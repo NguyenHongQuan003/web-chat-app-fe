@@ -1,8 +1,6 @@
 import axiosInstance from "../utils/axiosConfig";
 
 export const sendTextMessage = async (receiverId, message) => {
-  console.log("Sending message:", message);
-  console.log("Receiver ID:", receiverId);
   const response = await axiosInstance.post(`/messages/send/${receiverId}`, {
     message,
   });
@@ -17,12 +15,7 @@ export const sendFiles = async (receiverId, files) => {
 
   const response = await axiosInstance.post(
     `/messages/send/files/${receiverId}`,
-    formData,
-    {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    }
+    formData
   );
   return response.data;
 };
