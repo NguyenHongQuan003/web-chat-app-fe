@@ -125,7 +125,14 @@ const ChatWindow = () => {
   //     setNewMessage("");
   //   }
   // };
-  const handleSendMessage = async (e) => {
+
+  const handleSend = async (e) => {
+    if (newMessage.trim() !== "") {
+      handleSendTextMessage(e);
+    }
+  };
+
+  const handleSendTextMessage = async (e) => {
     e.preventDefault();
     if (!newMessage.trim()) return;
 
@@ -238,6 +245,7 @@ const ChatWindow = () => {
               message={message}
               selectedMessageID={selectedMessageID}
               setSelectedMessageID={setSelectedMessageID}
+              participantId={receiver.userID}
             />
           ))}
           {hasNewMessage && (
@@ -270,10 +278,7 @@ const ChatWindow = () => {
               </div>
             )}
           </div>
-          <form
-            onSubmit={handleSendMessage}
-            className="flex items-center gap-2"
-          >
+          <form className="flex items-center gap-2">
             <div className="flex items-center gap-2">
               <IoMdImages className="w-6 h-6 text-gray-500 cursor-pointer" />
               <FaRegSmile
@@ -284,7 +289,7 @@ const ChatWindow = () => {
             <MessageInput
               value={newMessage}
               onChange={(e) => setNewMessage(e.target.value)}
-              onSend={handleSendMessage}
+              onSend={handleSend}
               placeholder="Nhập tin nhắn..."
               className="flex-1"
             />

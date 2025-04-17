@@ -28,19 +28,25 @@ export const sendFiles = async (receiverId, files) => {
 };
 
 // Thu hồi tin nhắn
-export const revokeMessage = async (participantId, messageID) => {
+export const revokeMessage = async (
+  participantId,
+  messageID,
+  conversationID
+) => {
   const response = await axiosInstance.post(
     `/messages/revoke/${participantId}`,
     {
       messageID,
+      conversationID,
     }
   );
   return response.data;
 };
 
-export const deleteMessage = async (messageID) => {
+export const deleteMessage = async (messageID, conversationID) => {
   const response = await axiosInstance.post("/messages/delete", {
     messageID,
+    conversationID,
   });
   return response.data;
 };
