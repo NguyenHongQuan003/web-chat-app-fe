@@ -23,6 +23,8 @@ import { getReceiver } from "../services/conversationService";
 import DisplayMessage from "./DisplayMessage";
 import useMessageSocket from "../hooks/useMessageSocket";
 import { useAuth } from "../utils/authUtils";
+import data from "@emoji-mart/data";
+import Picker from "@emoji-mart/react";
 const ChatWindow = () => {
   const socket = useSocket();
   const { user } = useAuth();
@@ -31,6 +33,21 @@ const ChatWindow = () => {
   const [selectedMessageID, setSelectedMessageID] = useState(null);
   const [receiverOnline, setReceiverOnline] = useState(false);
   const onlineUsers = useRecoilValue(onlineUsersState);
+  const [showPicker, setShowPicker] = useState(false);
+  const pickerRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (pickerRef.current && !pickerRef.current.contains(event.target)) {
+        setShowPicker(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   const [messages, setMessages] = useState([]);
   useMessageSocket(socket, user?.userID, messages, setMessages);
@@ -240,14 +257,29 @@ const ChatWindow = () => {
         </div>
 
         {/* Input area */}
-        <div className="border-t border-gray-300 p-3">
+        <div className="relative border-t border-gray-300 p-3">
+          <div ref={pickerRef}>
+            {showPicker && (
+              <div className="absolute bottom-18 left-4">
+                <Picker
+                  data={data}
+                  onEmojiSelect={(emoji) => {
+                    setNewMessage((prev) => prev + emoji.native);
+                  }}
+                />
+              </div>
+            )}
+          </div>
           <form
             onSubmit={handleSendMessage}
             className="flex items-center gap-2"
           >
             <div className="flex items-center gap-2">
               <IoMdImages className="w-6 h-6 text-gray-500 cursor-pointer" />
-              <FaRegSmile className="w-6 h-6 text-gray-500 cursor-pointer" />
+              <FaRegSmile
+                onClick={() => setShowPicker((prev) => !prev)}
+                className="w-6 h-6 text-gray-500 cursor-pointer"
+              />
             </div>
             <MessageInput
               value={newMessage}
