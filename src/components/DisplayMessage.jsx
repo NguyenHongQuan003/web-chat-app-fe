@@ -59,11 +59,16 @@ const DisplayMessage = ({
     >
       <div
         ref={messageRef}
-        onClick={() =>
+        onClick={() => {
+          if (
+            message.revoke ||
+            (message.senderDelete && message.senderID === userAuth.userID)
+          )
+            return;
           setSelectedMessageID(
             selectedMessageID === message.messageID ? null : message.messageID
-          )
-        }
+          );
+        }}
         className={`relative max-w-[70%] rounded-2xl px-4 py-2 cursor-pointer shadow-2xl ${
           message.senderID === userAuth.userID
             ? "bg-blue-500 text-white"
