@@ -128,22 +128,26 @@ const DisplayMessage = ({
 
         {selectedMessageID === message.messageID && (
           <div
-            className={`absolute top-0 flex gap-x-6 cursor-default ${
-              isSender ? "-left-28" : "-right-28"
+            className={`absolute top-0 w-max flex gap-x-3 z-10 ${
+              isSender ? "-left-24" : "-right-8"
             }`}
           >
-            <button
-              onClick={handleDeleteMessage}
-              className="hover:bg-gray-200 p-1 rounded-full cursor-pointer"
-            >
-              <FaTrash className="w-3 h-3 text-gray-400" />
-            </button>
-            <button
-              onClick={handleRevokeMessage}
-              className="hover:bg-gray-200 p-1 rounded-full cursor-pointer"
-            >
-              <FaUndo className="w-3 h-3 text-gray-400" />
-            </button>
+            {isSender && (
+              <>
+                <button
+                  onClick={handleDeleteMessage}
+                  className="hover:bg-gray-200 p-1 rounded-full cursor-pointer"
+                >
+                  <FaTrash className="w-3 h-3 text-gray-400" />
+                </button>
+                <button
+                  onClick={handleRevokeMessage}
+                  className="hover:bg-gray-200 p-1 rounded-full cursor-pointer"
+                >
+                  <FaUndo className="w-3 h-3 text-gray-400" />
+                </button>
+              </>
+            )}
             <button
               onClick={() => {
                 console.log("Share message");
