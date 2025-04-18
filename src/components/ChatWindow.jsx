@@ -114,17 +114,6 @@ const ChatWindow = () => {
 
   const [newMessage, setNewMessage] = useState("");
 
-  // const handleSendMessage = (e) => {
-  //   e.preventDefault();
-  //   if (newMessage.trim() !== "") {
-  //     setMessages([
-  //       ...messages,
-  //       { id: messages.length + 1, sender: "Bạn", text: newMessage },
-  //     ]);
-  //     setNewMessage("");
-  //   }
-  // };
-
   const handleSend = async (e, files = []) => {
     e.preventDefault();
     const hasText = newMessage.trim() !== "";
@@ -159,41 +148,6 @@ const ChatWindow = () => {
       console.error("Lỗi khi gửi tin nhắn:", err);
     }
   };
-
-  // const handleFileChange = async (e) => {
-  //   const files = Array.from(e.target.files);
-  //   if (files.length === 0) return;
-
-  //   try {
-  //     const response = await sendFiles(receiver.userID, files);
-
-  //     // Tùy vào response trả về, bạn có thể cập nhật tin nhắn
-  //     // response.forEach((fileMsg) => {
-  //     //   setMessages((prev) => [
-  //     //     ...prev,
-  //     //     {
-  //     //       id: fileMsg.messageID,
-  //     //       sender: "Bạn",
-  //     //       text: `Đã gửi tệp: ${fileMsg.fileName || "File"}`,
-  //     //     },
-  //     //   ]);
-  //     // });
-  //   } catch (err) {
-  //     console.error("Lỗi gửi file:", err);
-  //   }
-  // };
-
-  // const handleShare = async (messageID) => {
-  //   const receiverIds = prompt("Nhập ID người nhận, cách nhau bởi dấu phẩy");
-  //   if (!receiverIds) return;
-
-  //   try {
-  //     await shareMessage(messageID, receiverIds.split(","));
-  //     alert("Chia sẻ thành công!");
-  //   } catch (err) {
-  //     console.error("Lỗi chia sẻ:", err);
-  //   }
-  // };
 
   return (
     <div className="flex flex-grow">

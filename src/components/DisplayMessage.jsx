@@ -1,7 +1,7 @@
 import PropTypes from "prop-types";
 import { parseTimestamp } from "../utils/parse";
 import { useAuth } from "../utils/authUtils";
-import { FaShare, FaTrash, FaUndo } from "react-icons/fa";
+import { FaFile, FaShare, FaTrash, FaUndo } from "react-icons/fa";
 import { deleteMessage, revokeMessage } from "../services/messageService";
 import { useEffect, useRef } from "react";
 import { isShareModalOpenState } from "../recoil/leftPanelAtom";
@@ -93,9 +93,11 @@ const DisplayMessage = ({
           href={message.messageUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-blue-500 underline"
+          className="underline"
         >
-          📄 {message.messageContent}
+          <div className="flex items-center gap-x-2">
+            <FaFile color="#ccc" /> {message.messageContent}
+          </div>
         </a>
       );
     }
@@ -119,7 +121,7 @@ const DisplayMessage = ({
           );
         }}
         className={`relative max-w-[70%] rounded-2xl px-4 py-2 cursor-pointer shadow-2xl ${
-          isSender ? "bg-blue-500 text-white" : "bg-gray-100"
+          isSender ? "bg-[#dbf8fe] " : "bg-gray-100"
         }`}
       >
         {isRevoked ? (
@@ -130,9 +132,7 @@ const DisplayMessage = ({
           renderMessageContent()
         )}
 
-        <div
-          className={`text-sm ${isSender ? "text-gray-300" : "text-gray-500"}`}
-        >
+        <div className={`text-sm text-gray-500`}>
           {parseTimestamp(message?.createdAt)}
         </div>
 
