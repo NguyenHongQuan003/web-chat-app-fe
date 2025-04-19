@@ -4,6 +4,7 @@ import { IoAttach, IoSend } from "react-icons/io5";
 import { FaRegSmile } from "react-icons/fa";
 
 const MessageInput = ({
+  isSending = false,
   value,
   onChange,
   onSend,
@@ -93,6 +94,7 @@ const MessageInput = ({
                 </div>
               )}
               <button
+                type="button"
                 onClick={() => removeFile(index)}
                 className="absolute -top-2 -right-2 bg-[#000000]/50 text-white text-xs rounded-full px-1"
               >
@@ -139,8 +141,13 @@ const MessageInput = ({
               setSelectedFiles([]);
             }
           }}
+          disabled={isSending}
         >
-          <IoSend className="w-6 h-6" />
+          {isSending ? (
+            <div className="animate-spin w-6 h-6 border-4 border-blue-500 rounded-full border-t-transparent"></div>
+          ) : (
+            <IoSend className="w-6 h-6" />
+          )}
         </button>
         <input
           ref={fileInputRef}
@@ -156,6 +163,7 @@ const MessageInput = ({
 };
 
 MessageInput.propTypes = {
+  isSending: PropTypes.bool,
   value: PropTypes.string.isRequired,
   onChange: PropTypes.func.isRequired,
   onSend: PropTypes.func,

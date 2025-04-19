@@ -24,6 +24,8 @@ import useMessageSocket from "../hooks/useMessageSocket";
 import { useAuth } from "../utils/authUtils";
 import data from "@emoji-mart/data";
 import Picker from "@emoji-mart/react";
+import groupImageMessages from "../utils/groupImageMessages";
+import ImageGroup from "./ImageGroup";
 const ChatWindow = () => {
   const socket = useSocket();
   const { user } = useAuth();
@@ -33,6 +35,7 @@ const ChatWindow = () => {
   const [receiverOnline, setReceiverOnline] = useState(false);
   const onlineUsers = useRecoilValue(onlineUsersState);
   const [showPicker, setShowPicker] = useState(false);
+  const [isSending, setIsSending] = useState(false);
   const pickerRef = useRef(null);
 
   useEffect(() => {
@@ -120,7 +123,7 @@ const ChatWindow = () => {
     const hasFiles = files.length > 0;
 
     if (!hasText && !hasFiles) return;
-
+    setIsSending(true);
     try {
       // Gửi text (nếu có)
       if (hasText) {
@@ -134,6 +137,8 @@ const ChatWindow = () => {
       }
     } catch (err) {
       console.error("Lỗi khi gửi tin nhắn:", err);
+    } finally {
+      setIsSending(false);
     }
   };
 
@@ -148,7 +153,7 @@ const ChatWindow = () => {
       console.error("Lỗi khi gửi tin nhắn:", err);
     }
   };
-
+  const groupedMessages = groupImageMessages(messages);
   return (
     <div className="flex flex-grow">
       <div className="bg-white flex flex-col flex-grow">
@@ -188,7 +193,7 @@ const ChatWindow = () => {
           ref={scrollContainerRef}
           className="flex-1 overflow-y-auto p-4 space-y-3 overflow-x-hidden"
         >
-          {messages.map((message) => (
+          {/* {messages.map((message) => (
             <DisplayMessage
               key={message.messageID}
               message={message}
@@ -196,7 +201,20 @@ const ChatWindow = () => {
               setSelectedMessageID={setSelectedMessageID}
               participantId={receiver?.userID}
             />
-          ))}
+          ))} */}
+          {groupedMessages.map((item, index) =>
+            item.type === "image-group" ? (
+              <ImageGroup key={`group-${index}`} messages={item.items} />
+            ) : (
+              <DisplayMessage
+                key={item.messageID}
+                message={item}
+                selectedMessageID={selectedMessageID}
+                setSelectedMessageID={setSelectedMessageID}
+                participantId={receiver?.userID}
+              />
+            )
+          )}
           {hasNewMessage && (
             <div className="absolute bottom-16 right-4">
               <button
@@ -229,6 +247,7 @@ const ChatWindow = () => {
           </div>
           <form className="flex items-center gap-2">
             <MessageInput
+              isSending={isSending}
               value={newMessage}
               onChange={(e) => setNewMessage(e.target.value)}
               onSend={handleSend}
