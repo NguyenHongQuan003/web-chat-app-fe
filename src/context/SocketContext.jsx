@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { io } from "socket.io-client";
 import PropTypes from "prop-types";
 import { useAuth } from "../utils/authUtils";
+import { API_SOCKET_URL } from "../constants/app.constants";
 
 const SocketContext = createContext();
 
@@ -16,7 +17,7 @@ export const SocketProvider = ({ children }) => {
     try {
       if (!user?.userID) return;
 
-      const connectSocket = io("http://127.0.0.1:8022", {
+      const connectSocket = io(`${API_SOCKET_URL}`, {
         query: {
           userId: user.userID,
         },
