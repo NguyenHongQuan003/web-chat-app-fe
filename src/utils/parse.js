@@ -11,3 +11,12 @@ export const parseTimestamp = (timestamp) => {
     return format(date, "hh:mm a"); // Chỉ hiện giờ phút
   }
 };
+
+export const safeParseArray = (value) => {
+  try {
+    const parsed = JSON.parse(value || "[]");
+    return Array.isArray(parsed) ? parsed : [parsed];
+  } catch {
+    return [value];
+  }
+};

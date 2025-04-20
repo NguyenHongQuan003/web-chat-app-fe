@@ -24,8 +24,6 @@ import useMessageSocket from "../hooks/useMessageSocket";
 import { useAuth } from "../utils/authUtils";
 import data from "@emoji-mart/data";
 import Picker from "@emoji-mart/react";
-import groupImageMessages from "../utils/groupImageMessages";
-import ImageGroup from "./ImageGroup";
 const ChatWindow = () => {
   const socket = useSocket();
   const { user } = useAuth();
@@ -153,7 +151,6 @@ const ChatWindow = () => {
       console.error("Lỗi khi gửi tin nhắn:", err);
     }
   };
-  const groupedMessages = groupImageMessages(messages);
   return (
     <div className="flex flex-grow">
       <div className="bg-white flex flex-col flex-grow">
@@ -191,9 +188,9 @@ const ChatWindow = () => {
         {/* Messages */}
         <div
           ref={scrollContainerRef}
-          className="flex-1 overflow-y-auto p-4 space-y-3 overflow-x-hidden"
+          className="flex-1 overflow-y-auto p-4 space-y-3 overflow-x-hidden bg-[#ebecf0]"
         >
-          {/* {messages.map((message) => (
+          {messages.map((message) => (
             <DisplayMessage
               key={message.messageID}
               message={message}
@@ -201,20 +198,7 @@ const ChatWindow = () => {
               setSelectedMessageID={setSelectedMessageID}
               participantId={receiver?.userID}
             />
-          ))} */}
-          {groupedMessages.map((item, index) =>
-            item.type === "image-group" ? (
-              <ImageGroup key={`group-${index}`} messages={item.items} />
-            ) : (
-              <DisplayMessage
-                key={item.messageID}
-                message={item}
-                selectedMessageID={selectedMessageID}
-                setSelectedMessageID={setSelectedMessageID}
-                participantId={receiver?.userID}
-              />
-            )
-          )}
+          ))}
           {hasNewMessage && (
             <div className="absolute bottom-16 right-4">
               <button

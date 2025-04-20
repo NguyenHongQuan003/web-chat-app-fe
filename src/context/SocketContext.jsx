@@ -20,6 +20,7 @@ export const SocketProvider = ({ children }) => {
       const connectSocket = io(`${API_SOCKET_URL}`, {
         query: {
           userId: user.userID,
+          deviceType: "web",
         },
         reconnection: true,
         reconnectionAttempts: 5, // số lần thử lại

@@ -3,7 +3,7 @@ import { useRecoilState } from "recoil";
 import { typeContentState } from "../recoil/leftPanelAtom";
 import { useEffect, useState } from "react";
 import { getReceiver } from "../services/conversationService";
-import { parseTimestamp } from "../utils/parse";
+import { parseTimestamp, safeParseArray } from "../utils/parse";
 import { useAuth } from "../utils/authUtils";
 // import { parseTimestamp } from "../utils/parse";
 const Conversation = ({ obj }) => {
@@ -54,10 +54,20 @@ const Conversation = ({ obj }) => {
         <div className="space-y-1">
           <p>{receiver?.fullName}</p>
           <p className="text-sm text-gray-600">
-            {isSender ? "Bạn: " : receiver?.fullName + ": "}
-            {obj?.lastMessage?.messageContent}
+            {isSender ? "Bạn: " : `${receiver?.fullName}: `}
+            {(() => {
+              const parsedContent = safeParseArray(
+                obj?.lastMessage?.messageContent
+              );
+              return Array.isArray(parsedContent)
+                ? `${parsedContent.length} file${
+                    parsedContent.length > 1 ? "s" : ""
+                  }`
+                : obj?.lastMessage?.messageContent;
+            })()}
           </p>
         </div>
+
         <span className="text-xs text-gray-500 ml-auto">
           {parseTimestamp(obj?.lastMessage?.updatedAt)}
         </span>

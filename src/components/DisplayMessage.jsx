@@ -1,12 +1,13 @@
 import PropTypes from "prop-types";
-import { parseTimestamp } from "../utils/parse";
+import { parseTimestamp, safeParseArray } from "../utils/parse";
 import { useAuth } from "../utils/authUtils";
-import { FaFile, FaShare, FaTrash, FaUndo } from "react-icons/fa";
+import { FaShare, FaTrash, FaUndo } from "react-icons/fa";
 import { deleteMessage, revokeMessage } from "../services/messageService";
 import { useEffect, useRef } from "react";
 import { isShareModalOpenState } from "../recoil/leftPanelAtom";
 import { selectedMessageState } from "../recoil/shareAtom";
 import { useSetRecoilState } from "recoil";
+import { IoDocuments } from "react-icons/io5";
 
 const DisplayMessage = ({
   message,
@@ -61,49 +62,147 @@ const DisplayMessage = ({
   };
 
   const renderMessageContent = () => {
-    const imageTypes = ["jpg", "jpeg", "png", "gif", "webp"];
-    const videoTypes = ["mp4", "webm", "mov"];
-    const isImage = imageTypes.includes(message.messageType?.toLowerCase());
-    const isVideo = videoTypes.includes(message.messageType?.toLowerCase());
-    const isPDF = message.messageType?.toLowerCase() === "pdf";
+    const imageTypes = [
+      "jpg",
+      "jpeg",
+      "png",
+      "gif",
+      "webp",
+      "bmp",
+      "tiff",
+      "svg",
+    ];
+    const videoTypes = ["mp4", "webm", "mov", "avi", "mkv", "flv", "wmv"];
+    const audioTypes = ["mp3", "wav", "ogg", "aac", "flac", "m4a"];
+    const documentTypes = [
+      "pdf",
+      "doc",
+      "docx",
+      "xls",
+      "xlsx",
+      "ppt",
+      "pptx",
+      "txt",
+      "csv",
+      "json",
+    ];
+    const archiveTypes = ["zip", "rar", "7z", "tar", "gz"];
 
-    if (isImage && message.messageUrl) {
+    let urls = [];
+    let types = [];
+    let contents = [];
+
+    try {
+      urls = safeParseArray(message.messageUrl);
+      types = safeParseArray(message.messageType);
+      contents = safeParseArray(message.messageContent);
+    } catch (error) {
+      console.error("Lỗi parse message fields:", error);
+    }
+
+    // 📝 Nếu là tin nhắn text đơn thuần
+    if (
+      !urls.length &&
+      message?.messageContent &&
+      message.messageType === "text"
+    ) {
       return (
-        <img
-          src={message.messageUrl}
-          alt={message.messageContent}
-          className="rounded-lg max-w-full max-h-60 object-cover"
-        />
+        <p className="whitespace-pre-wrap px-2 pt-4">
+          {message.messageContent}
+        </p>
       );
     }
 
-    if (isVideo && message.messageUrl) {
-      return (
-        <video
-          controls
-          src={message.messageUrl}
-          className="rounded-lg max-w-full max-h-60"
-        />
-      );
-    }
+    return (
+      <div className="flex flex-wrap">
+        {urls.map((url, index) => {
+          const type = types[index]?.toLowerCase();
+          const name = contents[index] || "File";
 
-    if (isPDF && message.messageUrl) {
-      return (
-        <a
-          href={message.messageUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="underline"
-        >
-          <div className="flex items-center gap-x-2">
-            <FaFile color="#ccc" /> {message.messageContent}
-          </div>
-        </a>
-      );
-    }
+          if (imageTypes.includes(type)) {
+            return (
+              <a
+                key={index}
+                href={url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block px-0.5 pt-0.5"
+              >
+                <img
+                  src={url}
+                  alt={name}
+                  className="w-28 h-28 object-cover rounded-md"
+                />
+              </a>
+            );
+          }
 
-    // Default fallback: text
-    return <p>{message?.messageContent}</p>;
+          if (videoTypes.includes(type)) {
+            return (
+              <a
+                key={index}
+                href={url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block relative w-40 h-28 px-0.5 pt-0.5"
+              >
+                <video
+                  controls
+                  src={url}
+                  className="w-full h-full object-cover rounded-md"
+                />
+              </a>
+            );
+          }
+
+          if (audioTypes.includes(type)) {
+            return (
+              <div key={index} className="w-full flex flex-col gap-1">
+                <audio controls className="w-full">
+                  <source src={url} type={`audio/${type}`} />
+                  Trình duyệt không hỗ trợ audio.
+                </audio>
+                <a
+                  href={url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm text-blue-600 underline"
+                >
+                  Nghe ở tab mới
+                </a>
+              </div>
+            );
+          }
+
+          if (documentTypes.includes(type) || archiveTypes.includes(type)) {
+            return (
+              <div key={index} className="block w-full">
+                <a
+                  href={url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1 px-2 pt-4 font-[650] underline text-blue-500"
+                >
+                  <IoDocuments size={48} color="#00aaff" /> {name}
+                </a>
+              </div>
+            );
+          }
+
+          // Fallback
+          return (
+            <a
+              key={index}
+              href={url}
+              download={name}
+              className="text-blue-600 underline w-full"
+            >
+              {name}
+            </a>
+          );
+        })}
+      </div>
+    );
   };
 
   const isSender = message?.senderID === userAuth?.userID;
@@ -120,19 +219,23 @@ const DisplayMessage = ({
             selectedMessageID === message.messageID ? null : message.messageID
           );
         }}
-        className={`relative max-w-[70%] rounded-2xl px-4 py-2 cursor-pointer shadow-2xl ${
-          isSender ? "bg-[#dbf8fe] " : "bg-gray-100"
+        className={`relative max-w-[70%] rounded-md cursor-pointer shadow-2xl ${
+          isSender ? "bg-[#dbf8fe] " : "bg-white"
         }`}
       >
         {isRevoked ? (
-          <p className="text-gray-400 italic">Tin nhắn đã được thu hồi</p>
+          <p className="text-gray-400 italic px-2 pt-4">
+            Tin nhắn đã được thu hồi
+          </p>
         ) : isDeletedBySender ? (
-          <p className="text-gray-400 italic">Bạn đã xoá tin nhắn này</p>
+          <p className="text-gray-400 italic px-2 pt-4">
+            Bạn đã xoá tin nhắn này
+          </p>
         ) : (
           renderMessageContent()
         )}
 
-        <div className={`text-sm text-gray-500`}>
+        <div className="text-xs text-gray-500 px-2 pt-2 pb-4">
           {parseTimestamp(message?.createdAt)}
         </div>
 
