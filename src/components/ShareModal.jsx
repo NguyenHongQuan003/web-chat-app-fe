@@ -39,9 +39,9 @@ const ShareModal = ({ isOpen, onClose }) => {
 
   const selectedMessage = useRecoilValue(selectedMessageState);
 
-  useEffect(() => {
-    console.log("selected message", selectedMessage);
-  }, [selectedMessage]);
+  // useEffect(() => {
+  //   console.log("selected message", selectedMessage);
+  // }, [selectedMessage]);
 
   const handleClickOutside = (e) => {
     if (modalRef.current && !modalRef.current.contains(e.target)) {
@@ -88,9 +88,9 @@ const ShareModal = ({ isOpen, onClose }) => {
     }
   };
 
-  useEffect(() => {
-    console.log("selectedUsers", selectedUsers);
-  }, [selectedUsers]);
+  // useEffect(() => {
+  //   console.log("selectedUsers", selectedUsers);
+  // }, [selectedUsers]);
 
   if (!isOpen) return null;
 
@@ -269,7 +269,7 @@ const ShareModal = ({ isOpen, onClose }) => {
             {isLoadingSearch ? (
               <div className="flex items-center justify-center gap-2">
                 <Loading size="sm" />
-                <span>Đang tìm...</span>
+                <span>Sharing...</span>
               </div>
             ) : (
               "Chia sẻ"

@@ -13,6 +13,7 @@ import {
   sendFiles,
   sendTextMessage,
 } from "../services/messageService";
+import ChatInfo from "../components/ChatInfo";
 
 import { useSocket } from "../context/SocketContext";
 import MessageInput from "./MessageInput";
@@ -23,7 +24,9 @@ import useMessageSocket from "../hooks/useMessageSocket";
 import { useAuth } from "../utils/authUtils";
 import data from "@emoji-mart/data";
 import Picker from "@emoji-mart/react";
-const ChatWindow = () => {
+import { getGroupInfo, getMembersOfGroup } from "../services/groupService";
+import { FaUser } from "react-icons/fa";
+const ChatGroupWindow = () => {
   const socket = useSocket();
   const { user } = useAuth();
   const typeContent = useRecoilValue(typeContentState);
@@ -34,6 +37,8 @@ const ChatWindow = () => {
   const [showPicker, setShowPicker] = useState(false);
   const [isSending, setIsSending] = useState(false);
   const pickerRef = useRef(null);
+  const [groupInfo, setGroupInfo] = useState("");
+  const [members, setMembers] = useState([]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -74,18 +79,45 @@ const ChatWindow = () => {
   }, [messages, setHasNewMessage]);
 
   useEffect(() => {
-    // console.log("typeContent", typeContent);
-    const fetchReceiver = async () => {
+    console.log("typeContent", typeContent);
+    const fetchInfoGroup = async () => {
+      const conversationID =
+        typeContent.conversation?.conversation?.conversationID;
+      if (!conversationID) return;
       try {
-        const conversationID =
-          typeContent.conversation.conversation.conversationID;
-        const receiver = await getReceiver(conversationID);
-        setReceiver(receiver);
-      } catch {
-        setReceiver(typeContent.receiver);
+        const groupInfo = await getGroupInfo(conversationID);
+        console.log("groupInfo", groupInfo.data);
+        setGroupInfo(groupInfo.data);
+      } catch (err) {
+        console.error("Lỗi khi lấy thông tin nhóm:", err);
       }
     };
-    fetchReceiver();
+    fetchInfoGroup();
+
+    const fetchMembersOfGroup = async () => {
+      const conversationID =
+        typeContent.conversation?.conversation?.conversationID;
+      if (!conversationID) return;
+      try {
+        const members = await getMembersOfGroup(conversationID);
+        console.log("members", members.data);
+        setMembers(members.data);
+      } catch (err) {
+        console.error("Lỗi khi lấy thông tin nhóm:", err);
+      }
+    };
+    fetchMembersOfGroup();
+    // const fetchReceiver = async () => {
+    //   try {
+    //     const conversationID =
+    //       typeContent.conversation.conversation.conversationID;
+    //     const receiver = await getReceiver(conversationID);
+    //     setReceiver(receiver);
+    //   } catch {
+    //     setReceiver(typeContent.receiver);
+    //   }
+    // };
+    // fetchReceiver();
     const fetchedMessages = async () => {
       try {
         const conversationID =
@@ -103,9 +135,11 @@ const ChatWindow = () => {
   }, [typeContent.conversation, setMessages, typeContent.receiver]);
 
   useEffect(() => {
-    if (onlineUsers.size > 0) {
-      const isReceiverOnline = onlineUsers.has(receiver.userID);
-      // console.log("isReceiverOnline", isReceiverOnline);
+    if (onlineUsers.length > 0) {
+      const isReceiverOnline = onlineUsers.some(
+        (userID) => userID === receiver.userID
+      );
+      console.log("isReceiverOnline", isReceiverOnline);
       setReceiverOnline(isReceiverOnline);
     }
   }, [onlineUsers, receiver]);
@@ -156,23 +190,22 @@ const ChatWindow = () => {
           <div className="flex items-center gap-3">
             <div className="w-14 h-14 rounded-full bg-gray-300">
               <img
-                src={receiver?.avatar || ""}
+                src={groupInfo?.groupAvatar || ""}
                 alt="avatar"
                 className="w-full h-full rounded-full object-cover"
               />
             </div>
             <div>
               <h3 className="font-semibold">
-                {receiver?.fullName || "Không có cuộc trò chuyện"}
+                {groupInfo?.groupName || "Không có cuộc trò chuyện"}
               </h3>
-              <span className="text-sm text-gray-500 flex items-center gap-1">
-                <div
-                  className={`${
-                    receiverOnline ? "bg-green-500" : "bg-red-500"
-                  } right-0 bottom-0 w-2 h-2 rounded-full `}
-                ></div>
-                {receiverOnline ? "Đang hoạt động" : "Không hoạt động"}
-              </span>
+
+              <button className="text-sm py-1 text-gray-500 flex items-center gap-1 cursor-pointer hover:text-blue-500">
+                <div>
+                  <FaUser />
+                </div>
+                {members?.length + " thành viên"}
+              </button>
             </div>
           </div>
           <div className="flex items-center gap-4 text-gray-600">
@@ -240,9 +273,9 @@ const ChatWindow = () => {
         </div>
       </div>
 
-      {/* <ChatInfo /> */}
+      <ChatInfo />
     </div>
   );
 };
 
-export default ChatWindow;
+export default ChatGroupWindow;

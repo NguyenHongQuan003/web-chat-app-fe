@@ -11,7 +11,7 @@ import {
   getFriendList,
   sendFriendRequest,
 } from "../services/friendService";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useRecoilValue, useSetRecoilState } from "recoil";
 import Loading from "./Loading";
 import { typeContentState } from "../recoil/leftPanelAtom";
 import { sentRequestListState } from "../recoil/sentRequestList";
@@ -25,8 +25,7 @@ const AddFriendModal = ({ isOpen, onClose }) => {
   const [searchResults, setSearchResults] = useState([]);
   const modalRef = useRef(null);
   const { user: userAuth } = useAuth();
-  // const setTypeContent = useSetRecoilState(typeContentState);
-  const [typeContent, setTypeContent] = useRecoilState(typeContentState);
+  const setTypeContent = useSetRecoilState(typeContentState);
 
   const [friendList, setFriendList] = useState([]);
   useEffect(() => {
@@ -129,9 +128,9 @@ const AddFriendModal = ({ isOpen, onClose }) => {
     }
   };
 
-  useEffect(() => {
-    console.log("typeContent", typeContent);
-  }, [typeContent]);
+  // useEffect(() => {
+  //   console.log("typeContent", typeContent);
+  // }, [typeContent]);
 
   if (!isOpen) return null;
 

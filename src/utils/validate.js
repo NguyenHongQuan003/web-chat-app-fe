@@ -19,6 +19,20 @@ export const validateFullName = (fullName) => {
   return "";
 };
 
+export const validateGroupName = (groupName) => {
+  if (!groupName.trim()) {
+    return "Không được để trống";
+  }
+
+  const nameRegex = /^[A-Za-zÀ-Ỹà-ỹ0-9\s]+$/;
+
+  if (!nameRegex.test(groupName)) {
+    return "Chỉ được chứa chữ cái, chữ số và dấu cách (không chứa số hoặc ký tự đặc biệt)";
+  }
+
+  return "";
+};
+
 export const validateOTP = (otp) => {
   return otp.length === 6 ? "" : "Mã OTP phải có 6 chữ số";
 };

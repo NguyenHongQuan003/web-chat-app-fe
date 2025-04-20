@@ -69,9 +69,9 @@ const MessageInput = ({
     });
   };
 
-  useEffect(() => {
-    console.log("Selected files:", selectedFiles);
-  }, [selectedFiles]);
+  // useEffect(() => {
+  //   console.log("Selected files:", selectedFiles);
+  // }, [selectedFiles]);
 
   return (
     <div className={`relative flex flex-col gap-2 ${className}`}>

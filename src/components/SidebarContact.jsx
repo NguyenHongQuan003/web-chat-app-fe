@@ -7,7 +7,6 @@ const SidebarContact = () => {
   const handleClick = (id) => {
     setTypeContent({
       contentName: id,
-      chat: typeContent.chat,
     });
   };
   const menuItems = [
@@ -19,7 +18,7 @@ const SidebarContact = () => {
     {
       id: "groups",
       icon: FaUsers,
-      label: "Danh sách nhóm và cộng đồng",
+      label: "Danh sách nhóm",
     },
     {
       id: "friendRequests",

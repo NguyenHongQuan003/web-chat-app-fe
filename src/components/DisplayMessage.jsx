@@ -249,13 +249,15 @@ const DisplayMessage = ({
               <>
                 <button
                   onClick={handleDeleteMessage}
-                  className="hover:bg-gray-200 p-1 rounded-full cursor-pointer"
+                  className="hover:bg-white p-1 rounded-full cursor-pointer"
+                  title="Xoá ở phía bạn"
                 >
                   <FaTrash className="w-3 h-3 text-gray-400" />
                 </button>
                 <button
                   onClick={handleRevokeMessage}
-                  className="hover:bg-gray-200 p-1 rounded-full cursor-pointer"
+                  className="hover:bg-white p-1 rounded-full cursor-pointer"
+                  title="Thu hồi"
                 >
                   <FaUndo className="w-3 h-3 text-gray-400" />
                 </button>
@@ -263,7 +265,8 @@ const DisplayMessage = ({
             )}
             <button
               onClick={handleShareMessage}
-              className="hover:bg-gray-200 p-1 rounded-full cursor-pointer"
+              className="hover:bg-white p-1 rounded-full cursor-pointer"
+              title="Chia sẻ"
             >
               <FaShare className="w-3 h-3 text-gray-400" />
             </button>

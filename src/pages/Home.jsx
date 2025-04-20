@@ -24,6 +24,8 @@ import { sentRequestListState } from "../recoil/sentRequestList";
 import useFriendRequestSocket from "../hooks/useFriendRequestSocket";
 import useConversationSocket from "../hooks/useConversationSocket";
 import ShareModal from "../components/ShareModal";
+import CreateGroupModal from "../components/CreateGroupModal";
+import { isCreateGroupModalOpenState } from "../recoil/createGroupAtom";
 
 const Home = () => {
   const socket = useSocket();
@@ -39,21 +41,20 @@ const Home = () => {
   const [isShareModalOpen, setIsShareModalOpen] = useRecoilState(
     isShareModalOpenState
   );
+  const [isCreateGroupModalOpen, setIsCreateGroupModalOpen] = useRecoilState(
+    isCreateGroupModalOpenState
+  );
   const tabs = [
     { id: "chat", icon: FaCommentDots, label: "Tin nhắn" },
     { id: "contacts", icon: FaAddressBook, label: "Danh bạ" },
   ];
 
-  // hook lấy danh sách cuộc trò chuyện
   useConversationSocket(socket, user?.userID);
-  // const [messages, setMessages] = useRecoilState(messageListState);
-  // useMessageSocket(socket, user?.userID, messages, setMessages);
-  // hook kiểm tra trạng thái online + gán list người dùng online
-  const onlineStatus = useSocketOnlineStatus(socket, user?.userID);
+  const onlineStatus = socket?.connected;
+  useSocketOnlineStatus(socket, user?.userID);
   const setSentRequestListRecoil = useSetRecoilState(sentRequestListState);
 
   const { sentRequestList } = useFriendRequestSocket(socket, user?.userID);
-  // setSentRequestListRecoil(sentRequestList);
 
   useEffect(() => {
     setSentRequestListRecoil(sentRequestList);
@@ -155,6 +156,10 @@ const Home = () => {
       <ShareModal
         isOpen={isShareModalOpen}
         onClose={() => setIsShareModalOpen(false)}
+      />
+      <CreateGroupModal
+        isOpen={isCreateGroupModalOpen}
+        onClose={() => setIsCreateGroupModalOpen(false)}
       />
     </div>
   );

@@ -2,5 +2,6 @@ import { atom } from "recoil";
 
 export const onlineUsersState = atom({
   key: "onlineUsersState",
-  default: [],
+  // default: [],
+  default: new Set(),
 });
