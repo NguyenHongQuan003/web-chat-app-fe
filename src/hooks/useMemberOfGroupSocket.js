@@ -55,10 +55,16 @@ const useMemberOfGroupSocket = (socket, userID, setMembers) => {
 
     socket.on("kickedFromGroup", handleKickedFromGroup);
     socket.on("memberKicked", handleChangeMemberOfGroup);
+    socket.on("newMember", handleChangeMemberOfGroup);
+    socket.on("grantAdmin", handleChangeMemberOfGroup);
+    socket.on("leaveMember", handleChangeMemberOfGroup);
 
     return () => {
       socket.off("kickedFromGroup", handleKickedFromGroup);
       socket.off("memberKicked", handleChangeMemberOfGroup);
+      socket.off("newMember", handleChangeMemberOfGroup);
+      socket.off("grantAdmin", handleChangeMemberOfGroup);
+      socket.off("leaveMember", handleChangeMemberOfGroup);
     };
   }, [socket, userID, typeContent, setMembers, setTypeContent]);
 };
