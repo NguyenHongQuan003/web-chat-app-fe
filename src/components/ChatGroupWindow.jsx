@@ -25,7 +25,7 @@ import useMessageSocket from "../hooks/useMessageSocket";
 import { useAuth } from "../utils/authUtils";
 import data from "@emoji-mart/data";
 import Picker from "@emoji-mart/react";
-import { getGroupInfo, getMembersOfGroup } from "../services/groupService";
+import { getGroupInfo } from "../services/groupService";
 import { FaUser } from "react-icons/fa";
 import ManagerGroup from "./ManagerGroup";
 import { isManagerGroupState } from "../recoil/managerGroupAtom";

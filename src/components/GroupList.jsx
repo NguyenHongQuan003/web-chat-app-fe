@@ -1,7 +1,7 @@
 // import React from "react";
 import { useEffect, useState } from "react";
 import { FaUsers } from "react-icons/fa";
-import { getFriendList } from "../services/friendService";
+import { getMyGroups } from "../services/groupService";
 
 // Danh sách bạn bè lấy trạng thái accept
 
@@ -9,16 +9,15 @@ const GroupList = () => {
   const [groupList, setGroupList] = useState([]);
 
   useEffect(() => {
-    const fetchFriendList = async () => {
+    const fetchMyGroupList = async () => {
       try {
-        const res = await getFriendList();
-        console.log("fetchFriendList", res);
-        setGroupList(res);
+        const res = await getMyGroups();
+        setGroupList(res.data);
       } catch (error) {
-        console.log("fetchFriendList", error);
+        console.log("fetching Group list", error);
       }
     };
-    fetchFriendList();
+    fetchMyGroupList();
   }, []);
 
   return (
@@ -28,20 +27,20 @@ const GroupList = () => {
         <span className="ml-2">Danh sách nhóm</span>
       </div>
       <div className="px-4 pt-4 text-sm font-[600]">
-        Nhóm và cộng đồng ({groupList.length})
+        Danh sách nhóm ({groupList.length})
       </div>
       <div className="overflow-y-auto bg-white mx-4 rounded-md mt-4 h-[calc(100vh-7rem)]">
         {groupList.map((item) => (
           <div
-            key={item.userID}
+            key={item.groupID}
             className="relative flex px-4 py-1 items-center border-b border-gray-300"
           >
             <img
-              src={item.avatar}
+              src={item.groupAvatar}
               className="w-12 h-12 rounded-full object-cover border border-gray-600"
-              alt={item.name}
+              alt={item.groupName}
             />
-            <span className="ml-2 w-full py-5">{item.fullName}</span>
+            <span className="ml-2 w-full py-5">{item.groupName}</span>
           </div>
         ))}
       </div>
