@@ -1,9 +1,11 @@
-import { useRecoilValue } from "recoil";
+import { useRecoilValue, useSetRecoilState } from "recoil";
 import { isManagerGroupState } from "../recoil/managerGroupAtom";
 import PropTypes from "prop-types";
 import { FaEllipsisV, FaKey, FaUserPlus } from "react-icons/fa";
 import { useAuth } from "../utils/authUtils";
 import { useEffect, useRef, useState } from "react";
+import { deleteGroup, kickMember, leaveGroup } from "../services/groupService";
+import { typeContentState } from "../recoil/leftPanelAtom";
 
 const ManagerGroup = ({ members }) => {
   const isManagerGroup = useRecoilValue(isManagerGroupState);
@@ -14,6 +16,11 @@ const ManagerGroup = ({ members }) => {
 
   const isUserAuth = (userID) => userAuth?.userID === userID;
   const roleAdmin = (role) => role === "admin";
+  const setTypeContent = useSetRecoilState(typeContentState);
+  const roleOfUserAuth = members.find(
+    (member) => member?.userInfo?.userID === userAuth?.userID
+  )?.role;
+  console.log("roleOfUserAuth", roleOfUserAuth);
 
   // Click ngoài vùng dropdown sẽ đóng menu
   useEffect(() => {
@@ -25,6 +32,44 @@ const ManagerGroup = ({ members }) => {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  const handleKickMember = async (member) => {
+    try {
+      await kickMember(member?.groupID, member?.userInfo?.userID);
+    } catch (error) {
+      console.log(error);
+    }
+    setSelectedMember(null);
+  };
+  const handleDeleteGroup = async () => {
+    try {
+      const groupID = members[0]?.groupID;
+      await deleteGroup(groupID);
+
+      // Reset lại state sau khi giải tán nhóm
+      setTypeContent({
+        contentName: null,
+        conversation: null,
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleLeaveGroup = async () => {
+    try {
+      const groupID = members[0]?.groupID;
+      await leaveGroup(groupID);
+
+      // set type content về null
+      setTypeContent({
+        contentName: null,
+        conversation: null,
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <div
@@ -38,15 +83,32 @@ const ManagerGroup = ({ members }) => {
       </div>
 
       <div className="flex justify-center items-center px-2">
-        <button className="flex items-center bg-gray-200 w-full py-1 rounded-xs mt-4 cursor-pointer hover:bg-gray-300 justify-center gap-1.5">
+        <button
+          hidden={!roleAdmin(roleOfUserAuth)}
+          onClick={() => alert("Thêm thành viên")}
+          className="flex items-center bg-gray-200 w-full py-1 rounded-xs mt-4 cursor-pointer hover:bg-gray-300 justify-center gap-1.5"
+        >
           <FaUserPlus color="#5c6b82" />
           <span>Thêm thành viên</span>
         </button>
       </div>
 
       <div className="flex justify-center items-center px-2">
-        <button className="flex items-center bg-red-200 w-full py-1 rounded-xs mt-4 cursor-pointer hover:bg-red-300 justify-center gap-1.5">
+        <button
+          hidden={!roleAdmin(roleOfUserAuth)}
+          onClick={handleDeleteGroup}
+          className="flex items-center bg-red-200 w-full py-1 rounded-xs mt-4 cursor-pointer hover:bg-red-300 justify-center gap-1.5"
+        >
           <span className="text-[#c31919]">Giải tán nhóm</span>
+        </button>
+      </div>
+      <div className="flex justify-center items-center px-2">
+        <button
+          onClick={handleLeaveGroup}
+          hidden={roleAdmin(roleOfUserAuth)}
+          className="flex items-center bg-red-200 w-full py-1 rounded-xs mt-4 cursor-pointer hover:bg-red-300 justify-center gap-1.5"
+        >
+          <span className="text-[#c31919]">Rời nhóm</span>
         </button>
       </div>
 
@@ -98,16 +160,27 @@ const ManagerGroup = ({ members }) => {
             )}
 
             {/* Dropdown tùy chọn thành viên */}
-            {selectedMember?.userInfo?.userID === member?.userInfo?.userID && (
-              <div
-                ref={dropdownRef}
-                className="absolute text-sm top-12 right-0 bg-white border border-gray-300 rounded-md shadow-lg w-40 z-20"
-              >
-                <button className="px-4 py-2 hover:bg-gray-200 cursor-pointer w-full">
-                  Xóa khỏi nhóm
-                </button>
-              </div>
-            )}
+            {selectedMember?.userInfo?.userID === member?.userInfo?.userID &&
+              roleAdmin(roleOfUserAuth) &&
+              !isUserAuth(member?.userInfo?.userID) && (
+                <div
+                  ref={dropdownRef}
+                  className="absolute text-sm top-12 right-0 bg-white border border-gray-300 rounded-md shadow-lg w-40 z-20"
+                >
+                  <div
+                    onClick={() => alert("Đặt trưởng nhóm")}
+                    className="flex items-center px-4 py-2 hover:bg-gray-200 cursor-pointer"
+                  >
+                    <span>Đặt trưởng nhóm</span>
+                  </div>
+                  <div
+                    onClick={() => handleKickMember(member)}
+                    className="flex items-center px-4 py-2 hover:bg-gray-200 cursor-pointer"
+                  >
+                    <span>Kích thành viên</span>
+                  </div>
+                </div>
+              )}
           </div>
         ))}
       </ul>

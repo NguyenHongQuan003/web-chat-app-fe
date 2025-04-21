@@ -3,27 +3,23 @@ import {
   BsThreeDotsVertical,
   BsTelephone,
   BsCameraVideo,
-  BsWallet,
-  BsWindow,
-  BsLayoutSidebar,
-  BsLayoutSidebarInset,
   BsLayoutSidebarInsetReverse,
   BsLayoutSidebarReverse,
 } from "react-icons/bs";
 import { IoNotifications } from "react-icons/io5";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { typeContentState } from "../recoil/leftPanelAtom";
-import { onlineUsersState } from "../recoil/onlineUsersAtom";
+// import { onlineUsersState } from "../recoil/onlineUsersAtom";
 import {
   getMessagesByConversation,
-  sendFiles,
-  sendTextMessage,
+  // sendFiles,
+  // sendTextMessage,
 } from "../services/messageService";
 
 import { useSocket } from "../context/SocketContext";
 import MessageInput from "./MessageInput";
 import { hasNewMessageState } from "../recoil/hasNewMessageAtom";
-import { getReceiver } from "../services/conversationService";
+// import { getReceiver } from "../services/conversationService";
 import DisplayMessage from "./DisplayMessage";
 import useMessageSocket from "../hooks/useMessageSocket";
 import { useAuth } from "../utils/authUtils";
@@ -37,12 +33,12 @@ const ChatGroupWindow = () => {
   const socket = useSocket();
   const { user } = useAuth();
   const typeContent = useRecoilValue(typeContentState);
-  const [receiver, setReceiver] = useState("");
+  // const [receiver, setReceiver] = useState("");
   const [selectedMessageID, setSelectedMessageID] = useState(null);
-  const [receiverOnline, setReceiverOnline] = useState(false);
-  const onlineUsers = useRecoilValue(onlineUsersState);
+  // const [receiverOnline, setReceiverOnline] = useState(false);
+  // const onlineUsers = useRecoilValue(onlineUsersState);
   const [showPicker, setShowPicker] = useState(false);
-  const [isSending, setIsSending] = useState(false);
+  // const [isSending, setIsSending] = useState(false);
   const pickerRef = useRef(null);
   const [groupInfo, setGroupInfo] = useState("");
   const [members, setMembers] = useState([]);
@@ -143,54 +139,54 @@ const ChatGroupWindow = () => {
     fetchedMessages();
   }, [typeContent.conversation, setMessages, typeContent.receiver]);
 
-  useEffect(() => {
-    if (onlineUsers.length > 0) {
-      const isReceiverOnline = onlineUsers.some(
-        (userID) => userID === receiver.userID
-      );
-      console.log("isReceiverOnline", isReceiverOnline);
-      setReceiverOnline(isReceiverOnline);
-    }
-  }, [onlineUsers, receiver]);
+  // useEffect(() => {
+  //   if (onlineUsers.length > 0) {
+  //     const isReceiverOnline = onlineUsers.some(
+  //       (userID) => userID === receiver.userID
+  //     );
+  //     console.log("isReceiverOnline", isReceiverOnline);
+  //     setReceiverOnline(isReceiverOnline);
+  //   }
+  // }, [onlineUsers, receiver]);
 
   const [newMessage, setNewMessage] = useState("");
 
-  const handleSend = async (e, files = []) => {
-    e.preventDefault();
-    const hasText = newMessage.trim() !== "";
-    const hasFiles = files.length > 0;
+  // const handleSend = async (e, files = []) => {
+  //   e.preventDefault();
+  //   const hasText = newMessage.trim() !== "";
+  //   const hasFiles = files.length > 0;
 
-    if (!hasText && !hasFiles) return;
-    setIsSending(true);
-    try {
-      // Gửi text (nếu có)
-      if (hasText) {
-        await handleSendTextMessage(e);
-        setNewMessage(""); // reset input
-      }
+  //   if (!hasText && !hasFiles) return;
+  //   setIsSending(true);
+  //   try {
+  //     // Gửi text (nếu có)
+  //     if (hasText) {
+  //       await handleSendTextMessage(e);
+  //       setNewMessage(""); // reset input
+  //     }
 
-      // Gửi file trước (nếu có)
-      if (hasFiles) {
-        await sendFiles(receiver.userID, files);
-      }
-    } catch (err) {
-      console.error("Lỗi khi gửi tin nhắn:", err);
-    } finally {
-      setIsSending(false);
-    }
-  };
+  //     // Gửi file trước (nếu có)
+  //     if (hasFiles) {
+  //       await sendFiles(receiver.userID, files);
+  //     }
+  //   } catch (err) {
+  //     console.error("Lỗi khi gửi tin nhắn:", err);
+  //   } finally {
+  //     setIsSending(false);
+  //   }
+  // };
 
-  const handleSendTextMessage = async (e) => {
-    e.preventDefault();
-    if (!newMessage.trim()) return;
+  // const handleSendTextMessage = async (e) => {
+  //   e.preventDefault();
+  //   if (!newMessage.trim()) return;
 
-    try {
-      await sendTextMessage(receiver.userID, newMessage);
-      setNewMessage("");
-    } catch (err) {
-      console.error("Lỗi khi gửi tin nhắn:", err);
-    }
-  };
+  //   try {
+  //     await sendTextMessage(receiver.userID, newMessage);
+  //     setNewMessage("");
+  //   } catch (err) {
+  //     console.error("Lỗi khi gửi tin nhắn:", err);
+  //   }
+  // };
   return (
     <>
       <div className="flex flex-grow">
@@ -258,7 +254,7 @@ const ChatGroupWindow = () => {
                 message={message}
                 selectedMessageID={selectedMessageID}
                 setSelectedMessageID={setSelectedMessageID}
-                participantId={receiver?.userID}
+                // participantId={receiver?.userID}
               />
             ))}
             {hasNewMessage && (
@@ -293,10 +289,10 @@ const ChatGroupWindow = () => {
             </div>
             <form className="flex items-center gap-2">
               <MessageInput
-                isSending={isSending}
+                // isSending={isSending}
                 value={newMessage}
                 onChange={(e) => setNewMessage(e.target.value)}
-                onSend={handleSend}
+                // onSend={handleSend}
                 onShowPicker={() => setShowPicker(!showPicker)}
                 placeholder="Nhập tin nhắn..."
                 className="flex-1"

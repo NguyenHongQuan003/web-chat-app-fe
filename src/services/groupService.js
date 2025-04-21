@@ -40,6 +40,7 @@ export const leaveGroup = (groupID) => {
 
 // Kích thành viên khỏi nhóm
 export const kickMember = (groupID, memberID) => {
+  console.log("kickMember", groupID, memberID);
   return axiosInstance.post("/groups/kick-member", { groupID, memberID });
 };
 

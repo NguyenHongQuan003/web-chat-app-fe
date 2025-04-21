@@ -9,6 +9,8 @@ import { getFriendList } from "../services/friendService";
 import Loading from "./Loading";
 import { createGroup } from "../services/groupService";
 import { validateGroupName } from "../utils/validate";
+import { typeContentState } from "../recoil/leftPanelAtom";
+import { useSetRecoilState } from "recoil";
 
 const CreateGroupModal = ({ isOpen, onClose }) => {
   const [isLoadingSearch, setIsLoadingSearch] = useState(false);
@@ -19,6 +21,7 @@ const CreateGroupModal = ({ isOpen, onClose }) => {
   const [selectedUsers, setSelectedUsers] = useState([]);
   const [friendList, setFriendList] = useState([]);
   const [errors, setErrors] = useState({});
+  const setTypeContent = useSetRecoilState(typeContentState);
 
   // Thêm state mới
   const [groupName, setGroupName] = useState("");
@@ -99,9 +102,16 @@ const CreateGroupModal = ({ isOpen, onClose }) => {
     const members = selectedUsers.map((user) => user.userID);
 
     try {
-      await createGroup(groupName, members, groupImage);
+      const response = await createGroup(groupName, members, groupImage);
+      console.log("Group created successfully:", response);
       toast.success("Tạo nhóm thành công!");
       handleCancel();
+      setTypeContent({
+        contentName: "conversation",
+        conversation: {
+          conversation: response.data,
+        },
+      });
     } catch (error) {
       toast.error("Tạo nhóm thất bại!");
       console.error("Create group error:", error);

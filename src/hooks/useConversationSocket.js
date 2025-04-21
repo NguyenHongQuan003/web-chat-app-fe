@@ -8,17 +8,16 @@ const useConversationSocket = (socket, userID) => {
     conversationListState
   );
 
-  const fetchConversationList = async () => {
-    try {
-      const results = await getConversations();
-      setConversationList(results);
-    } catch (error) {
-      console.error("Error fetching conversations:", error);
-    }
-  };
-
   useEffect(() => {
     if (!socket || !userID) return;
+    const fetchConversationList = async () => {
+      try {
+        const results = await getConversations();
+        setConversationList(results);
+      } catch (error) {
+        console.error("Error fetching conversations:", error);
+      }
+    };
 
     const handleGetConversationList = () => {
       fetchConversationList();
@@ -26,17 +25,11 @@ const useConversationSocket = (socket, userID) => {
     fetchConversationList();
 
     socket.on("notification", handleGetConversationList);
-    // socket.on("newMessage", (data) => {
-    //   console.log("New message received:", data);
-    // });
 
     return () => {
       socket.off("notification", handleGetConversationList);
-      // socket.off("newMessage", (data) => {
-      //   console.log("New message received:", data);
-      // });
     };
-  }, [socket, userID]);
+  }, [socket, userID, setConversationList]);
   return conversationList;
 };
 
