@@ -3,6 +3,12 @@ import {
   BsThreeDotsVertical,
   BsTelephone,
   BsCameraVideo,
+  BsWallet,
+  BsWindow,
+  BsLayoutSidebar,
+  BsLayoutSidebarInset,
+  BsLayoutSidebarInsetReverse,
+  BsLayoutSidebarReverse,
 } from "react-icons/bs";
 import { IoNotifications } from "react-icons/io5";
 import { useRecoilState, useRecoilValue } from "recoil";
@@ -13,7 +19,6 @@ import {
   sendFiles,
   sendTextMessage,
 } from "../services/messageService";
-import ChatInfo from "../components/ChatInfo";
 
 import { useSocket } from "../context/SocketContext";
 import MessageInput from "./MessageInput";
@@ -26,6 +31,8 @@ import data from "@emoji-mart/data";
 import Picker from "@emoji-mart/react";
 import { getGroupInfo, getMembersOfGroup } from "../services/groupService";
 import { FaUser } from "react-icons/fa";
+import ManagerGroup from "./ManagerGroup";
+import { isManagerGroupState } from "../recoil/managerGroupAtom";
 const ChatGroupWindow = () => {
   const socket = useSocket();
   const { user } = useAuth();
@@ -39,6 +46,8 @@ const ChatGroupWindow = () => {
   const pickerRef = useRef(null);
   const [groupInfo, setGroupInfo] = useState("");
   const [members, setMembers] = useState([]);
+  const [isManagerGroupOpen, setIsManagerGroupOpen] =
+    useRecoilState(isManagerGroupState);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -183,98 +192,121 @@ const ChatGroupWindow = () => {
     }
   };
   return (
-    <div className="flex flex-grow">
-      <div className="bg-white flex flex-col flex-grow">
-        {/* Header */}
-        <div className="flex items-center justify-between px-4 py-2 border-b border-gray-300">
-          <div className="flex items-center gap-3">
-            <div className="w-14 h-14 rounded-full bg-gray-300">
-              <img
-                src={groupInfo?.groupAvatar || ""}
-                alt="avatar"
-                className="w-full h-full rounded-full object-cover"
-              />
-            </div>
-            <div>
-              <h3 className="font-semibold">
-                {groupInfo?.groupName || "Không có cuộc trò chuyện"}
-              </h3>
-
-              <button className="text-sm py-1 text-gray-500 flex items-center gap-1 cursor-pointer hover:text-blue-500">
-                <div>
-                  <FaUser />
-                </div>
-                {members?.length + " thành viên"}
-              </button>
-            </div>
-          </div>
-          <div className="flex items-center gap-4 text-gray-600">
-            <BsTelephone className="w-5 h-5 cursor-pointer" />
-            <BsCameraVideo className="w-5 h-5 cursor-pointer" />
-            <BsThreeDotsVertical className="w-5 h-5 cursor-pointer" />
-          </div>
-        </div>
-
-        {/* Messages */}
-        <div
-          ref={scrollContainerRef}
-          className="flex-1 overflow-y-auto p-4 space-y-3 overflow-x-hidden bg-[#ebecf0]"
-        >
-          {messages.map((message) => (
-            <DisplayMessage
-              key={message.messageID}
-              message={message}
-              selectedMessageID={selectedMessageID}
-              setSelectedMessageID={setSelectedMessageID}
-              participantId={receiver?.userID}
-            />
-          ))}
-          {hasNewMessage && (
-            <div className="absolute bottom-16 right-4">
-              <button
-                onClick={() => {
-                  scrollToBottom();
-                  setHasNewMessage(false);
-                }}
-                className="border border-gray-100 bg-amber-300 text-white p-2 rounded-full shadow-lg"
-              >
-                <IoNotifications className="w-6 h-6" />
-              </button>
-            </div>
-          )}
-          <div ref={messagesEndRef} />
-        </div>
-
-        {/* Input area */}
-        <div className="relative border-t border-gray-300 p-3">
-          <div ref={pickerRef}>
-            {showPicker && (
-              <div className="absolute bottom-24 right-12">
-                <Picker
-                  data={data}
-                  onEmojiSelect={(emoji) => {
-                    setNewMessage((prev) => prev + emoji.native);
-                  }}
+    <>
+      <div className="flex flex-grow">
+        <div className="relative bg-white flex flex-col flex-grow">
+          {/* Header */}
+          <div className="flex items-center justify-between px-4 py-2 border-b border-gray-300">
+            <div className="flex items-center gap-3">
+              <div className="w-14 h-14 rounded-full bg-gray-300">
+                <img
+                  src={groupInfo?.groupAvatar || ""}
+                  alt="avatar"
+                  className="w-full h-full rounded-full object-cover"
                 />
               </div>
-            )}
+              <div>
+                <h3 className="font-semibold">
+                  {groupInfo?.groupName || "Không có cuộc trò chuyện"}
+                </h3>
+
+                <button
+                  onClick={() => setIsManagerGroupOpen(true)}
+                  className="text-sm py-1 text-gray-500 flex items-center gap-1 cursor-pointer hover:text-blue-500"
+                >
+                  <div>
+                    <FaUser />
+                  </div>
+                  {members?.length + " thành viên"}
+                </button>
+              </div>
+            </div>
+            <div className="flex items-center gap-0.5 text-gray-600">
+              <button className="cursor-pointer hover:bg-gray-200 p-1.5 rounded-xs">
+                <BsTelephone className="w-5 h-5 cursor-pointer" />
+              </button>
+              <button className="cursor-pointer hover:bg-gray-200 p-1.5 rounded-xs">
+                <BsCameraVideo className="w-5 h-5 cursor-pointer" />
+              </button>
+              <button className="cursor-pointer hover:bg-gray-200 p-1.5 rounded-xs">
+                <BsThreeDotsVertical className="w-5 h-5 cursor-pointer" />
+              </button>
+              <button
+                onClick={() => setIsManagerGroupOpen(!isManagerGroupOpen)}
+                className={`cursor-pointer hover:bg-gray-200 p-1.5 rounded-xs`}
+              >
+                {isManagerGroupOpen ? (
+                  <BsLayoutSidebarInsetReverse
+                    color="#0078E8"
+                    className="w-5 h-5 "
+                  />
+                ) : (
+                  <BsLayoutSidebarReverse className="w-5 h-5 " />
+                )}
+              </button>
+            </div>
           </div>
-          <form className="flex items-center gap-2">
-            <MessageInput
-              isSending={isSending}
-              value={newMessage}
-              onChange={(e) => setNewMessage(e.target.value)}
-              onSend={handleSend}
-              onShowPicker={() => setShowPicker(!showPicker)}
-              placeholder="Nhập tin nhắn..."
-              className="flex-1"
-            />
-          </form>
+
+          {/* Messages */}
+          <div
+            ref={scrollContainerRef}
+            className="flex-1 overflow-y-auto p-4 space-y-3 overflow-x-hidden bg-[#ebecf0]"
+          >
+            {messages.map((message) => (
+              <DisplayMessage
+                key={message.messageID}
+                message={message}
+                selectedMessageID={selectedMessageID}
+                setSelectedMessageID={setSelectedMessageID}
+                participantId={receiver?.userID}
+              />
+            ))}
+            {hasNewMessage && (
+              <div className="absolute bottom-16 right-4">
+                <button
+                  onClick={() => {
+                    scrollToBottom();
+                    setHasNewMessage(false);
+                  }}
+                  className="border border-gray-100 bg-amber-300 text-white p-2 rounded-full shadow-lg"
+                >
+                  <IoNotifications className="w-6 h-6" />
+                </button>
+              </div>
+            )}
+            <div ref={messagesEndRef} />
+          </div>
+
+          {/* Input area */}
+          <div className="relative border-t border-gray-300 p-3">
+            <div ref={pickerRef}>
+              {showPicker && (
+                <div className="absolute bottom-24 right-12">
+                  <Picker
+                    data={data}
+                    onEmojiSelect={(emoji) => {
+                      setNewMessage((prev) => prev + emoji.native);
+                    }}
+                  />
+                </div>
+              )}
+            </div>
+            <form className="flex items-center gap-2">
+              <MessageInput
+                isSending={isSending}
+                value={newMessage}
+                onChange={(e) => setNewMessage(e.target.value)}
+                onSend={handleSend}
+                onShowPicker={() => setShowPicker(!showPicker)}
+                placeholder="Nhập tin nhắn..."
+                className="flex-1"
+              />
+            </form>
+          </div>
         </div>
       </div>
-
-      <ChatInfo />
-    </div>
+      <ManagerGroup members={members} />
+    </>
   );
 };
 

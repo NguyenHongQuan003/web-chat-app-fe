@@ -27,7 +27,7 @@ const ConversationList = () => {
           </button>
         ))}
       </div>
-      <ul className=" overflow-y-auto h-[calc(100vh-6rem)]">
+      <ul className=" overflow-y-auto h-[calc(100vh-97px)]">
         {conversationList.map((obj) => (
           <Conversation key={obj.conversation.conversationID} obj={obj} />
         ))}
