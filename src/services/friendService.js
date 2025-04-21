@@ -36,3 +36,9 @@ export const getFriendList = async () => {
   // console.log("getFriendList", response);
   return response.data;
 };
+
+export const deleteFriend = async (friendId) => {
+  console.log("deleteFriend", friendId);
+  const response = await axiosInstance.get(`/friends/remove/${friendId}`);
+  return response.data;
+};

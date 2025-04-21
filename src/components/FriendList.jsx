@@ -1,9 +1,10 @@
 // import React from "react";
 import { useEffect, useState } from "react";
-import { FaUserFriends } from "react-icons/fa";
-import { getFriendList } from "../services/friendService";
+import { FaTrash, FaUserFriends } from "react-icons/fa";
+import { deleteFriend, getFriendList } from "../services/friendService";
 import { useRecoilValue } from "recoil";
 import { onlineUsersState } from "../recoil/onlineUsersAtom";
+import { toast } from "react-toastify";
 
 // Danh sách bạn bè lấy trạng thái accept
 
@@ -140,6 +141,18 @@ const FriendList = () => {
     fetchFriendList();
   }, []);
 
+  const handleRemoveFriend = async (friendID) => {
+    try {
+      await deleteFriend(friendID);
+      toast.success("Xóa bạn thành công");
+      setFriendList((prev) =>
+        prev.filter((friend) => friend.userID !== friendID)
+      );
+    } catch (error) {
+      console.log("handleRemoveFriend", error);
+    }
+  };
+
   return (
     <div className="flex-1">
       <div className="bg-white border border-l-0 border-gray-300 p-4 font-[500] flex items-center">
@@ -166,6 +179,12 @@ const FriendList = () => {
               } left-13 bottom-3 w-4 h-4 border-2 border-white rounded-full `}
             ></div>
             <span className="ml-2 w-full py-5">{item.fullName}</span>
+            <div
+              onClick={() => handleRemoveFriend(item.userID)}
+              className="ml-auto"
+            >
+              <FaTrash color="#5c6b82" />
+            </div>
           </div>
         ))}
       </div>
