@@ -4,7 +4,12 @@ import PropTypes from "prop-types";
 import { FaEllipsisV, FaKey, FaUserPlus } from "react-icons/fa";
 import { useAuth } from "../utils/authUtils";
 import { useEffect, useRef, useState } from "react";
-import { deleteGroup, kickMember, leaveGroup } from "../services/groupService";
+import {
+  deleteGroup,
+  grantAdmin,
+  kickMember,
+  leaveGroup,
+} from "../services/groupService";
 import { typeContentState } from "../recoil/leftPanelAtom";
 import { isInviteIntoGroupModalOpenState } from "../recoil/inviteIntoGroupAtom";
 
@@ -76,6 +81,17 @@ const ManagerGroup = ({ members }) => {
 
   const handleOpenInviteIntoGroupModal = () => {
     setIsInviteIntoGroupModalOpen(true);
+  };
+
+  const handleGrantAdmin = async () => {
+    try {
+      const participantId = selectedMember?.userInfo?.userID;
+      const groupID = members[0]?.groupID;
+      await grantAdmin(participantId, groupID);
+    } catch (error) {
+      console.log(error);
+    }
+    setSelectedMember(null);
   };
 
   return (
@@ -175,7 +191,7 @@ const ManagerGroup = ({ members }) => {
                   className="absolute text-sm top-12 right-0 bg-white border border-gray-300 rounded-md shadow-lg w-40 z-20"
                 >
                   <div
-                    onClick={() => alert("Đặt trưởng nhóm")}
+                    onClick={handleGrantAdmin}
                     className="flex items-center px-4 py-2 hover:bg-gray-200 cursor-pointer"
                   >
                     <span>Đặt trưởng nhóm</span>
