@@ -9,6 +9,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { RecoilRoot } from "recoil";
 import { SocketProvider } from "./context/SocketContext";
 import ChatWindow from "./components/ChatWindow";
+import ChatGroupWindow from "./components/ChatGroupWindow";
 
 const App = () => {
   return (
@@ -22,6 +23,7 @@ const App = () => {
               <Route path="/register" element={<Register />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />
               <Route element={<ChatWindow />} />
+              <Route element={<ChatGroupWindow />} />
             </Routes>
             <ToastContainer
               position="top-right"

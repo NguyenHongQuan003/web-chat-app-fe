@@ -29,6 +29,7 @@ import { getGroupInfo, getMembersOfGroup } from "../services/groupService";
 import { FaUser } from "react-icons/fa";
 import ManagerGroup from "./ManagerGroup";
 import { isManagerGroupState } from "../recoil/managerGroupAtom";
+import useMemberOfGroupSocket from "../hooks/useMemberOfGroupSocket.js";
 const ChatGroupWindow = () => {
   const socket = useSocket();
   const { user } = useAuth();
@@ -45,6 +46,7 @@ const ChatGroupWindow = () => {
   const [isManagerGroupOpen, setIsManagerGroupOpen] =
     useRecoilState(isManagerGroupState);
 
+  useMemberOfGroupSocket(socket, user?.userID, setMembers);
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (pickerRef.current && !pickerRef.current.contains(event.target)) {
@@ -99,19 +101,6 @@ const ChatGroupWindow = () => {
     };
     fetchInfoGroup();
 
-    const fetchMembersOfGroup = async () => {
-      const conversationID =
-        typeContent.conversation?.conversation?.conversationID;
-      if (!conversationID) return;
-      try {
-        const members = await getMembersOfGroup(conversationID);
-        console.log("members", members.data);
-        setMembers(members.data);
-      } catch (err) {
-        console.error("Lỗi khi lấy thông tin nhóm:", err);
-      }
-    };
-    fetchMembersOfGroup();
     // const fetchReceiver = async () => {
     //   try {
     //     const conversationID =
