@@ -6,6 +6,7 @@ import { useAuth } from "../utils/authUtils";
 import { useEffect, useRef, useState } from "react";
 import { deleteGroup, kickMember, leaveGroup } from "../services/groupService";
 import { typeContentState } from "../recoil/leftPanelAtom";
+import { isInviteIntoGroupModalOpenState } from "../recoil/inviteIntoGroupAtom";
 
 const ManagerGroup = ({ members }) => {
   const isManagerGroup = useRecoilValue(isManagerGroupState);
@@ -13,6 +14,9 @@ const ManagerGroup = ({ members }) => {
   const [selectedMember, setSelectedMember] = useState(null);
   const [hoveredIndex, setHoveredIndex] = useState(null);
   const dropdownRef = useRef(null);
+  const setIsInviteIntoGroupModalOpen = useSetRecoilState(
+    isInviteIntoGroupModalOpenState
+  );
 
   const isUserAuth = (userID) => userAuth?.userID === userID;
   const roleAdmin = (role) => role === "admin";
@@ -20,7 +24,6 @@ const ManagerGroup = ({ members }) => {
   const roleOfUserAuth = members.find(
     (member) => member?.userInfo?.userID === userAuth?.userID
   )?.role;
-  console.log("roleOfUserAuth", roleOfUserAuth);
 
   // Click ngoài vùng dropdown sẽ đóng menu
   useEffect(() => {
@@ -71,6 +74,10 @@ const ManagerGroup = ({ members }) => {
     }
   };
 
+  const handleOpenInviteIntoGroupModal = () => {
+    setIsInviteIntoGroupModalOpen(true);
+  };
+
   return (
     <div
       className={`bg-white border-l border-gray-300 min-w-[350px] max-w-[350px] ${
@@ -85,7 +92,7 @@ const ManagerGroup = ({ members }) => {
       <div className="flex justify-center items-center px-2">
         <button
           hidden={!roleAdmin(roleOfUserAuth)}
-          onClick={() => alert("Thêm thành viên")}
+          onClick={handleOpenInviteIntoGroupModal}
           className="flex items-center bg-gray-200 w-full py-1 rounded-xs mt-4 cursor-pointer hover:bg-gray-300 justify-center gap-1.5"
         >
           <FaUserPlus color="#5c6b82" />

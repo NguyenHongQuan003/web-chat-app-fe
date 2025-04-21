@@ -29,8 +29,16 @@ export const getMembersOfGroup = (groupID) => {
 };
 
 // Mời thành viên vào nhóm
-export const inviteGroup = (data) => {
-  return axiosInstance.post("/groups/invite", data);
+// {
+//   "groupID":"bee6fcde-3628-4510-8af6-a3036d243a90",
+//   "members":["ee2d3dc7-dc4e-4c46-ae88-e9be0f479639"]
+// }
+export const inviteGroup = async (groupID, members) => {
+  console.log("inviteGroup", groupID);
+  members.forEach((member) => {
+    console.log("member", member);
+  });
+  return axiosInstance.post("/groups/invite", { groupID, members });
 };
 
 // Rời nhóm

@@ -26,6 +26,8 @@ import useConversationSocket from "../hooks/useConversationSocket";
 import ShareModal from "../components/ShareModal";
 import CreateGroupModal from "../components/CreateGroupModal";
 import { isCreateGroupModalOpenState } from "../recoil/createGroupAtom";
+import InviteIntoGroupModal from "../components/InviteIntoGroupModal";
+import { isInviteIntoGroupModalOpenState } from "../recoil/inviteIntoGroupAtom";
 
 const Home = () => {
   const socket = useSocket();
@@ -44,6 +46,8 @@ const Home = () => {
   const [isCreateGroupModalOpen, setIsCreateGroupModalOpen] = useRecoilState(
     isCreateGroupModalOpenState
   );
+  const [isInviteIntoGroupModalOpen, setIsInviteIntoGroupModalOpen] =
+    useRecoilState(isInviteIntoGroupModalOpenState);
   const tabs = [
     { id: "chat", icon: FaCommentDots, label: "Tin nhắn" },
     { id: "contacts", icon: FaAddressBook, label: "Danh bạ" },
@@ -160,6 +164,10 @@ const Home = () => {
       <CreateGroupModal
         isOpen={isCreateGroupModalOpen}
         onClose={() => setIsCreateGroupModalOpen(false)}
+      />
+      <InviteIntoGroupModal
+        isOpen={isInviteIntoGroupModalOpen}
+        onClose={() => setIsInviteIntoGroupModalOpen(false)}
       />
     </div>
   );
