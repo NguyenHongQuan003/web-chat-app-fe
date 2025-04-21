@@ -61,3 +61,23 @@ export const getMessagesByConversation = async (conversationID) => {
   );
   return response.data;
 };
+export const sendReplyMessage = async (
+  receiverId,
+  message,
+  replyMessageID,
+  conversationID
+) => {
+  console.log("receiverId", receiverId);
+  console.log("message", message);
+  console.log("replyMessageID", replyMessageID);
+  console.log("conversationID", conversationID);
+  const response = await axiosInstance.post(
+    `/messages/send/reply/${receiverId}`,
+    {
+      message,
+      replyMessageID,
+      conversationID,
+    }
+  );
+  return response.data;
+};

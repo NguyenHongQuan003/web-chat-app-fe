@@ -6,6 +6,8 @@ import { FaRegSmile } from "react-icons/fa";
 const MessageInput = ({
   isSending = false,
   value,
+  replyMessage,
+  setReplyMessage,
   onChange,
   onSend,
   onFileSelect,
@@ -34,9 +36,11 @@ const MessageInput = ({
       if (onSend) {
         onSend(
           e,
-          selectedFiles.map((f) => f.file)
+          selectedFiles.map((f) => f.file),
+          replyMessage
         );
         setSelectedFiles([]);
+        setReplyMessage(null);
       }
     }
   };
@@ -69,12 +73,27 @@ const MessageInput = ({
     });
   };
 
-  // useEffect(() => {
-  //   console.log("Selected files:", selectedFiles);
-  // }, [selectedFiles]);
-
   return (
     <div className={`relative flex flex-col gap-2 ${className}`}>
+      {replyMessage && (
+        <div className="flex items-start justify-between p-2 bg-blue-100 rounded-md border-l-4 border-blue-500">
+          <div className="flex flex-col text-sm text-gray-800 max-w-[90%]">
+            <span className="font-medium text-blue-600">Đang trả lời:</span>
+            <span className="line-clamp-2 break-words">
+              {replyMessage.messageContent || "Tệp tin được đính kèm"}
+            </span>
+          </div>
+          <button
+            type="button"
+            onClick={() => setReplyMessage(null)}
+            className="text-gray-500 hover:text-gray-700 ml-2 text-lg"
+            title="Huỷ trả lời"
+          >
+            ✕
+          </button>
+        </div>
+      )}
+
       {selectedFiles.length > 0 && (
         <div className="flex flex-wrap gap-2">
           {selectedFiles.map((file, index) => (
@@ -136,9 +155,11 @@ const MessageInput = ({
             if (onSend) {
               onSend(
                 e,
-                selectedFiles.map((f) => f.file)
+                selectedFiles.map((f) => f.file),
+                replyMessage
               );
               setSelectedFiles([]);
+              setReplyMessage(null);
             }
           }}
           disabled={isSending}
@@ -165,6 +186,8 @@ const MessageInput = ({
 MessageInput.propTypes = {
   isSending: PropTypes.bool,
   value: PropTypes.string.isRequired,
+  replyMessage: PropTypes.object,
+  setReplyMessage: PropTypes.func,
   onChange: PropTypes.func.isRequired,
   onSend: PropTypes.func,
   onFileSelect: PropTypes.func,

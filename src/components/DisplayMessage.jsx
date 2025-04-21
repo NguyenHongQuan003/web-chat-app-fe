@@ -1,7 +1,7 @@
 import PropTypes from "prop-types";
 import { parseTimestamp, safeParseArray } from "../utils/parse";
 import { useAuth } from "../utils/authUtils";
-import { FaShare, FaTrash, FaUndo } from "react-icons/fa";
+import { FaQuoteRight, FaShare, FaTrash, FaUndo } from "react-icons/fa";
 import { deleteMessage, revokeMessage } from "../services/messageService";
 import { useEffect, useRef } from "react";
 import { isShareModalOpenState } from "../recoil/leftPanelAtom";
@@ -14,6 +14,8 @@ const DisplayMessage = ({
   selectedMessageID,
   setSelectedMessageID,
   participantId,
+  receiver,
+  setReplyMessage,
 }) => {
   const { user: userAuth } = useAuth();
   const messageRef = useRef(null);
@@ -60,34 +62,32 @@ const DisplayMessage = ({
     setSelectedMessage({ message });
     setIsShareModalOpen(true);
   };
-
+  const imageTypes = [
+    "jpg",
+    "jpeg",
+    "png",
+    "gif",
+    "webp",
+    "bmp",
+    "tiff",
+    "svg",
+  ];
+  const videoTypes = ["mp4", "webm", "mov", "avi", "mkv", "flv", "wmv"];
+  const audioTypes = ["mp3", "wav", "ogg", "aac", "flac", "m4a"];
+  const documentTypes = [
+    "pdf",
+    "doc",
+    "docx",
+    "xls",
+    "xlsx",
+    "ppt",
+    "pptx",
+    "txt",
+    "csv",
+    "json",
+  ];
+  const archiveTypes = ["zip", "rar", "7z", "tar", "gz"];
   const renderMessageContent = () => {
-    const imageTypes = [
-      "jpg",
-      "jpeg",
-      "png",
-      "gif",
-      "webp",
-      "bmp",
-      "tiff",
-      "svg",
-    ];
-    const videoTypes = ["mp4", "webm", "mov", "avi", "mkv", "flv", "wmv"];
-    const audioTypes = ["mp3", "wav", "ogg", "aac", "flac", "m4a"];
-    const documentTypes = [
-      "pdf",
-      "doc",
-      "docx",
-      "xls",
-      "xlsx",
-      "ppt",
-      "pptx",
-      "txt",
-      "csv",
-      "json",
-    ];
-    const archiveTypes = ["zip", "rar", "7z", "tar", "gz"];
-
     let urls = [];
     let types = [];
     let contents = [];
@@ -100,107 +100,152 @@ const DisplayMessage = ({
       console.error("Lỗi parse message fields:", error);
     }
 
-    // 📝 Nếu là tin nhắn text đơn thuần
-    if (
-      !urls.length &&
-      message?.messageContent &&
-      message.messageType === "text"
-    ) {
-      return (
-        <p className="whitespace-pre-wrap px-2 pt-4">
-          {message.messageContent}
-        </p>
-      );
-    }
+    const shouldDisplayMessageContent = (content) => {
+      if (typeof content !== "string") return false;
+
+      try {
+        const parsed = JSON.parse(content);
+        if (Array.isArray(parsed)) return false;
+      } catch {
+        // Không phải JSON => tiếp tục
+      }
+
+      const lowerContent = content.toLowerCase();
+      const allExtensions = [
+        ...imageTypes,
+        ...documentTypes,
+        ...archiveTypes,
+        ...videoTypes,
+        ...audioTypes,
+      ];
+
+      return !allExtensions.some((ext) => lowerContent.endsWith(`.${ext}`));
+    };
+
+    const isDocumentReply = (replyText = "") => {
+      const docExts = [
+        ...documentTypes,
+        ...archiveTypes,
+        ...videoTypes,
+        ...audioTypes,
+      ];
+      const lower = replyText.toLowerCase();
+      return docExts.some((ext) => lower.endsWith(`.${ext}`));
+    };
 
     return (
-      <div className="flex flex-wrap">
-        {urls.map((url, index) => {
-          const type = types[index]?.toLowerCase();
-          const name = contents[index] || "File";
-
-          if (imageTypes.includes(type)) {
-            return (
-              <a
-                key={index}
-                href={url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block px-0.5 pt-0.5"
-              >
-                <img
-                  src={url}
-                  alt={name}
-                  className="w-28 h-28 object-cover rounded-md"
-                />
-              </a>
-            );
-          }
-
-          if (videoTypes.includes(type)) {
-            return (
-              <a
-                key={index}
-                href={url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block relative w-40 h-28 px-0.5 pt-0.5"
-              >
-                <video
-                  controls
-                  src={url}
-                  className="w-full h-full object-cover rounded-md"
-                />
-              </a>
-            );
-          }
-
-          if (audioTypes.includes(type)) {
-            return (
-              <div key={index} className="w-full flex flex-col gap-1">
-                <audio controls className="w-full">
-                  <source src={url} type={`audio/${type}`} />
-                  Trình duyệt không hỗ trợ audio.
-                </audio>
-                <a
-                  href={url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-sm text-blue-600 underline"
-                >
-                  Nghe ở tab mới
-                </a>
+      <div className="px-2 pt-4">
+        {message.reply && (
+          <div className="border-l-4 border-blue-400 pl-2 mb-2 text-sm italic text-gray-700">
+            {isDocumentReply(message.reply) ? (
+              <div className="flex items-center gap-1 text-blue-500 font-medium">
+                <IoDocuments size={18} />
+                {message.reply}
               </div>
-            );
-          }
+            ) : (
+              <>
+                <FaQuoteRight className="inline-block mr-1 text-blue-400" />
+                {message.reply}
+              </>
+            )}
+          </div>
+        )}
 
-          if (documentTypes.includes(type) || archiveTypes.includes(type)) {
-            return (
-              <div key={index} className="block w-full">
+        {shouldDisplayMessageContent(message?.messageContent) && (
+          <p className="whitespace-pre-wrap mb-2">{message.messageContent}</p>
+        )}
+
+        {urls.length > 0 && (
+          <div className="flex flex-wrap">
+            {urls.map((url, index) => {
+              const type = types[index]?.toLowerCase();
+              const name = contents[index] || "File";
+
+              if (imageTypes.includes(type)) {
+                return (
+                  <a
+                    key={index}
+                    href={url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block px-0.5 pt-0.5"
+                  >
+                    <img
+                      src={url}
+                      alt={name}
+                      className="w-28 h-28 object-cover rounded-md"
+                    />
+                  </a>
+                );
+              }
+
+              if (videoTypes.includes(type)) {
+                return (
+                  <a
+                    key={index}
+                    href={url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block relative w-40 h-28 px-0.5 pt-0.5"
+                  >
+                    <video
+                      controls
+                      src={url}
+                      className="w-full h-full object-cover rounded-md"
+                    />
+                  </a>
+                );
+              }
+
+              if (audioTypes.includes(type)) {
+                return (
+                  <div key={index} className="w-full flex flex-col gap-1">
+                    <audio controls className="w-full">
+                      <source src={url} type={`audio/${type}`} />
+                      Trình duyệt không hỗ trợ audio.
+                    </audio>
+                    <a
+                      href={url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-sm text-blue-600 underline"
+                    >
+                      Nghe ở tab mới
+                    </a>
+                  </div>
+                );
+              }
+
+              if (documentTypes.includes(type) || archiveTypes.includes(type)) {
+                return (
+                  <div key={index} className="block w-full">
+                    {!message.reply && (
+                      <a
+                        href={url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-1 px-2 pt-4 font-[650] underline text-blue-500"
+                      >
+                        <IoDocuments size={48} color="#00aaff" /> {name}
+                      </a>
+                    )}
+                  </div>
+                );
+              }
+
+              return (
                 <a
+                  key={index}
                   href={url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-1 px-2 pt-4 font-[650] underline text-blue-500"
+                  download={name}
+                  className="text-blue-600 underline w-full"
                 >
-                  <IoDocuments size={48} color="#00aaff" /> {name}
+                  {name}
                 </a>
-              </div>
-            );
-          }
-
-          // Fallback
-          return (
-            <a
-              key={index}
-              href={url}
-              download={name}
-              className="text-blue-600 underline w-full"
-            >
-              {name}
-            </a>
-          );
-        })}
+              );
+            })}
+          </div>
+        )}
       </div>
     );
   };
@@ -210,7 +255,15 @@ const DisplayMessage = ({
   const isDeletedBySender = message.senderDelete && isSender;
 
   return (
-    <div className={`flex ${isSender ? "justify-end" : "justify-start"}`}>
+    <div className={`flex ${isSender ? "justify-end" : "justify-start"} gap-2`}>
+      {!isSender && receiver.avatar && (
+        <img
+          src={receiver.avatar}
+          alt="avatar"
+          className="w-10 h-10 rounded-full object-cover"
+        />
+      )}
+
       <div
         ref={messageRef}
         onClick={() => {
@@ -220,7 +273,7 @@ const DisplayMessage = ({
           );
         }}
         className={`relative max-w-[70%] rounded-md cursor-pointer shadow-2xl ${
-          isSender ? "bg-[#dbf8fe] " : "bg-white"
+          isSender ? "bg-[#dbf8fe]" : "bg-white"
         }`}
       >
         {isRevoked ? (
@@ -242,7 +295,7 @@ const DisplayMessage = ({
         {selectedMessageID === message.messageID && (
           <div
             className={`absolute top-0 w-max flex gap-x-3 z-10 ${
-              isSender ? "-left-24" : "-right-8"
+              isSender ? "-left-32" : "-right-16"
             }`}
           >
             {isSender && (
@@ -270,8 +323,16 @@ const DisplayMessage = ({
             >
               <FaShare className="w-3 h-3 text-gray-400" />
             </button>
+            <button
+              onClick={() => setReplyMessage(message)}
+              title="Trả lời"
+              className="hover:bg-white p-1 rounded-full cursor-pointer"
+            >
+              <FaQuoteRight className="w-3 h-3 text-gray-400" />
+            </button>
           </div>
         )}
+        <div></div>
       </div>
     </div>
   );
@@ -282,6 +343,8 @@ DisplayMessage.propTypes = {
   selectedMessageID: PropTypes.string,
   setSelectedMessageID: PropTypes.func.isRequired,
   participantId: PropTypes.string,
+  receiver: PropTypes.object,
+  setReplyMessage: PropTypes.func,
 };
 
 export default DisplayMessage;

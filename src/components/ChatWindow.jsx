@@ -4,7 +4,6 @@ import {
   BsTelephone,
   BsCameraVideo,
 } from "react-icons/bs";
-import { IoNotifications } from "react-icons/io5";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { typeContentState } from "../recoil/leftPanelAtom";
 import { onlineUsersState } from "../recoil/onlineUsersAtom";
@@ -12,6 +11,7 @@ import {
   getMessagesByConversation,
   sendFiles,
   sendTextMessage,
+  sendReplyMessage,
 } from "../services/messageService";
 
 import { useSocket } from "../context/SocketContext";
@@ -23,6 +23,7 @@ import useMessageSocket from "../hooks/useMessageSocket";
 import { useAuth } from "../utils/authUtils";
 import data from "@emoji-mart/data";
 import Picker from "@emoji-mart/react";
+import { FaChevronDown } from "react-icons/fa";
 const ChatWindow = () => {
   const socket = useSocket();
   const { user } = useAuth();
@@ -33,7 +34,12 @@ const ChatWindow = () => {
   const onlineUsers = useRecoilValue(onlineUsersState);
   const [showPicker, setShowPicker] = useState(false);
   const [isSending, setIsSending] = useState(false);
+  const [selectedReplyMessage, setSelectedReplyMessage] = useState(null);
   const pickerRef = useRef(null);
+
+  useEffect(() => {
+    console.log("replyMessage", selectedReplyMessage);
+  }, [selectedReplyMessage]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -112,7 +118,7 @@ const ChatWindow = () => {
 
   const [newMessage, setNewMessage] = useState("");
 
-  const handleSend = async (e, files = []) => {
+  const handleSend = async (e, files = [], replyMessage = null) => {
     e.preventDefault();
     const hasText = newMessage.trim() !== "";
     const hasFiles = files.length > 0;
@@ -120,20 +126,41 @@ const ChatWindow = () => {
     if (!hasText && !hasFiles) return;
     setIsSending(true);
     try {
-      // Gửi text (nếu có)
-      if (hasText) {
-        await handleSendTextMessage(e);
-        setNewMessage(""); // reset input
-      }
+      if (replyMessage !== null) {
+        await handleSendReplyMessage(e, replyMessage);
+        setSelectedReplyMessage(null);
+      } else {
+        // Gửi text (nếu có)
+        if (hasText) {
+          await handleSendTextMessage(e);
+          setNewMessage(""); // reset input
+        }
 
-      // Gửi file trước (nếu có)
-      if (hasFiles) {
-        await sendFiles(receiver.userID, files);
+        // // Gửi file trước (nếu có)
+        if (hasFiles) {
+          await sendFiles(receiver.userID, files);
+        }
       }
     } catch (err) {
       console.error("Lỗi khi gửi tin nhắn:", err);
     } finally {
       setIsSending(false);
+    }
+  };
+
+  const handleSendReplyMessage = async (e, replyMessage) => {
+    e.preventDefault();
+    if (replyMessage === null) return;
+    try {
+      await sendReplyMessage(
+        receiver.userID,
+        newMessage,
+        replyMessage.messageID,
+        replyMessage.conversationID
+      );
+      setNewMessage("");
+    } catch (err) {
+      console.error("Lỗi khi gửi tin nhắn:", err);
     }
   };
 
@@ -194,6 +221,8 @@ const ChatWindow = () => {
               selectedMessageID={selectedMessageID}
               setSelectedMessageID={setSelectedMessageID}
               participantId={receiver?.userID}
+              receiver={receiver}
+              setReplyMessage={setSelectedReplyMessage}
             />
           ))}
           {hasNewMessage && (
@@ -205,7 +234,7 @@ const ChatWindow = () => {
                 }}
                 className="border border-gray-100 bg-amber-300 text-white p-2 rounded-full shadow-lg"
               >
-                <IoNotifications className="w-6 h-6" />
+                <FaChevronDown className="w-6 h-6" />
               </button>
             </div>
           )}
@@ -230,6 +259,8 @@ const ChatWindow = () => {
             <MessageInput
               isSending={isSending}
               value={newMessage}
+              replyMessage={selectedReplyMessage}
+              setReplyMessage={setSelectedReplyMessage}
               onChange={(e) => setNewMessage(e.target.value)}
               onSend={handleSend}
               onShowPicker={() => setShowPicker(!showPicker)}
