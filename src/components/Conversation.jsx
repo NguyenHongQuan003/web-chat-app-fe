@@ -42,6 +42,7 @@ const Conversation = ({ obj }) => {
       fetchReceiver();
     }
     if (obj?.conversation?.conversationType === "group") {
+      fetchReceiver();
       fetchInfoGroup();
     }
   }, [obj.conversation.conversationType, obj.conversation.conversationID]);
@@ -67,32 +68,34 @@ const Conversation = ({ obj }) => {
           }`}
           onClick={() => handleClick()}
         >
-          <div className="flex justify-start items-center">
-            <span className="w-12 h-12 rounded-full bg-blue-500 mr-2">
-              <img
-                src={receiver?.avatar}
-                alt="avatar"
-                className="w-full h-full rounded-full object-cover"
-              />
-            </span>
-            <div className="space-y-1">
-              <p>{receiver?.fullName}</p>
-              <p className="text-sm text-gray-600">
-                {isSender ? "Bạn: " : `${receiver?.fullName}: `}
-                {(() => {
-                  if (obj?.lastMessage?.messageType === "text") {
-                    return obj?.lastMessage?.messageContent;
-                  }
-                  const parsedContent = safeParseArray(
-                    obj?.lastMessage?.messageContent
-                  );
-                  return Array.isArray(parsedContent)
-                    ? `${parsedContent.length} file${
-                        parsedContent.length > 1 ? "s" : ""
-                      }`
-                    : obj?.lastMessage?.messageContent;
-                })()}
-              </p>
+          <div className="flex justify-start">
+            <div className="flex items-center">
+              <span className="w-12 h-12 rounded-full bg-blue-500 mr-2">
+                <img
+                  src={receiver?.avatar}
+                  alt="avatar"
+                  className="w-full h-full rounded-full object-cover"
+                />
+              </span>
+              <div className="space-y-1">
+                <p>{receiver?.fullName}</p>
+                <p className="text-sm text-gray-600 truncate max-w-[180px]">
+                  {isSender ? "Bạn: " : `${receiver?.fullName}: `}
+                  {(() => {
+                    if (obj?.lastMessage?.messageType === "text") {
+                      return obj?.lastMessage?.messageContent;
+                    }
+                    const parsedContent = safeParseArray(
+                      obj?.lastMessage?.messageContent
+                    );
+                    return Array.isArray(parsedContent)
+                      ? `${parsedContent.length} file${
+                          parsedContent.length > 1 ? "s" : ""
+                        }`
+                      : obj?.lastMessage?.messageContent;
+                  })()}
+                </p>
+              </div>
             </div>
 
             <span className="text-xs text-gray-500 ml-auto">
@@ -113,39 +116,41 @@ const Conversation = ({ obj }) => {
           }`}
           onClick={() => handleClick()}
         >
-          <div className="flex justify-start items-center">
-            <span className="w-12 h-12 rounded-full bg-blue-500 mr-2">
-              <img
-                src={groupInfo?.groupAvatar}
-                alt="avatar"
-                className="w-full h-full rounded-full object-cover"
-              />
-            </span>
-            <div className="space-y-1">
-              <p>{groupInfo?.groupName}</p>
-              <p className="text-sm text-gray-600">
-                {obj?.lastMessage?.messageContent ? (
-                  <>
-                    {isSender ? "Bạn: " : `${receiver?.fullName}: `}
-                    {(() => {
-                      if (obj?.lastMessage?.messageType === "text") {
-                        return obj?.lastMessage?.messageContent;
-                      }
+          <div className="flex justify-start">
+            <div className="flex items-center">
+              <span className="w-12 h-12 rounded-full bg-blue-500 mr-2">
+                <img
+                  src={groupInfo?.groupAvatar}
+                  alt="avatar"
+                  className="w-full h-full rounded-full object-cover"
+                />
+              </span>
+              <div className="space-y-1">
+                <p>{groupInfo?.groupName}</p>
+                <p className="text-sm text-gray-600 truncate max-w-[180px]">
+                  {obj?.lastMessage?.messageContent ? (
+                    <>
+                      {isSender ? "Bạn: " : `${receiver?.fullName}: `}
+                      {(() => {
+                        if (obj?.lastMessage?.messageType === "text") {
+                          return obj?.lastMessage?.messageContent;
+                        }
 
-                      const parsedContent = safeParseArray(
-                        obj?.lastMessage?.messageContent
-                      );
-                      return Array.isArray(parsedContent)
-                        ? `${parsedContent.length} file${
-                            parsedContent.length > 1 ? "s" : ""
-                          }`
-                        : obj?.lastMessage?.messageContent;
-                    })()}
-                  </>
-                ) : (
-                  "" // nếu không có messageContent hợp lệ, hiển thị rỗng
-                )}
-              </p>
+                        const parsedContent = safeParseArray(
+                          obj?.lastMessage?.messageContent
+                        );
+                        return Array.isArray(parsedContent)
+                          ? `${parsedContent.length} file${
+                              parsedContent.length > 1 ? "s" : ""
+                            }`
+                          : obj?.lastMessage?.messageContent;
+                      })()}
+                    </>
+                  ) : (
+                    "" // nếu không có messageContent hợp lệ, hiển thị rỗng
+                  )}
+                </p>
+              </div>
             </div>
 
             <span className="text-xs text-gray-500 ml-auto">

@@ -6,7 +6,6 @@ import {
   BsLayoutSidebarInsetReverse,
   BsLayoutSidebarReverse,
 } from "react-icons/bs";
-import { IoNotifications } from "react-icons/io5";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { typeContentState } from "../recoil/leftPanelAtom";
 // import { onlineUsersState } from "../recoil/onlineUsersAtom";
@@ -20,29 +19,27 @@ import { useSocket } from "../context/SocketContext";
 import MessageInput from "./MessageInput";
 import { hasNewMessageState } from "../recoil/hasNewMessageAtom";
 // import { getReceiver } from "../services/conversationService";
-import DisplayMessage from "./DisplayMessage";
 import useMessageSocket from "../hooks/useMessageSocket";
 import { useAuth } from "../utils/authUtils";
 import data from "@emoji-mart/data";
 import Picker from "@emoji-mart/react";
-import { getGroupInfo } from "../services/groupService";
-import { FaUser } from "react-icons/fa";
+import { getGroupInfo, sendMessage } from "../services/groupService";
+import { FaChevronDown, FaUser } from "react-icons/fa";
 import ManagerGroup from "./ManagerGroup";
 import { isManagerGroupState } from "../recoil/managerGroupAtom";
 import useMemberOfGroupSocket from "../hooks/useMemberOfGroupSocket.js";
+import DisplayMessageGroup from "./DisplayMessageGroup.jsx";
 const ChatGroupWindow = () => {
   const socket = useSocket();
   const { user } = useAuth();
   const typeContent = useRecoilValue(typeContentState);
-  // const [receiver, setReceiver] = useState("");
   const [selectedMessageID, setSelectedMessageID] = useState(null);
-  // const [receiverOnline, setReceiverOnline] = useState(false);
-  // const onlineUsers = useRecoilValue(onlineUsersState);
   const [showPicker, setShowPicker] = useState(false);
-  // const [isSending, setIsSending] = useState(false);
+  const [isSending, setIsSending] = useState(false);
   const pickerRef = useRef(null);
   const [groupInfo, setGroupInfo] = useState("");
   const [members, setMembers] = useState([]);
+  const [selectedReplyMessage, setSelectedReplyMessage] = useState(null);
   const [isManagerGroupOpen, setIsManagerGroupOpen] =
     useRecoilState(isManagerGroupState);
 
@@ -101,17 +98,6 @@ const ChatGroupWindow = () => {
     };
     fetchInfoGroup();
 
-    // const fetchReceiver = async () => {
-    //   try {
-    //     const conversationID =
-    //       typeContent.conversation.conversation.conversationID;
-    //     const receiver = await getReceiver(conversationID);
-    //     setReceiver(receiver);
-    //   } catch {
-    //     setReceiver(typeContent.receiver);
-    //   }
-    // };
-    // fetchReceiver();
     const fetchedMessages = async () => {
       try {
         const conversationID =
@@ -120,62 +106,74 @@ const ChatGroupWindow = () => {
         const sortedMessages = fetchedMessages.sort(
           (a, b) => new Date(a.createdAt) - new Date(b.createdAt)
         );
+        console.log("sortedMessages", sortedMessages);
         setMessages(sortedMessages);
       } catch {
         setMessages([]);
       }
     };
     fetchedMessages();
-  }, [typeContent.conversation, setMessages, typeContent.receiver]);
-
-  // useEffect(() => {
-  //   if (onlineUsers.length > 0) {
-  //     const isReceiverOnline = onlineUsers.some(
-  //       (userID) => userID === receiver.userID
-  //     );
-  //     console.log("isReceiverOnline", isReceiverOnline);
-  //     setReceiverOnline(isReceiverOnline);
-  //   }
-  // }, [onlineUsers, receiver]);
+  }, [typeContent.conversation, setMessages, typeContent]);
 
   const [newMessage, setNewMessage] = useState("");
 
-  // const handleSend = async (e, files = []) => {
+  const handleSend = async (e, files = [], replyMessage = null) => {
+    e.preventDefault();
+    const hasText = newMessage.trim() !== "";
+    const hasFiles = files.length > 0;
+
+    if (!hasText && !hasFiles) return;
+    setIsSending(true);
+    try {
+      if (replyMessage !== null) {
+        // await handleSendReplyMessage(e, replyMessage);
+        // setSelectedReplyMessage(null);
+      } else {
+        // Gửi text (nếu có)
+        if (hasText) {
+          await handleSendTextMessage(e);
+          setNewMessage(""); // reset input
+        }
+
+        // // Gửi file trước (nếu có)
+        if (hasFiles) {
+          // await sendFiles(receiver.userID, files);
+        }
+      }
+    } catch (err) {
+      console.error("Lỗi khi gửi tin nhắn:", err);
+    } finally {
+      setIsSending(false);
+    }
+  };
+
+  // const handleSendReplyMessage = async (e, replyMessage) => {
   //   e.preventDefault();
-  //   const hasText = newMessage.trim() !== "";
-  //   const hasFiles = files.length > 0;
-
-  //   if (!hasText && !hasFiles) return;
-  //   setIsSending(true);
+  //   if (replyMessage === null) return;
   //   try {
-  //     // Gửi text (nếu có)
-  //     if (hasText) {
-  //       await handleSendTextMessage(e);
-  //       setNewMessage(""); // reset input
-  //     }
-
-  //     // Gửi file trước (nếu có)
-  //     if (hasFiles) {
-  //       await sendFiles(receiver.userID, files);
-  //     }
-  //   } catch (err) {
-  //     console.error("Lỗi khi gửi tin nhắn:", err);
-  //   } finally {
-  //     setIsSending(false);
-  //   }
-  // };
-
-  // const handleSendTextMessage = async (e) => {
-  //   e.preventDefault();
-  //   if (!newMessage.trim()) return;
-
-  //   try {
-  //     await sendTextMessage(receiver.userID, newMessage);
+  //     await sendReplyMessage(
+  //       receiver.userID,
+  //       newMessage,
+  //       replyMessage.messageID,
+  //       replyMessage.conversationID
+  //     );
   //     setNewMessage("");
   //   } catch (err) {
   //     console.error("Lỗi khi gửi tin nhắn:", err);
   //   }
   // };
+
+  const handleSendTextMessage = async (e) => {
+    e.preventDefault();
+    if (!newMessage.trim()) return;
+
+    try {
+      await sendMessage(newMessage, groupInfo?.groupID);
+      setNewMessage("");
+    } catch (err) {
+      console.error("Lỗi khi gửi tin nhắn:", err);
+    }
+  };
   return (
     <>
       <div className="flex flex-grow">
@@ -238,12 +236,13 @@ const ChatGroupWindow = () => {
             className="flex-1 overflow-y-auto p-4 space-y-3 overflow-x-hidden bg-[#ebecf0]"
           >
             {messages.map((message) => (
-              <DisplayMessage
+              <DisplayMessageGroup
                 key={message.messageID}
                 message={message}
                 selectedMessageID={selectedMessageID}
                 setSelectedMessageID={setSelectedMessageID}
-                // participantId={receiver?.userID}
+                setReplyMessage={setSelectedReplyMessage}
+                members={members}
               />
             ))}
             {hasNewMessage && (
@@ -255,7 +254,7 @@ const ChatGroupWindow = () => {
                   }}
                   className="border border-gray-100 bg-amber-300 text-white p-2 rounded-full shadow-lg"
                 >
-                  <IoNotifications className="w-6 h-6" />
+                  <FaChevronDown className="w-6 h-6" />
                 </button>
               </div>
             )}
@@ -278,10 +277,12 @@ const ChatGroupWindow = () => {
             </div>
             <form className="flex items-center gap-2">
               <MessageInput
-                // isSending={isSending}
+                isSending={isSending}
                 value={newMessage}
+                replyMessage={selectedReplyMessage}
+                setReplyMessage={setSelectedReplyMessage}
                 onChange={(e) => setNewMessage(e.target.value)}
-                // onSend={handleSend}
+                onSend={handleSend}
                 onShowPicker={() => setShowPicker(!showPicker)}
                 placeholder="Nhập tin nhắn..."
                 className="flex-1"

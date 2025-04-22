@@ -33,7 +33,7 @@ const SidebarContact = () => {
   ];
 
   return (
-    <div className="bg-white border-r border-gray-300 h-full">
+    <div className="bg-white border-r min-w-86 max-w-86 border-gray-300 h-full">
       {/* Menu Items */}
       <div className="py-2">
         {menuItems.map((item) => (

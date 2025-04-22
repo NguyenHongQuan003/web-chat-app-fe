@@ -14,7 +14,7 @@ const ConversationList = () => {
   };
 
   return (
-    <div className="bg-white border-r border-gray-300">
+    <div className="bg-white border-r min-w-86 max-w-86 border-gray-300">
       {/* Filter */}
       <div className=" text-[14px] px-4 text-gray-600 font-[600]">
         {choices.map((choice) => (

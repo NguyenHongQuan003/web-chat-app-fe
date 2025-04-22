@@ -31,11 +31,13 @@ const useMessageSocket = (socket, userID, messages, setMessages) => {
       setHasNewMessage(true);
     };
     socket.on("newMessage", handleNewMessage);
+    socket.on("newMessageGroup", handleNewMessage);
     socket.on("revokeMessage", handleNewMessage);
     socket.on("deleteMessage", handleNewMessage);
 
     return () => {
       socket.off("newMessage", handleNewMessage);
+      socket.off("newMessageGroup", handleNewMessage);
       socket.off("revokeMessage", handleNewMessage);
       socket.off("deleteMessage", handleNewMessage);
     };

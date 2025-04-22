@@ -11,7 +11,7 @@ const SearchTool = () => {
   );
   return (
     <>
-      <div className="min-w-86 border border-b-0 border-gray-300 bg-white">
+      <div className="min-w-86 max-w-86 border border-b-0 border-gray-300 bg-white">
         {/* Search bar */}
         <div className="p-4 space-x-1 flex justify-between items-center">
           <div className="relative">
