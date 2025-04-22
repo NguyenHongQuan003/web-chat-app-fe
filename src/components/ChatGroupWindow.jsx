@@ -23,7 +23,7 @@ import useMessageSocket from "../hooks/useMessageSocket";
 import { useAuth } from "../utils/authUtils";
 import data from "@emoji-mart/data";
 import Picker from "@emoji-mart/react";
-import { getGroupInfo, sendMessage } from "../services/groupService";
+import { getGroupInfo, sendFiles, sendMessage } from "../services/groupService";
 import { FaChevronDown, FaUser } from "react-icons/fa";
 import ManagerGroup from "./ManagerGroup";
 import { isManagerGroupState } from "../recoil/managerGroupAtom";
@@ -137,7 +137,7 @@ const ChatGroupWindow = () => {
 
         // // Gửi file trước (nếu có)
         if (hasFiles) {
-          // await sendFiles(receiver.userID, files);
+          await sendFiles(groupInfo?.groupID, files);
         }
       }
     } catch (err) {

@@ -33,13 +33,17 @@ const useMessageSocket = (socket, userID, messages, setMessages) => {
     socket.on("newMessage", handleNewMessage);
     socket.on("newMessageGroup", handleNewMessage);
     socket.on("revokeMessage", handleNewMessage);
+    socket.on("revokeMessageGroup", handleNewMessage);
     socket.on("deleteMessage", handleNewMessage);
+    socket.on("deleteMessageGroup", handleNewMessage);
 
     return () => {
       socket.off("newMessage", handleNewMessage);
       socket.off("newMessageGroup", handleNewMessage);
       socket.off("revokeMessage", handleNewMessage);
+      socket.off("revokeMessageGroup", handleNewMessage);
       socket.off("deleteMessage", handleNewMessage);
+      socket.off("deleteMessageGroup", handleNewMessage);
     };
   }, [socket, userID, messages, setMessages, setHasNewMessage, typeContent]);
 };

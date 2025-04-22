@@ -2,12 +2,12 @@ import PropTypes from "prop-types";
 import { parseTimestamp, safeParseArray } from "../utils/parse";
 import { useAuth } from "../utils/authUtils";
 import { FaQuoteRight, FaShare, FaTrash, FaUndo } from "react-icons/fa";
-import { deleteMessage } from "../services/messageService";
 import { useEffect, useRef, useState } from "react";
 import { isShareModalOpenState } from "../recoil/leftPanelAtom";
 import { selectedMessageState } from "../recoil/shareAtom";
 import { useSetRecoilState } from "recoil";
 import { IoDocuments } from "react-icons/io5";
+import { deleteMessage, revokeMessage } from "../services/groupService";
 
 const DisplayMessageGroup = ({
   message,
@@ -57,17 +57,13 @@ const DisplayMessageGroup = ({
     };
   }, [selectedMessageID, message.messageID, setSelectedMessageID]);
 
-  //   const handleRevokeMessage = async () => {
-  //     try {
-  //       await revokeMessage(
-  //         participantId,
-  //         message.messageID,
-  //         message.conversationID
-  //       );
-  //     } catch (error) {
-  //       console.log("Error revoking message:", error);
-  //     }
-  //   };
+  const handleRevokeMessage = async () => {
+    try {
+      await revokeMessage(message.messageID, message.conversationID);
+    } catch (error) {
+      console.log("Error revoking message:", error);
+    }
+  };
 
   const handleDeleteMessage = async () => {
     try {
@@ -332,7 +328,7 @@ const DisplayMessageGroup = ({
                   <FaTrash className="w-3 h-3 text-gray-400" />
                 </button>
                 <button
-                  //   onClick={handleRevokeMessage}
+                  onClick={handleRevokeMessage}
                   className="hover:bg-white p-1 rounded-full cursor-pointer"
                   title="Thu hồi"
                 >
