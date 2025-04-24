@@ -193,7 +193,11 @@ const ManagerGroup = ({ members }) => {
                   : member?.userInfo?.fullName}
               </div>
               <div className="text-xs">
-                {roleAdmin(member?.role) ? "Trưởng nhóm" : ""}
+                {roleAdmin(member?.role)
+                  ? "Trưởng nhóm"
+                  : roleDeputy(member?.role)
+                  ? "Phó nhóm"
+                  : ""}
               </div>
             </div>
 

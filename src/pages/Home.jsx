@@ -12,6 +12,7 @@ import {
   isChangePasswordModalOpenState,
   typeContentState,
   isShareModalOpenState,
+  isShareGroupModalOpenState,
 } from "../recoil/leftPanelAtom";
 import SearchTool from "../components/SearchTool";
 import LeftPanel from "../components/LeftPanel";
@@ -28,6 +29,7 @@ import CreateGroupModal from "../components/CreateGroupModal";
 import { isCreateGroupModalOpenState } from "../recoil/createGroupAtom";
 import InviteIntoGroupModal from "../components/InviteIntoGroupModal";
 import { isInviteIntoGroupModalOpenState } from "../recoil/inviteIntoGroupAtom";
+import ShareGroupModal from "../components/ShareGroupModal";
 
 const Home = () => {
   const socket = useSocket();
@@ -48,6 +50,9 @@ const Home = () => {
   );
   const [isInviteIntoGroupModalOpen, setIsInviteIntoGroupModalOpen] =
     useRecoilState(isInviteIntoGroupModalOpenState);
+  const [isShareGroupModalOpen, setIsShareGroupModalOpen] = useRecoilState(
+    isShareGroupModalOpenState
+  );
   const tabs = [
     { id: "chat", icon: FaCommentDots, label: "Tin nhắn" },
     { id: "contacts", icon: FaAddressBook, label: "Danh bạ" },
@@ -160,6 +165,11 @@ const Home = () => {
       <ShareModal
         isOpen={isShareModalOpen}
         onClose={() => setIsShareModalOpen(false)}
+        s
+      />
+      <ShareGroupModal
+        isOpen={isShareGroupModalOpen}
+        onClose={() => setIsShareGroupModalOpen(false)}
       />
       <CreateGroupModal
         isOpen={isCreateGroupModalOpen}

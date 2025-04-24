@@ -32,3 +32,8 @@ export const typeContentState = atom({
     conversation: null,
   },
 });
+
+export const isShareGroupModalOpenState = atom({
+  key: "isShareGroupModalOpenState",
+  default: false,
+});

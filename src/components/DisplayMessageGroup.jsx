@@ -3,7 +3,7 @@ import { parseTimestamp, safeParseArray } from "../utils/parse";
 import { useAuth } from "../utils/authUtils";
 import { FaQuoteRight, FaShare, FaTrash, FaUndo } from "react-icons/fa";
 import { useEffect, useRef, useState } from "react";
-import { isShareModalOpenState } from "../recoil/leftPanelAtom";
+import { isShareGroupModalOpenState } from "../recoil/leftPanelAtom";
 import { selectedMessageState } from "../recoil/shareAtom";
 import { useSetRecoilState } from "recoil";
 import { IoDocuments } from "react-icons/io5";
@@ -18,7 +18,9 @@ const DisplayMessageGroup = ({
 }) => {
   const { user: userAuth } = useAuth();
   const messageRef = useRef(null);
-  const setIsShareModalOpen = useSetRecoilState(isShareModalOpenState);
+  const setIsShareGroupModalOpen = useSetRecoilState(
+    isShareGroupModalOpenState
+  );
   const setSelectedMessage = useSetRecoilState(selectedMessageState);
   const [sender, setSender] = useState(null);
 
@@ -75,7 +77,7 @@ const DisplayMessageGroup = ({
 
   const handleShareMessage = () => {
     setSelectedMessage({ message });
-    setIsShareModalOpen(true);
+    setIsShareGroupModalOpen(true);
   };
   const imageTypes = [
     "jpg",
