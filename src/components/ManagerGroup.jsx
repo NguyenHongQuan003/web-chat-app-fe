@@ -7,8 +7,10 @@ import { useEffect, useRef, useState } from "react";
 import {
   deleteGroup,
   grantAdmin,
+  grantDeputy,
   kickMember,
   leaveGroup,
+  revokeDeputy,
 } from "../services/groupService";
 import { typeContentState } from "../recoil/leftPanelAtom";
 import { isInviteIntoGroupModalOpenState } from "../recoil/inviteIntoGroupAtom";
@@ -25,6 +27,7 @@ const ManagerGroup = ({ members }) => {
 
   const isUserAuth = (userID) => userAuth?.userID === userID;
   const roleAdmin = (role) => role === "admin";
+  const roleDeputy = (role) => role === "deputy";
   const setTypeContent = useSetRecoilState(typeContentState);
   const roleOfUserAuth = members.find(
     (member) => member?.userInfo?.userID === userAuth?.userID
@@ -94,6 +97,28 @@ const ManagerGroup = ({ members }) => {
     setSelectedMember(null);
   };
 
+  const handleGrantDeputy = async () => {
+    try {
+      const participantId = selectedMember?.userInfo?.userID;
+      const groupID = members[0]?.groupID;
+      await grantDeputy(participantId, groupID);
+    } catch (error) {
+      console.log(error);
+    }
+    setSelectedMember(null);
+  };
+
+  const handleRevokeDeputy = async () => {
+    try {
+      const participantId = selectedMember?.userInfo?.userID;
+      const groupID = members[0]?.groupID;
+      await revokeDeputy(participantId, groupID);
+    } catch (error) {
+      console.log(error);
+    }
+    setSelectedMember(null);
+  };
+
   return (
     <div
       className={`bg-white border-l border-gray-300 min-w-[350px] max-w-[350px] ${
@@ -107,7 +132,6 @@ const ManagerGroup = ({ members }) => {
 
       <div className="flex justify-center items-center px-2">
         <button
-          hidden={!roleAdmin(roleOfUserAuth)}
           onClick={handleOpenInviteIntoGroupModal}
           className="flex items-center bg-gray-200 w-full py-1 rounded-xs mt-4 cursor-pointer hover:bg-gray-300 justify-center gap-1.5"
         >
@@ -157,6 +181,11 @@ const ManagerGroup = ({ members }) => {
                 <FaKey color="yellow" className="h-3 w-3" />
               </div>
             )}
+            {roleDeputy(member?.role) && (
+              <div className="absolute bg-[#000000]/50 rounded-full left-9 flex justify-center items-center bottom-2 p-1">
+                <FaKey color="white" className="h-3 w-3" />
+              </div>
+            )}
             <div className="pl-2">
               <div className="text-sm font-[600]">
                 {isUserAuth(member?.userInfo?.userID)
@@ -169,41 +198,80 @@ const ManagerGroup = ({ members }) => {
             </div>
 
             {/* Icon 3 chấm chỉ hiện khi hover */}
-            {hoveredIndex === index && (
-              <button
-                onClick={() =>
-                  selectedMember?.userInfo?.userID === member?.userInfo?.userID
-                    ? setSelectedMember(null)
-                    : setSelectedMember(member)
-                }
-                className="ml-auto z-10 hover:bg-white rounded-full p-1 cursor-pointer"
-              >
-                <FaEllipsisV color="#5c6b82" />
-              </button>
-            )}
-
-            {/* Dropdown tùy chọn thành viên */}
-            {selectedMember?.userInfo?.userID === member?.userInfo?.userID &&
-              roleAdmin(roleOfUserAuth) &&
-              !isUserAuth(member?.userInfo?.userID) && (
-                <div
-                  ref={dropdownRef}
-                  className="absolute text-sm top-12 right-0 bg-white border border-gray-300 rounded-md shadow-lg w-40 z-20"
+            {roleAdmin(roleOfUserAuth) &&
+              !isUserAuth(member?.userInfo?.userID) &&
+              hoveredIndex === index && (
+                <button
+                  onClick={() =>
+                    selectedMember?.userInfo?.userID ===
+                    member?.userInfo?.userID
+                      ? setSelectedMember(null)
+                      : setSelectedMember(member)
+                  }
+                  className="ml-auto z-10 hover:bg-white rounded-full p-1 cursor-pointer"
                 >
-                  <div
-                    onClick={handleGrantAdmin}
-                    className="flex items-center px-4 py-2 hover:bg-gray-200 cursor-pointer"
-                  >
-                    <span>Đặt trưởng nhóm</span>
-                  </div>
+                  <FaEllipsisV color="#5c6b82" />
+                </button>
+              )}
+
+            {roleDeputy(roleOfUserAuth) &&
+              !isUserAuth(member?.userInfo?.userID) &&
+              !roleAdmin(member?.role) &&
+              hoveredIndex === index && (
+                <button
+                  onClick={() =>
+                    selectedMember?.userInfo?.userID ===
+                    member?.userInfo?.userID
+                      ? setSelectedMember(null)
+                      : setSelectedMember(member)
+                  }
+                  className="ml-auto z-10 hover:bg-white rounded-full p-1 cursor-pointer"
+                >
+                  <FaEllipsisV color="#5c6b82" />
+                </button>
+              )}
+
+            {selectedMember?.userInfo?.userID === member?.userInfo?.userID && (
+              <div
+                ref={dropdownRef}
+                className="absolute text-sm top-12 right-0 bg-white border border-gray-300 rounded-md shadow-lg w-50 z-20"
+              >
+                {roleAdmin(roleOfUserAuth) && (
+                  <>
+                    <div
+                      onClick={handleGrantAdmin}
+                      className="flex items-center px-4 py-2 hover:bg-gray-200 cursor-pointer"
+                    >
+                      <span>Cấp quyền trưởng nhóm</span>
+                    </div>
+                    {!roleDeputy(member?.role) ? (
+                      <div
+                        onClick={handleGrantDeputy}
+                        className="flex items-center px-4 py-2 hover:bg-gray-200 cursor-pointer"
+                      >
+                        <span>Cấp quyền phó nhóm</span>
+                      </div>
+                    ) : (
+                      <div
+                        onClick={handleRevokeDeputy}
+                        className="flex items-center px-4 py-2 hover:bg-gray-200 cursor-pointer"
+                      >
+                        <span>Thu hồi quyền phó nhóm</span>
+                      </div>
+                    )}
+                  </>
+                )}
+
+                {(roleAdmin(roleOfUserAuth) || roleDeputy(roleOfUserAuth)) && (
                   <div
                     onClick={() => handleKickMember(member)}
                     className="flex items-center px-4 py-2 hover:bg-gray-200 cursor-pointer"
                   >
-                    <span>Kích thành viên</span>
+                    <span>Xóa khỏi nhóm</span>
                   </div>
-                </div>
-              )}
+                )}
+              </div>
+            )}
           </div>
         ))}
       </ul>

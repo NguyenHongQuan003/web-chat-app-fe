@@ -57,6 +57,8 @@ const useMemberOfGroupSocket = (socket, userID, setMembers) => {
     socket.on("memberKicked", handleChangeMemberOfGroup);
     socket.on("newMember", handleChangeMemberOfGroup);
     socket.on("grantAdmin", handleChangeMemberOfGroup);
+    socket.on("grantDeputy", handleChangeMemberOfGroup);
+    socket.on("revokeDeputy", handleChangeMemberOfGroup);
     socket.on("leaveMember", handleChangeMemberOfGroup);
 
     return () => {
@@ -64,6 +66,8 @@ const useMemberOfGroupSocket = (socket, userID, setMembers) => {
       socket.off("memberKicked", handleChangeMemberOfGroup);
       socket.off("newMember", handleChangeMemberOfGroup);
       socket.off("grantAdmin", handleChangeMemberOfGroup);
+      socket.off("grantDeputy", handleChangeMemberOfGroup);
+      socket.off("revokeDeputy", handleChangeMemberOfGroup);
       socket.off("leaveMember", handleChangeMemberOfGroup);
     };
   }, [socket, userID, typeContent, setMembers, setTypeContent]);

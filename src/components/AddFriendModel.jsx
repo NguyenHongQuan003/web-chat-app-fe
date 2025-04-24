@@ -110,6 +110,7 @@ const AddFriendModal = ({ isOpen, onClose }) => {
     // Ngươc lại
     // setTypeContent với conversation là conversation
     const response = await haveTheyChatted(user.userID);
+    console.log("response open chat", response);
     if (response === null) {
       console.log("Chưa có cuộc trò chuyện nào");
       setTypeContent({

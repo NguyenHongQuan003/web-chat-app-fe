@@ -43,7 +43,8 @@ export const leaveGroup = (groupID) => {
 
 // Kích thành viên khỏi nhóm
 export const kickMember = (groupID, memberID) => {
-  console.log("kickMember", groupID, memberID);
+  console.log("kickMember", groupID);
+  console.log("memberID", memberID);
   return axiosInstance.post("/groups/kick-member", { groupID, memberID });
 };
 
@@ -100,4 +101,28 @@ export const getMyGroups = () => {
 // Lấy tất cả các nhóm
 export const getAllGroups = () => {
   return axiosInstance.get("/groups/all-groups");
+};
+
+// Cấp quyền phó nhóm
+//cấp quyền phó nhóm
+// Router.post(
+//   '/admin/deputy',
+//   authMiddleware.isAuthorized,
+//   groupController.grantDeputy
+// ) // cấp quyền phó nhóm
+export const grantDeputy = (participantId, groupID) => {
+  return axiosInstance.post("/groups/admin/deputy", { participantId, groupID });
+};
+
+// //thu hồi quyền phó nhóm
+// Router.post(
+//   '/admin/revoke-deputy',
+//   authMiddleware.isAuthorized,
+//   groupController.revokeDeputy
+// ) // thu hồi quyền phó nhóm
+export const revokeDeputy = (participantId, groupID) => {
+  return axiosInstance.post("/groups/admin/revoke-deputy", {
+    participantId,
+    groupID,
+  });
 };
