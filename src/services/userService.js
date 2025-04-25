@@ -35,7 +35,8 @@ export const checkPhoneNumber = async (phoneNumber) => {
     const response = await axiosInstance.get(
       `/users/checkPhoneNumber/${phoneNumber}`
     );
-    return response.status === 200;
+    // return response.status === 200;
+    return { flag: response.status === 200, userID: response.data.userID };
   } catch (error) {
     if (error.response.status === 404) {
       return false;

@@ -149,8 +149,8 @@ const ForgotPassword = () => {
     e.preventDefault();
     setIsLoading(true);
     try {
-      const isExists = await checkPhoneNumber(formData.phoneNumber);
-      if (isExists) {
+      const { flag } = await checkPhoneNumber(formData.phoneNumber);
+      if (flag) {
         await handleSendOTP();
       } else {
         toast.warning("Số điện thoại không tồn tại");
