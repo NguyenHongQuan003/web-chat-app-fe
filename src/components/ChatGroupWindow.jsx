@@ -23,7 +23,12 @@ import useMessageSocket from "../hooks/useMessageSocket";
 import { useAuth } from "../utils/authUtils";
 import data from "@emoji-mart/data";
 import Picker from "@emoji-mart/react";
-import { getGroupInfo, sendFiles, sendMessage } from "../services/groupService";
+import {
+  getGroupInfo,
+  sendFiles,
+  sendMessage,
+  sendReplyMessage,
+} from "../services/groupService";
 import { FaChevronDown, FaUser } from "react-icons/fa";
 import ManagerGroup from "./ManagerGroup";
 import { isManagerGroupState } from "../recoil/managerGroupAtom";
@@ -126,8 +131,8 @@ const ChatGroupWindow = () => {
     setIsSending(true);
     try {
       if (replyMessage !== null) {
-        // await handleSendReplyMessage(e, replyMessage);
-        // setSelectedReplyMessage(null);
+        await handleSendReplyMessage(e, replyMessage);
+        setSelectedReplyMessage(null);
       } else {
         // Gửi text (nếu có)
         if (hasText) {
@@ -147,21 +152,20 @@ const ChatGroupWindow = () => {
     }
   };
 
-  // const handleSendReplyMessage = async (e, replyMessage) => {
-  //   e.preventDefault();
-  //   if (replyMessage === null) return;
-  //   try {
-  //     await sendReplyMessage(
-  //       receiver.userID,
-  //       newMessage,
-  //       replyMessage.messageID,
-  //       replyMessage.conversationID
-  //     );
-  //     setNewMessage("");
-  //   } catch (err) {
-  //     console.error("Lỗi khi gửi tin nhắn:", err);
-  //   }
-  // };
+  const handleSendReplyMessage = async (e, replyMessage) => {
+    e.preventDefault();
+    if (replyMessage === null) return;
+    try {
+      await sendReplyMessage(
+        newMessage,
+        replyMessage.messageID,
+        groupInfo?.groupID
+      );
+      setNewMessage("");
+    } catch (err) {
+      console.error("Lỗi khi gửi tin nhắn:", err);
+    }
+  };
 
   const handleSendTextMessage = async (e) => {
     e.preventDefault();

@@ -67,10 +67,6 @@ export const sendReplyMessage = async (
   replyMessageID,
   conversationID
 ) => {
-  console.log("receiverId", receiverId);
-  console.log("message", message);
-  console.log("replyMessageID", replyMessageID);
-  console.log("conversationID", conversationID);
   const response = await axiosInstance.post(
     `/messages/send/reply/${receiverId}`,
     {
@@ -78,6 +74,13 @@ export const sendReplyMessage = async (
       replyMessageID,
       conversationID,
     }
+  );
+  return response.data;
+};
+
+export const getMessageByID = async (messageId, conversationID) => {
+  const response = await axiosInstance.get(
+    `/messages/messageById/${messageId}/${conversationID}`
   );
   return response.data;
 };

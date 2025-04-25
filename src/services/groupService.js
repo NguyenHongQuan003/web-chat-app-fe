@@ -117,26 +117,23 @@ export const getAllGroups = () => {
   return axiosInstance.get("/groups/all-groups");
 };
 
-// Cấp quyền phó nhóm
-//cấp quyền phó nhóm
-// Router.post(
-//   '/admin/deputy',
-//   authMiddleware.isAuthorized,
-//   groupController.grantDeputy
-// ) // cấp quyền phó nhóm
 export const grantDeputy = (participantId, groupID) => {
   return axiosInstance.post("/groups/admin/deputy", { participantId, groupID });
 };
 
-// //thu hồi quyền phó nhóm
-// Router.post(
-//   '/admin/revoke-deputy',
-//   authMiddleware.isAuthorized,
-//   groupController.revokeDeputy
-// ) // thu hồi quyền phó nhóm
 export const revokeDeputy = (participantId, groupID) => {
   return axiosInstance.post("/groups/admin/revoke-deputy", {
     participantId,
     groupID,
+  });
+};
+
+// '/messages/reply',
+// const { replyMessageID, groupID, message } = req.body
+export const sendReplyMessage = async (message, replyMessageID, groupID) => {
+  return axiosInstance.post("/groups/messages/reply", {
+    replyMessageID,
+    groupID,
+    message,
   });
 };
