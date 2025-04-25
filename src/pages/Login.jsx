@@ -4,12 +4,13 @@ import { useNavigate } from "react-router-dom";
 import Input from "../components/Input";
 import Button from "../components/Button";
 import { FaLock, FaPhone } from "react-icons/fa";
-import { API_SOCKET_URL, APP_INFO } from "../constants/app.constants";
+import { APP_INFO } from "../constants/app.constants";
 import { useAuth } from "../utils/authUtils";
 import { toast } from "react-toastify";
 import Loading from "../components/Loading";
-import { checkPhoneNumber } from "../services/userService";
-import { io } from "socket.io-client";
+// import { API_SOCKET_URL } from "../constants/app.constants";
+// import { checkPhoneNumber } from "../services/userService";
+// import { io } from "socket.io-client";
 
 const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -24,39 +25,39 @@ const Login = () => {
     e.preventDefault();
     setIsLoading(true);
 
-    let userId = "";
-    const deviceType = "web";
+    // let userId = "";
+    // const deviceType = "web";
 
-    try {
-      const { userID } = await checkPhoneNumber(formData.phoneNumber);
-      userId = userID;
-      console.log(userId);
-    } catch (error) {
-      console.error(error);
-      toast.error("Số điện thoại không tồn tại.");
-      setIsLoading(false);
-      return;
-    }
+    // try {
+    //   const { userID } = await checkPhoneNumber(formData.phoneNumber);
+    //   userId = userID;
+    //   console.log(userId);
+    // } catch (error) {
+    //   console.error(error);
+    //   toast.error("Số điện thoại không tồn tại.");
+    //   setIsLoading(false);
+    //   return;
+    // }
 
-    const tempSocket = io(API_SOCKET_URL, {
-      query: { userId, deviceType },
-      autoConnect: true,
-    });
+    // const tempSocket = io(API_SOCKET_URL, {
+    //   query: { userId, deviceType },
+    //   autoConnect: true,
+    // });
 
-    let denied = false;
-    await new Promise((resolve) => {
-      tempSocket.on("loginDenied", (message) => {
-        denied = true;
-        toast.error(message);
-        tempSocket.disconnect();
-        resolve();
-      });
-    });
+    // let denied = false;
+    // await new Promise((resolve) => {
+    //   tempSocket.on("loginDenied", (message) => {
+    //     denied = true;
+    //     toast.error(message);
+    //     tempSocket.disconnect();
+    //     resolve();
+    //   });
+    // });
 
-    if (denied) {
-      setIsLoading(false);
-      return;
-    }
+    // if (denied) {
+    //   setIsLoading(false);
+    //   return;
+    // }
 
     try {
       await signIn(formData);

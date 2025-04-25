@@ -124,6 +124,8 @@ const ShareGroupModal = ({ isOpen, onClose }) => {
         receiverIds,
         selectedMessage.message.conversationID
       );
+      toast.success("Chia sẻ tin nhắn thành công");
+      onClose();
     } catch (error) {
       console.error("Error sharing message:", error);
     }

@@ -44,107 +44,213 @@ const RenderMessageContent = ({ message }) => {
     );
   }
 
-  // Nếu là tin nhắn text đơn thuần
-  if (
-    !urls.length &&
-    message?.messageContent &&
-    message.messageType === "text"
-  ) {
+  if (message?.messageType === "text") {
     return (
       <p className="whitespace-pre-wrap px-2 pt-4">{message.messageContent}</p>
     );
   }
 
-  return (
-    <div className="flex flex-wrap">
-      {urls.map((url, index) => {
-        const type = types[index]?.toLowerCase();
-        const name = contents[index] || "File";
+  const replyIsNull = message?.reply === null;
+  if (urls.length > 0) {
+    return (
+      <div className="flex flex-wrap">
+        {/* Nếu là reply thì hiển thị messageContent đúng 1 lần */}
+        {!replyIsNull && message?.messageContent && (
+          <p className="whitespace-pre-wrap px-2 pt-4 w-full">
+            {message.messageContent}
+          </p>
+        )}
 
-        if (imageTypes.includes(type)) {
-          return (
-            <a
-              key={index}
-              href={url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="block px-0.5 pt-0.5"
-            >
-              <img
-                src={url}
-                alt={name}
-                className="w-28 h-28 object-cover rounded-md"
-              />
-            </a>
-          );
-        }
+        {urls.map((url, index) => {
+          const type = types[index]?.toLowerCase();
+          const name = contents[index] || "File";
 
-        if (videoTypes.includes(type)) {
-          return (
-            <a
-              key={index}
-              href={url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="block relative w-40 h-28 px-0.5 pt-0.5"
-            >
-              <video
-                controls
-                src={url}
-                className="w-full h-full object-cover rounded-md"
-              />
-            </a>
-          );
-        }
+          const isImage = imageTypes.includes(type);
+          const isVideo = videoTypes.includes(type);
+          const isDocOrArchive =
+            documentTypes.includes(type) || archiveTypes.includes(type);
+          const isAudio = audioTypes.includes(type);
 
-        if (audioTypes.includes(type)) {
-          return (
-            <div key={index} className="w-full flex flex-col gap-1">
-              <audio controls className="w-full">
-                <source src={url} type={`audio/${type}`} />
-                Trình duyệt không hỗ trợ audio.
-              </audio>
+          // Khi là reply, đã hiển thị nội dung rồi, bỏ qua media
+          if (!replyIsNull) return null;
+
+          if (isImage) {
+            return (
               <a
+                key={index}
                 href={url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-sm text-blue-600 underline"
+                className="block px-0.5 pt-0.5"
               >
-                Nghe ở tab mới
+                <img
+                  src={url}
+                  alt={name}
+                  className="w-28 h-28 object-cover rounded-md"
+                />
               </a>
-            </div>
-          );
-        }
+            );
+          }
 
-        if (documentTypes.includes(type) || archiveTypes.includes(type)) {
-          return (
-            <div key={index} className="block w-full">
+          if (isVideo) {
+            return (
               <a
+                key={index}
                 href={url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-1 px-2 pt-4 font-[650] underline text-blue-500"
+                className="block relative w-40 h-28 px-0.5 pt-0.5"
               >
-                <IoDocuments size={48} color="#00aaff" /> {name}
+                <video
+                  controls
+                  src={url}
+                  className="w-full h-full object-cover rounded-md"
+                />
               </a>
-            </div>
-          );
-        }
+            );
+          }
 
-        // Fallback
-        return (
-          <a
-            key={index}
-            href={url}
-            download={name}
-            className="text-blue-600 underline w-full"
-          >
-            {name}
-          </a>
-        );
-      })}
-    </div>
-  );
+          if (isDocOrArchive) {
+            return (
+              <div key={index} className="block w-full">
+                <a
+                  href={url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1 px-2 pt-4 font-[650] underline text-blue-500"
+                >
+                  <IoDocuments size={24} color="#00aaff" /> {name}
+                </a>
+              </div>
+            );
+          }
+
+          if (isAudio) {
+            return (
+              <div key={index} className="w-full flex flex-col gap-1">
+                <audio controls className="w-full">
+                  <source src={url} type={`audio/${type}`} />
+                  Trình duyệt không hỗ trợ audio.
+                </audio>
+                <a
+                  href={url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm text-blue-600 underline"
+                >
+                  Nghe ở tab mới
+                </a>
+              </div>
+            );
+          }
+
+          return null;
+        })}
+      </div>
+    );
+  }
+
+  // Nếu là tin nhắn text đơn thuần
+  // if (
+  //   !urls.length &&
+  //   message?.messageContent &&
+  //   message.messageType === "text"
+  // ) {
+  //   return (
+  //     <p className="whitespace-pre-wrap px-2 pt-4">{message.messageContent}</p>
+  //   );
+  // }
+
+  // return (
+  //   <div className="flex flex-wrap">
+  //     {urls.map((url, index) => {
+  //       const type = types[index]?.toLowerCase();
+  //       const name = contents[index] || "File";
+
+  //       if (imageTypes.includes(type)) {
+  //         return (
+  //           <a
+  //             key={index}
+  //             href={url}
+  //             target="_blank"
+  //             rel="noopener noreferrer"
+  //             className="block px-0.5 pt-0.5"
+  //           >
+  //             <img
+  //               src={url}
+  //               alt={name}
+  //               className="w-28 h-28 object-cover rounded-md"
+  //             />
+  //           </a>
+  //         );
+  //       }
+
+  //       if (videoTypes.includes(type)) {
+  //         return (
+  //           <a
+  //             key={index}
+  //             href={url}
+  //             target="_blank"
+  //             rel="noopener noreferrer"
+  //             className="block relative w-40 h-28 px-0.5 pt-0.5"
+  //           >
+  //             <video
+  //               controls
+  //               src={url}
+  //               className="w-full h-full object-cover rounded-md"
+  //             />
+  //           </a>
+  //         );
+  //       }
+
+  //       if (audioTypes.includes(type)) {
+  //         return (
+  //           <div key={index} className="w-full flex flex-col gap-1">
+  //             <audio controls className="w-full">
+  //               <source src={url} type={`audio/${type}`} />
+  //               Trình duyệt không hỗ trợ audio.
+  //             </audio>
+  //             <a
+  //               href={url}
+  //               target="_blank"
+  //               rel="noopener noreferrer"
+  //               className="text-sm text-blue-600 underline"
+  //             >
+  //               Nghe ở tab mới
+  //             </a>
+  //           </div>
+  //         );
+  //       }
+
+  //       if (documentTypes.includes(type) || archiveTypes.includes(type)) {
+  //         return (
+  //           <div key={index} className="block w-full">
+  //             <a
+  //               href={url}
+  //               target="_blank"
+  //               rel="noopener noreferrer"
+  //               className="flex items-center gap-1 px-2 pt-4 font-[650] underline text-blue-500"
+  //             >
+  //               <IoDocuments size={48} color="#00aaff" /> {name}
+  //             </a>
+  //           </div>
+  //         );
+  //       }
+
+  //       // Fallback
+  //       return (
+  //         <a
+  //           key={index}
+  //           href={url}
+  //           download={name}
+  //           className="text-blue-600 underline w-full"
+  //         >
+  //           {name}
+  //         </a>
+  //       );
+  //     })}
+  //   </div>
+  // );
 };
 
 RenderMessageContent.propTypes = {
