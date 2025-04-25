@@ -14,6 +14,7 @@ import {
 } from "../services/groupService";
 import { typeContentState } from "../recoil/leftPanelAtom";
 import { isInviteIntoGroupModalOpenState } from "../recoil/inviteIntoGroupAtom";
+import { membersInviteState } from "../recoil/inviteIntoGroupAtom";
 
 const ManagerGroup = ({ members }) => {
   const isManagerGroup = useRecoilValue(isManagerGroupState);
@@ -24,6 +25,7 @@ const ManagerGroup = ({ members }) => {
   const setIsInviteIntoGroupModalOpen = useSetRecoilState(
     isInviteIntoGroupModalOpenState
   );
+  const setMembersInvite = useSetRecoilState(membersInviteState);
 
   const isUserAuth = (userID) => userAuth?.userID === userID;
   const roleAdmin = (role) => role === "admin";
@@ -83,6 +85,7 @@ const ManagerGroup = ({ members }) => {
   };
 
   const handleOpenInviteIntoGroupModal = () => {
+    setMembersInvite(members);
     setIsInviteIntoGroupModalOpen(true);
   };
 

@@ -11,7 +11,7 @@ import { useRecoilValue } from "recoil";
 import Loading from "./Loading";
 import { typeContentState } from "../recoil/leftPanelAtom";
 import { inviteGroup } from "../services/groupService";
-
+import { membersInviteState } from "../recoil/inviteIntoGroupAtom";
 const InviteIntoGroupModal = ({ isOpen, onClose }) => {
   const [isLoadingSearch, setIsLoadingSearch] = useState(false);
   const [phoneNumber, setPhoneNumber] = useState("");
@@ -64,7 +64,13 @@ const InviteIntoGroupModal = ({ isOpen, onClose }) => {
       setIsLoadingSearch(false);
     }
   };
-
+  const membersInvite = useRecoilValue(membersInviteState);
+  console.log("membersInvite", membersInvite);
+  const isMemberInvite = (user) => {
+    return membersInvite.some(
+      (member) => member.userInfo.userID === user.userID
+    );
+  };
   const toggleSelectUser = (user) => {
     const exists = selectedUsers.find((u) => u.userID === user.userID);
     if (exists) {
@@ -143,35 +149,51 @@ const InviteIntoGroupModal = ({ isOpen, onClose }) => {
 
           {searchResults.length > 0 ? (
             <div className="h-20 max-h-20 overflow-y-auto">
-              {searchResults.map((user) => (
-                <div
-                  key={user.userID}
-                  className="px-4 flex justify-between items-center hover:bg-gray-200 cursor-pointer"
-                  onClick={() => toggleSelectUser(user)}
-                >
-                  <div className="flex items-center py-2">
-                    <input
-                      type="checkbox"
-                      checked={
-                        !!selectedUsers.find((u) => u.userID === user.userID)
-                      }
-                      readOnly
-                      className="mr-2"
-                    />
-                    <img
-                      src={user.avatar}
-                      alt={user.avatar}
-                      className="w-10 h-10 rounded-full mr-3"
-                    />
-                    <div>
-                      <p className="text-[14px]">{user.fullName}</p>
-                      <p className="text-xs text-gray-500">
-                        {user.phoneNumber}
-                      </p>
+              {searchResults.map((user) => {
+                const isDisabled = isMemberInvite(user);
+                const isSelected = !!selectedUsers.find(
+                  (u) => u.userID === user.userID
+                );
+                return (
+                  <div
+                    key={user.userID}
+                    className={`px-4 flex justify-between items-center ${
+                      isDisabled
+                        ? "bg-gray-100 cursor-not-allowed"
+                        : "hover:bg-gray-200 cursor-pointer"
+                    }`}
+                    onClick={() => {
+                      if (!isDisabled) toggleSelectUser(user);
+                    }}
+                  >
+                    <div className="flex items-center py-2">
+                      {isDisabled ? (
+                        <span className="text-xs text-green-600 font-medium mr-2">
+                          Đã trong nhóm
+                        </span>
+                      ) : (
+                        <input
+                          type="checkbox"
+                          checked={isSelected}
+                          readOnly
+                          className="mr-2"
+                        />
+                      )}
+                      <img
+                        src={user.avatar}
+                        alt={user.avatar}
+                        className="w-10 h-10 rounded-full mr-3"
+                      />
+                      <div>
+                        <p className="text-[14px]">{user.fullName}</p>
+                        <p className="text-xs text-gray-500">
+                          {user.phoneNumber}
+                        </p>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
 
               <div className="py-2 text-center"></div>
             </div>
@@ -182,35 +204,47 @@ const InviteIntoGroupModal = ({ isOpen, onClose }) => {
           <h3 className="text-xs px-4 text-gray-500 mb-2">Dánh sách bạn bè</h3>
           {friendList.length > 0 ? (
             <div className="h-40 max-h-40 overflow-y-auto">
-              {friendList.map((user) => (
-                <div
-                  key={user.userID}
-                  className="px-4 flex justify-between items-center hover:bg-gray-200 cursor-pointer"
-                  onClick={() => toggleSelectUser(user)}
-                >
-                  <div className="flex items-center py-2">
-                    <input
-                      type="checkbox"
-                      checked={
-                        !!selectedUsers.find((u) => u.userID === user.userID)
-                      }
-                      readOnly
-                      className="mr-2"
-                    />
-                    <img
-                      src={user.avatar}
-                      alt={user.avatar}
-                      className="w-10 h-10 rounded-full mr-3"
-                    />
-                    <div>
-                      <p className="text-[14px]">{user.fullName}</p>
-                      <p className="text-xs text-gray-500">
-                        {user.phoneNumber}
-                      </p>
+              {friendList.map((user) => {
+                const isDisabled = isMemberInvite(user);
+                const isSelected = !!selectedUsers.find(
+                  (u) => u.userID === user.userID
+                );
+                return (
+                  <div
+                    key={user.userID}
+                    className="px-4 flex justify-between items-center hover:bg-gray-200 cursor-pointer"
+                    onClick={() => {
+                      if (!isDisabled) toggleSelectUser(user);
+                    }}
+                  >
+                    <div className="flex items-center py-2">
+                      {isDisabled ? (
+                        <span className="text-xs text-green-600 font-medium mr-2">
+                          Đã trong nhóm
+                        </span>
+                      ) : (
+                        <input
+                          type="checkbox"
+                          checked={isSelected}
+                          readOnly
+                          className="mr-2"
+                        />
+                      )}
+                      <img
+                        src={user.avatar}
+                        alt={user.avatar}
+                        className="w-10 h-10 rounded-full mr-3"
+                      />
+                      <div>
+                        <p className="text-[14px]">{user.fullName}</p>
+                        <p className="text-xs text-gray-500">
+                          {user.phoneNumber}
+                        </p>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           ) : (
             <div className="py-4 text-center text-gray-500"></div>
