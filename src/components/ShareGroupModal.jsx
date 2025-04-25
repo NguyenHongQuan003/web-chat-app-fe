@@ -152,7 +152,7 @@ const ShareGroupModal = ({ isOpen, onClose }) => {
         </div>
 
         {/* Search input */}
-        <div className="px-2 py-4">
+        <div className="px-2 py-2">
           <div className="flex space-x-1">
             <Input
               type="tel"
@@ -180,8 +180,8 @@ const ShareGroupModal = ({ isOpen, onClose }) => {
         </div>
 
         {/* Search results */}
-        <div className="flex">
-          <div className="w-1/2 border-r border-gray-300">
+        <div className="flex ">
+          <div className="min-w-1/2 border-r border-gray-300">
             <h3 className="text-xs px-4 text-gray-500 mb-2">
               Kết quả tìm kiếm
             </h3>
@@ -246,7 +246,7 @@ const ShareGroupModal = ({ isOpen, onClose }) => {
             </button>
 
             {activeTab === "friends" && friendList.length > 0 && (
-              <div className="h-40 max-h-40 overflow-y-auto">
+              <div className="h-60 max-h-60 overflow-y-auto">
                 {friendList.map((user) => (
                   <div
                     key={user.userID}
@@ -280,7 +280,7 @@ const ShareGroupModal = ({ isOpen, onClose }) => {
             )}
 
             {activeTab === "groups" && groupList.length > 0 && (
-              <div className="h-40 max-h-40 overflow-y-auto">
+              <div className="h-60 max-h-60 overflow-y-auto">
                 {groupList.map((group) => (
                   <div
                     key={group.groupID}
@@ -317,7 +317,7 @@ const ShareGroupModal = ({ isOpen, onClose }) => {
               Đã chọn: {selectedUsers.length}/100
             </h4>
             {selectedUsers.length > 0 && (
-              <div className="w-full h-30 max-h-30 overflow-y-auto">
+              <div className="w-full h-90 max-h-90 overflow-y-auto">
                 <div className="flex flex-wrap gap-2 px-2">
                   {selectedUsers.map((item) => (
                     <div
