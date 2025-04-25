@@ -2,6 +2,7 @@ import { useRef, useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import { IoAttach, IoSend } from "react-icons/io5";
 import { FaRegSmile } from "react-icons/fa";
+import RenderMessageContent from "./RenderMessageContent";
 
 const MessageInput = ({
   isSending = false,
@@ -80,7 +81,8 @@ const MessageInput = ({
           <div className="flex flex-col text-sm text-gray-800 max-w-[90%]">
             <span className="font-medium text-blue-600">Đang trả lời:</span>
             <span className="line-clamp-2 break-words">
-              {replyMessage.messageContent || "Tệp tin được đính kèm"}
+              {/* {replyMessage.messageContent || "Tệp tin được đính kèm"} */}
+              <RenderMessageContent message={replyMessage} />
             </span>
           </div>
           <button

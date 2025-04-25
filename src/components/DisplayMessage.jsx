@@ -148,7 +148,7 @@ const DisplayMessage = ({
                 <div className="flex items-center gap-x-2">
                   <FaQuoteRight color="#0078E8" />
                   <p className="font-bold">
-                    {senderName.userID === message.senderID
+                    {senderName.userID === userAuth.userID
                       ? "Bạn"
                       : senderName.fullName}
                   </p>
