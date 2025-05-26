@@ -121,6 +121,32 @@ const DisplayMessageGroup = ({
   const isRevoked = message.revoke;
   const isDeletedBySender = message.senderDelete && isSender;
 
+  const isSystemMessage = message?.messageType === "system";
+  const [isExpanded, setIsExpanded] = useState(false);
+  if (isSystemMessage) {
+    return (
+      // <div className="flex justify-center">
+      //   <div className="max-w-[80%] bg-white rounded-full text-gray-400 italic px-2 py-1 text-center">
+      //     {message.messageContent}
+      //   </div>
+      // </div>
+      <div className="flex justify-center">
+        <div
+          className={`max-w-[70%] bg-white rounded-full text-gray-400 italic px-3 py-1 text-center cursor-pointer transition-all duration-300
+            ${
+              isExpanded
+                ? "whitespace-normal break-words"
+                : "truncate whitespace-nowrap overflow-hidden text-ellipsis"
+            }`}
+          onClick={() => setIsExpanded(!isExpanded)}
+          title={isExpanded ? "" : message.messageContent}
+        >
+          {message.messageContent}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className={`flex ${isSender ? "justify-end" : "justify-start"} gap-2`}>
       {!isSender && sender?.avatar && (
@@ -173,7 +199,9 @@ const DisplayMessageGroup = ({
                 </div>
               </div>
             )}
-            <RenderMessageContent message={message} />
+            {message?.messageType !== "system" && (
+              <RenderMessageContent message={message} />
+            )}
           </>
         )}
 

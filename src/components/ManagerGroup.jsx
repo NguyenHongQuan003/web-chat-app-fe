@@ -136,6 +136,7 @@ const ManagerGroup = ({ members }) => {
       <div className="flex justify-center items-center px-2">
         <button
           onClick={handleOpenInviteIntoGroupModal}
+          hidden={!roleAdmin(roleOfUserAuth)} // Chỉ hiển thị khi user là admin
           className="flex items-center bg-gray-200 w-full py-1 rounded-xs mt-4 cursor-pointer hover:bg-gray-300 justify-center gap-1.5"
         >
           <FaUserPlus color="#5c6b82" />

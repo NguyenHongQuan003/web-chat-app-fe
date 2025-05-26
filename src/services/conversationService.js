@@ -36,3 +36,15 @@ export const haveTheyChatted = async (userID) => {
     throw error;
   }
 };
+// /updateStateSeen/:conversationId
+export const updateStateSeen = async (conversationID) => {
+  try {
+    const response = await axiosInstance.post(
+      `/conversations/updateStateSeen/${conversationID}`
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error updating state seen:", error);
+    throw error;
+  }
+};

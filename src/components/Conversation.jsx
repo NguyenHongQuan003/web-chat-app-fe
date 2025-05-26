@@ -2,7 +2,7 @@ import PropTypes from "prop-types";
 import { useRecoilState } from "recoil";
 import { typeContentState } from "../recoil/leftPanelAtom";
 import { useEffect, useState } from "react";
-import { getReceiver } from "../services/conversationService";
+import { getReceiver, updateStateSeen } from "../services/conversationService";
 import { parseTimestamp, safeParseArray } from "../utils/parse";
 import { useAuth } from "../utils/authUtils";
 import { getGroupInfo } from "../services/groupService";
@@ -11,6 +11,7 @@ const Conversation = ({ obj }) => {
   const [typeContent, setTypeContent] = useRecoilState(typeContentState);
   const [receiver, setReceiver] = useState("");
   const [groupInfo, setGroupInfo] = useState("");
+  const [isSeen, setIsSeen] = useState(obj?.conversation?.isSeenMessage);
   const { user: userAuth } = useAuth();
 
   useEffect(() => {
@@ -46,13 +47,19 @@ const Conversation = ({ obj }) => {
       fetchInfoGroup();
     }
   }, [obj.conversation.conversationType, obj.conversation.conversationID]);
-  const handleClick = () => {
-    // console.log("handleClick conversation", obj);
+  const handleClick = async () => {
+    const conversationID = obj?.conversation?.conversationID;
+    if (conversationID === "" || conversationID === null) return;
+    try {
+      await updateStateSeen(conversationID);
+      setIsSeen(true);
+    } catch (err) {
+      console.error("Lỗi khi cập nhật trạng thái đã xem:", err);
+    }
     setTypeContent({
       contentName: "conversation",
       conversation: obj,
     });
-    // console.log("obj", obj);
   };
   const isSender = obj.lastMessage?.senderID === userAuth?.userID;
 
@@ -77,9 +84,9 @@ const Conversation = ({ obj }) => {
                   className="w-full h-full rounded-full object-cover"
                 />
               </span>
-              <div className="space-y-1">
+              <div className={`space-y-1 ${isSeen ? "" : "font-bold"}`}>
                 <p>{receiver?.fullName}</p>
-                <p className="text-sm text-gray-600 truncate max-w-[180px]">
+                <p className="text-sm truncate max-w-[180px]">
                   {isSender ? "Bạn: " : `${receiver?.fullName}: `}
                   {(() => {
                     if (obj?.lastMessage?.messageType === "text") {
@@ -98,7 +105,11 @@ const Conversation = ({ obj }) => {
               </div>
             </div>
 
-            <span className="text-xs text-gray-500 ml-auto">
+            <span
+              className={`text-xs ${
+                isSeen ? "text-gray-500" : "font-bold text-black"
+              } ml-auto`}
+            >
               {parseTimestamp(obj?.lastMessage?.updatedAt)}
             </span>
           </div>
@@ -125,9 +136,9 @@ const Conversation = ({ obj }) => {
                   className="w-full h-full rounded-full object-cover"
                 />
               </span>
-              <div className="space-y-1">
+              <div className={`space-y-1 ${isSeen ? "" : "font-bold"}`}>
                 <p>{groupInfo?.groupName}</p>
-                <p className="text-sm text-gray-600 truncate max-w-[180px]">
+                <p className="text-sm truncate max-w-[180px]">
                   {obj?.lastMessage?.messageContent ? (
                     <>
                       {isSender ? "Bạn: " : `${receiver?.fullName}: `}
@@ -153,7 +164,11 @@ const Conversation = ({ obj }) => {
               </div>
             </div>
 
-            <span className="text-xs text-gray-500 ml-auto">
+            <span
+              className={`text-xs ml-auto ${
+                isSeen ? "text-gray-500" : "font-bold text-black"
+              }`}
+            >
               {parseTimestamp(obj?.lastMessage?.updatedAt)}
             </span>
           </div>
