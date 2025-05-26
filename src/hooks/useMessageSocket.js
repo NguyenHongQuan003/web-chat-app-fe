@@ -51,6 +51,7 @@ const useMessageSocket = (socket, userID, messages, setMessages) => {
     socket.on("deleteMessageGroup", handleNewMessage);
     socket.on("memberKicked", handleNewMessage);
     socket.on("newMember", handleNewMessage);
+    socket.on("leaveMember", handleNewMessage);
 
     return () => {
       socket.off("newMessage", handleNewMessage);
@@ -61,6 +62,7 @@ const useMessageSocket = (socket, userID, messages, setMessages) => {
       socket.off("deleteMessageGroup", handleNewMessage);
       socket.off("memberKicked", handleNewMessage);
       socket.off("newMember", handleNewMessage);
+      socket.off("leaveMember", handleNewMessage);
     };
   }, [socket, userID, messages, setMessages, setHasNewMessage, typeContent]);
 };
