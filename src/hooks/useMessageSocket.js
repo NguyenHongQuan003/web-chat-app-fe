@@ -14,15 +14,28 @@ const useMessageSocket = (socket, userID, messages, setMessages) => {
       console.log("New message received:", data);
       const fetchedMessages = async () => {
         try {
-          const conversationID =
-            typeContent.conversation.conversation.conversationID;
+          let conversationID =
+            typeContent?.conversation?.conversation?.conversationID;
+          console.log("conversationID", conversationID);
+          console.log("data.conversationID", data?.conversationID);
+          if (conversationID === undefined || conversationID === null) {
+            console.log(
+              "conversationID is undefined or null, using data.conversationID"
+            );
+            conversationID = data.conversationID;
+          }
           const fetchedMessages = await getMessagesByConversation(
             conversationID
           );
           const sortedMessages = fetchedMessages.sort(
             (a, b) => new Date(a.createdAt) - new Date(b.createdAt)
           );
+          // if (
+          //   data.conversationID ===
+          //   typeContent.conversation.conversation.conversationID
+          // ) {
           setMessages(sortedMessages);
+          // }
         } catch {
           setMessages([]);
         }

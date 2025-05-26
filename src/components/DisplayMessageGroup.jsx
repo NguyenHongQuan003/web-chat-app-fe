@@ -33,7 +33,6 @@ const DisplayMessageGroup = ({
         const senderData = members.find(
           (member) => member.userInfo.userID === senderId
         );
-        console.log("Sender data:", senderData.userInfo);
         if (senderData) {
           setSender(senderData.userInfo);
         }
