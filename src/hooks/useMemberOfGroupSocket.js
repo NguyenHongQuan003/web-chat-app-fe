@@ -30,6 +30,8 @@ const useMemberOfGroupSocket = (socket, userID, setMembers) => {
     fetchMembersOfGroup();
 
     const handleKickedFromGroup = (data) => {
+      if (data.memberID !== userID) return; // Chỉ xử lý nếu chính người dùng bị kicks
+
       const fetchInfoGroup = async () => {
         const conversationID = data.conversationID;
         if (!conversationID) return;

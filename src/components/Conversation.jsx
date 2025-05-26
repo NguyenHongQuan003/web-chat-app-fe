@@ -141,21 +141,27 @@ const Conversation = ({ obj }) => {
                 <p className="text-sm truncate max-w-[180px]">
                   {obj?.lastMessage?.messageContent ? (
                     <>
-                      {isSender ? "Bạn: " : `${receiver?.fullName}: `}
-                      {(() => {
-                        if (obj?.lastMessage?.messageType === "text") {
-                          return obj?.lastMessage?.messageContent;
-                        }
+                      {obj?.lastMessage?.messageType === "system" ? (
+                        obj?.lastMessage?.messageContent
+                      ) : (
+                        <>
+                          {isSender ? "Bạn: " : `${receiver?.fullName}: `}
+                          {(() => {
+                            if (obj?.lastMessage?.messageType === "text") {
+                              return obj?.lastMessage?.messageContent;
+                            }
 
-                        const parsedContent = safeParseArray(
-                          obj?.lastMessage?.messageContent
-                        );
-                        return Array.isArray(parsedContent)
-                          ? `${parsedContent.length} file${
-                              parsedContent.length > 1 ? "s" : ""
-                            }`
-                          : obj?.lastMessage?.messageContent;
-                      })()}
+                            const parsedContent = safeParseArray(
+                              obj?.lastMessage?.messageContent
+                            );
+                            return Array.isArray(parsedContent)
+                              ? `${parsedContent.length} file${
+                                  parsedContent.length > 1 ? "s" : ""
+                                }`
+                              : obj?.lastMessage?.messageContent;
+                          })()}
+                        </>
+                      )}
                     </>
                   ) : (
                     "" // nếu không có messageContent hợp lệ, hiển thị rỗng

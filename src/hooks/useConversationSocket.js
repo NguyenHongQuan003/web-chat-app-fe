@@ -25,9 +25,11 @@ const useConversationSocket = (socket, userID) => {
     fetchConversationList();
 
     socket.on("notification", handleGetConversationList);
+    socket.on("memberKicked", handleGetConversationList);
 
     return () => {
       socket.off("notification", handleGetConversationList);
+      socket.off("memberKicked", handleGetConversationList);
     };
   }, [socket, userID, setConversationList]);
   return conversationList;

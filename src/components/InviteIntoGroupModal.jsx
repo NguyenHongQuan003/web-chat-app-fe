@@ -169,7 +169,12 @@ const InviteIntoGroupModal = ({ isOpen, onClose }) => {
                     <div className="flex items-center py-2">
                       {isDisabled ? (
                         <span className="text-xs text-green-600 font-medium mr-2">
-                          Đã trong nhóm
+                          <input
+                            type="checkbox"
+                            checked={true}
+                            readOnly
+                            className="mr-2"
+                          />
                         </span>
                       ) : (
                         <input
@@ -212,7 +217,11 @@ const InviteIntoGroupModal = ({ isOpen, onClose }) => {
                 return (
                   <div
                     key={user.userID}
-                    className="px-4 flex justify-between items-center hover:bg-gray-200 cursor-pointer"
+                    className={`px-4 flex justify-between items-center ${
+                      isDisabled
+                        ? "bg-gray-100 cursor-not-allowed"
+                        : "hover:bg-gray-200 cursor-pointer"
+                    }`}
                     onClick={() => {
                       if (!isDisabled) toggleSelectUser(user);
                     }}
@@ -220,7 +229,12 @@ const InviteIntoGroupModal = ({ isOpen, onClose }) => {
                     <div className="flex items-center py-2">
                       {isDisabled ? (
                         <span className="text-xs text-green-600 font-medium mr-2">
-                          Đã trong nhóm
+                          <input
+                            type="checkbox"
+                            checked={true}
+                            readOnly
+                            className="mr-2"
+                          />
                         </span>
                       ) : (
                         <input
@@ -287,7 +301,13 @@ const InviteIntoGroupModal = ({ isOpen, onClose }) => {
           </button>
           <button
             onClick={handleInvite}
-            className="cursor-pointer px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+            disabled={selectedUsers.length === 0 || isLoadingSearch}
+            className={`px-4 py-2 rounded text-white 
+    ${
+      selectedUsers.length === 0 || isLoadingSearch
+        ? "bg-gray-400"
+        : "bg-blue-500 hover:bg-blue-600 cursor-pointer"
+    }`}
           >
             {isLoadingSearch ? (
               <div className="flex items-center justify-center gap-2">
