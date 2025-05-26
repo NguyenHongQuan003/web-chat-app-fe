@@ -15,6 +15,10 @@ const Conversation = ({ obj }) => {
   const { user: userAuth } = useAuth();
 
   useEffect(() => {
+    setIsSeen(obj?.conversation?.isSeenMessage);
+  }, [obj?.conversation?.isSeenMessage]);
+
+  useEffect(() => {
     // console.log("obj", obj);
     const fetchReceiver = async () => {
       const conversationID = obj?.conversation?.conversationID;
