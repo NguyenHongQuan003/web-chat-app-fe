@@ -16,7 +16,7 @@ const useMemberOfGroupSocket = (socket, userID, setMembers) => {
       if (!conversationID) return;
       try {
         const members = await getMembersOfGroup(conversationID);
-        console.log("members", members.data);
+        // console.log("members", members.data);
         setMembers(members.data);
       } catch (err) {
         console.error("Lỗi khi lấy members nhóm:", err);

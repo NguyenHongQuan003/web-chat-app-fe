@@ -37,3 +37,27 @@ export const isShareGroupModalOpenState = atom({
   key: "isShareGroupModalOpenState",
   default: false,
 });
+
+export const isVideoCallModalOpenState = atom({
+  key: "isVideoCallModalOpenState",
+  default: false,
+});
+
+export const incomingCallState = atom({
+  key: "incomingCallState",
+  default: null,
+});
+
+export const statusOfCallVideo = atom({
+  key: "statusOfCallVideo",
+  default: "idle", // idle, calling, receiving, connected
+});
+
+export const infoChatVideoState = atom({
+  key: "infoChatVideoState",
+  default: {
+    conversationID: null,
+    receiver: null,
+    isGroup: false,
+  },
+});

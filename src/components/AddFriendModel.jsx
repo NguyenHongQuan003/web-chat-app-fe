@@ -26,7 +26,7 @@ const AddFriendModal = ({ isOpen, onClose }) => {
   const modalRef = useRef(null);
   const { user: userAuth } = useAuth();
   const setTypeContent = useSetRecoilState(typeContentState);
-  const typeContent = useRecoilValue(typeContentState);
+  // const typeContent = useRecoilValue(typeContentState);
 
   const [friendList, setFriendList] = useState([]);
   useEffect(() => {
@@ -130,9 +130,9 @@ const AddFriendModal = ({ isOpen, onClose }) => {
     }
   };
 
-  useEffect(() => {
-    console.log("typeContent", typeContent);
-  }, [typeContent]);
+  // useEffect(() => {
+  //   console.log("typeContent", typeContent);
+  // }, [typeContent]);
 
   if (!isOpen) return null;
 

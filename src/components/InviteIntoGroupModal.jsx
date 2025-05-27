@@ -65,7 +65,7 @@ const InviteIntoGroupModal = ({ isOpen, onClose }) => {
     }
   };
   const membersInvite = useRecoilValue(membersInviteState);
-  console.log("membersInvite", membersInvite);
+  // console.log("membersInvite", membersInvite);
   const isMemberInvite = (user) => {
     return membersInvite.some(
       (member) => member.userInfo.userID === user.userID

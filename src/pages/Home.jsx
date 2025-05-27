@@ -30,6 +30,14 @@ import { isCreateGroupModalOpenState } from "../recoil/createGroupAtom";
 import InviteIntoGroupModal from "../components/InviteIntoGroupModal";
 import { isInviteIntoGroupModalOpenState } from "../recoil/inviteIntoGroupAtom";
 import ShareGroupModal from "../components/ShareGroupModal";
+import VideoCallModal from "../components/VideoCallModal";
+import {
+  isVideoCallModalOpenState,
+  statusOfCallVideo,
+  incomingCallState,
+} from "../recoil/leftPanelAtom";
+import useInComingCall from "../hooks/useInComingCall";
+import IncomingCallNotification from "../components/IncomingCallNotification";
 
 const Home = () => {
   const socket = useSocket();
@@ -53,6 +61,10 @@ const Home = () => {
   const [isShareGroupModalOpen, setIsShareGroupModalOpen] = useRecoilState(
     isShareGroupModalOpenState
   );
+  const [isVideoCallOpen, setIsVideoCallOpen] = useRecoilState(
+    isVideoCallModalOpenState
+  );
+  const setCallStatus = useSetRecoilState(statusOfCallVideo);
   const tabs = [
     { id: "chat", icon: FaCommentDots, label: "Tin nhắn" },
     { id: "contacts", icon: FaAddressBook, label: "Danh bạ" },
@@ -71,7 +83,7 @@ const Home = () => {
 
   const typeContent = useRecoilValue(typeContentState);
   useEffect(() => {
-    console.log("typeContent", typeContent);
+    // console.log("typeContent", typeContent);
   }, [typeContent]);
 
   useEffect(() => {
@@ -89,6 +101,19 @@ const Home = () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+
+  // notification for incoming call
+  const [inComingCall, setInComingCall] = useRecoilState(incomingCallState);
+  useInComingCall(socket, user?.userID);
+  const handleAnswerCall = () => {
+    setIsVideoCallOpen(true);
+    setCallStatus("receiving");
+    setInComingCall(null);
+  };
+
+  const handleRejectCall = () => {
+    setInComingCall(null);
+  };
 
   return (
     <div className=" flex h-screen bg-gray-100">
@@ -179,6 +204,17 @@ const Home = () => {
         isOpen={isInviteIntoGroupModalOpen}
         onClose={() => setIsInviteIntoGroupModalOpen(false)}
       />
+      <VideoCallModal
+        isOpen={isVideoCallOpen}
+        onClose={() => setIsVideoCallOpen(false)}
+      />
+      {inComingCall !== null && !isVideoCallOpen && (
+        <IncomingCallNotification
+          callerID={inComingCall.from}
+          onAnswer={handleAnswerCall}
+          onReject={handleRejectCall}
+        />
+      )}
     </div>
   );
 };

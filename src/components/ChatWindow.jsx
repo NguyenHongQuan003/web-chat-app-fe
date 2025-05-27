@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import {
-  BsThreeDotsVertical,
-  BsTelephone,
+  // BsThreeDotsVertical,
+  // BsTelephone,
   BsCameraVideo,
 } from "react-icons/bs";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import { typeContentState } from "../recoil/leftPanelAtom";
 import { onlineUsersState } from "../recoil/onlineUsersAtom";
 import {
@@ -24,6 +24,11 @@ import { useAuth } from "../utils/authUtils";
 import data from "@emoji-mart/data";
 import Picker from "@emoji-mart/react";
 import { FaChevronDown } from "react-icons/fa";
+import {
+  isVideoCallModalOpenState,
+  infoChatVideoState,
+} from "../recoil/leftPanelAtom";
+
 const ChatWindow = () => {
   const socket = useSocket();
   const { user } = useAuth();
@@ -36,9 +41,12 @@ const ChatWindow = () => {
   const [isSending, setIsSending] = useState(false);
   const [selectedReplyMessage, setSelectedReplyMessage] = useState(null);
   const pickerRef = useRef(null);
+  const setIsVideoCallOpen = useSetRecoilState(isVideoCallModalOpenState);
+  const setInfoChatVideo = useSetRecoilState(infoChatVideoState);
+  const infoChatVideo = useRecoilValue(infoChatVideoState);
 
   useEffect(() => {
-    console.log("replyMessage", selectedReplyMessage);
+    // console.log("replyMessage", selectedReplyMessage);
   }, [selectedReplyMessage]);
 
   useEffect(() => {
@@ -175,6 +183,20 @@ const ChatWindow = () => {
       console.error("Lỗi khi gửi tin nhắn:", err);
     }
   };
+  const handleOpenVideoCall = () => {
+    if (!receiver || !receiver.userID) return;
+    setInfoChatVideo({
+      conversationID: typeContent.conversation.conversation.conversationID,
+      receiver: receiver,
+      isGroup:
+        typeContent.conversation.conversation.conversationType === "group",
+    });
+    setIsVideoCallOpen(true);
+  };
+
+  useEffect(() => {
+    // console.log("infoChatVideo", infoChatVideo);
+  }, [infoChatVideo]);
   return (
     <div className="flex flex-grow">
       <div className="bg-white flex flex-col flex-grow">
@@ -203,9 +225,12 @@ const ChatWindow = () => {
             </div>
           </div>
           <div className="flex items-center gap-4 text-gray-600">
-            <BsTelephone className="w-5 h-5 cursor-pointer" />
-            <BsCameraVideo className="w-5 h-5 cursor-pointer" />
-            <BsThreeDotsVertical className="w-5 h-5 cursor-pointer" />
+            {/* <BsTelephone className="w-5 h-5 cursor-pointer" /> */}
+            <BsCameraVideo
+              className="w-5 h-5 cursor-pointer hover:text-blue-500"
+              onClick={handleOpenVideoCall}
+            />
+            {/* <BsThreeDotsVertical className="w-5 h-5 cursor-pointer" /> */}
           </div>
         </div>
 
@@ -270,8 +295,6 @@ const ChatWindow = () => {
           </form>
         </div>
       </div>
-
-      {/* <ChatInfo /> */}
     </div>
   );
 };

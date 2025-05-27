@@ -88,14 +88,14 @@ const ChatGroupWindow = () => {
   }, [messages, setHasNewMessage]);
 
   useEffect(() => {
-    console.log("typeContent", typeContent);
+    // console.log("typeContent", typeContent);
     const fetchInfoGroup = async () => {
       const conversationID =
         typeContent.conversation?.conversation?.conversationID;
       if (!conversationID) return;
       try {
         const groupInfo = await getGroupInfo(conversationID);
-        console.log("groupInfo", groupInfo.data);
+        // console.log("groupInfo", groupInfo.data);
         setGroupInfo(groupInfo.data);
       } catch (err) {
         console.error("Lỗi khi lấy thông tin nhóm:", err);
@@ -111,7 +111,7 @@ const ChatGroupWindow = () => {
         const sortedMessages = fetchedMessages.sort(
           (a, b) => new Date(a.createdAt) - new Date(b.createdAt)
         );
-        console.log("sortedMessages", sortedMessages);
+        // console.log("sortedMessages", sortedMessages);
         setMessages(sortedMessages);
       } catch {
         setMessages([]);
