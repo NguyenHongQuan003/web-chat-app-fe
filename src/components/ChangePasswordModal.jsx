@@ -194,7 +194,7 @@ const ForgotPasswordModal = ({ isOpen, onClose }) => {
 
   return (
     <div
-      className="fixed inset-0 flex bg-[#000000]/60 justify-center items-center z-50 opacity-0 animate-[fadeIn_0.3s_ease-in-out_forwards]"
+      className="fixed inset-0 flex bg-[#000000]/60 justify-center items-center z-50"
       onClick={handleClickOutside}
     >
       <div
