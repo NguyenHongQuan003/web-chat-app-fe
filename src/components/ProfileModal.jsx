@@ -56,7 +56,7 @@ const ProfileModal = ({ isOpen, onClose }) => {
     setIsLoading(true);
     try {
       const response = await updateAvatarUser(formData);
-      console.log("location:", response.avatar);
+      // console.log("location:", response.avatar);
       updateUser({ ...user, avatar: response.avatar });
       toast.success("Cập nhật ảnh đại diện thành công");
       setEditAvatar(false);

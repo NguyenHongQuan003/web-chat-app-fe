@@ -103,7 +103,7 @@ const CreateGroupModal = ({ isOpen, onClose }) => {
 
     try {
       const response = await createGroup(groupName, members, groupImage);
-      console.log("Group created successfully:", response);
+      // console.log("Group created successfully:", response);
       toast.success("Tạo nhóm thành công!");
       handleCancel();
       setTypeContent({

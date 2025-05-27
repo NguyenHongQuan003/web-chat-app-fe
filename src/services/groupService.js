@@ -29,7 +29,7 @@ export const getMembersOfGroup = async (groupID) => {
 };
 
 export const inviteGroup = async (groupID, members) => {
-  console.log("inviteGroup", groupID);
+  // console.log("inviteGroup", groupID);
   members.forEach((member) => {
     console.log("member", member);
   });
@@ -43,8 +43,8 @@ export const leaveGroup = async (groupID) => {
 
 // Kích thành viên khỏi nhóm
 export const kickMember = async (groupID, memberID) => {
-  console.log("kickMember", groupID);
-  console.log("memberID", memberID);
+  // console.log("kickMember", groupID);
+  // console.log("memberID", memberID);
   return axiosInstance.post("/groups/kick-member", { groupID, memberID });
 };
 
@@ -95,10 +95,10 @@ export const shareMessage = async (
   receiverIds,
   conversationID
 ) => {
-  console.log("messageID", messageID);
-  console.log("groupIDs", groupIDs);
-  console.log("receiverIds", receiverIds);
-  console.log("conversationID", conversationID);
+  // console.log("messageID", messageID);
+  // console.log("groupIDs", groupIDs);
+  // console.log("receiverIds", receiverIds);
+  // console.log("conversationID", conversationID);
   return axiosInstance.post("/groups/messages/share", {
     messageID,
     groupIDs,

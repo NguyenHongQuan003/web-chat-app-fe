@@ -36,7 +36,7 @@ const Conversation = ({ obj }) => {
       if (!conversationID) return;
       try {
         const groupInfo = await getGroupInfo(conversationID);
-        console.log("groupInfo", groupInfo.data);
+        // console.log("groupInfo", groupInfo.data);
         setGroupInfo(groupInfo.data);
       } catch (err) {
         console.error("Lỗi khi lấy thông tin nhóm:", err);

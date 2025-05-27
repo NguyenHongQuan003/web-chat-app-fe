@@ -7,7 +7,7 @@ export const sendFriendRequest = async (receiverId) => {
 
 export const cancelFriendRequest = async (receiverId) => {
   const response = await axiosInstance.get(`/friends/${receiverId}/cancel`);
-  console.log("cancelFriendRequest", response);
+  // console.log("cancelFriendRequest", response);
   return response.data;
 };
 
@@ -38,7 +38,7 @@ export const getFriendList = async () => {
 };
 
 export const deleteFriend = async (friendId) => {
-  console.log("deleteFriend", friendId);
+  // console.log("deleteFriend", friendId);
   const response = await axiosInstance.get(`/friends/remove/${friendId}`);
   return response.data;
 };

@@ -9,7 +9,7 @@ const useSocketOnlineStatus = (socket, userID) => {
     if (!socket || !userID) return;
 
     const handleOnlineUsers = (users) => {
-      console.log("Online users:", users);
+      // console.log("Online users:", users);
       const onlineUserSet = new Set(users);
       setOnlineUsers(onlineUserSet);
     };

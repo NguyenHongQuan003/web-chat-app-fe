@@ -11,17 +11,17 @@ const useMessageSocket = (socket, userID, messages, setMessages) => {
     if (!socket || !userID) return;
 
     const handleNewMessage = (data) => {
-      console.log("New message received:", data);
+      // console.log("New message received:", data);
       const fetchedMessages = async () => {
         try {
           let conversationID =
             typeContent?.conversation?.conversation?.conversationID;
-          console.log("conversationID", conversationID);
-          console.log("data.conversationID", data?.conversationID);
+          // console.log("conversationID", conversationID);
+          // console.log("data.conversationID", data?.conversationID);
           if (conversationID === undefined || conversationID === null) {
-            console.log(
-              "conversationID is undefined or null, using data.conversationID"
-            );
+            // console.log(
+            //   "conversationID is undefined or null, using data.conversationID"
+            // );
             conversationID = data.conversationID;
           }
           const fetchedMessages = await getMessagesByConversation(

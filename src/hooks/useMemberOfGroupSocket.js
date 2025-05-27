@@ -37,7 +37,7 @@ const useMemberOfGroupSocket = (socket, userID, setMembers) => {
         if (!conversationID) return;
         try {
           const groupInfo = await getGroupInfo(conversationID);
-          console.log("groupInfo", groupInfo.data);
+          // console.log("groupInfo", groupInfo.data);
           toast.error(`Bạn đã bị mời khỏi nhóm: ${groupInfo.data.groupName}`);
         } catch (err) {
           console.error("Lỗi khi lấy thông tin nhóm:", err);

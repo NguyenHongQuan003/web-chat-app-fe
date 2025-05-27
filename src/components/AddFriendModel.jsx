@@ -78,7 +78,7 @@ const AddFriendModal = ({ isOpen, onClose }) => {
   const handleAddFriend = async (receiverID) => {
     setIsLoading(true);
     try {
-      console.log("receiverID", receiverID);
+      // console.log("receiverID", receiverID);
       await sendFriendRequest(receiverID);
       toast.success("Đã gửi lời mời kết bạn!");
     } catch (error) {
@@ -104,7 +104,7 @@ const AddFriendModal = ({ isOpen, onClose }) => {
 
   const handleOpenWindowChat = async (user) => {
     onClose();
-    console.log("Open chat with user", user);
+    // console.log("Open chat with user", user);
     // Lấy conversation theo userAuth và receiver
     // Gọi API để lấy conversationID Nếu chưa có
     // setTypeContent với conversation = null và receiver là user
@@ -113,14 +113,14 @@ const AddFriendModal = ({ isOpen, onClose }) => {
     const response = await haveTheyChatted(user.userID);
     console.log("response open chat", response);
     if (response === null) {
-      console.log("Chưa có cuộc trò chuyện nào");
+      // console.log("Chưa có cuộc trò chuyện nào");
       setTypeContent({
         contentName: "conversation",
         conversation: null,
         receiver: user,
       });
     } else {
-      console.log("Đã có cuộc trò chuyện");
+      // console.log("Đã có cuộc trò chuyện");
       setTypeContent({
         contentName: "conversation",
         conversation: {

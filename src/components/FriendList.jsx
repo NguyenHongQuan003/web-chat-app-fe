@@ -132,7 +132,7 @@ const FriendList = () => {
     const fetchFriendList = async () => {
       try {
         const res = await getFriendList();
-        console.log("fetchFriendList", res);
+        // console.log("fetchFriendList", res);
         setFriendList(res);
       } catch (error) {
         console.log("fetchFriendList", error);

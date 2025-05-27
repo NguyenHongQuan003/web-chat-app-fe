@@ -11,7 +11,7 @@ const useInComingCall = (socket, userID) => {
       setInComingCall({ from, offer });
     });
     socket.on("call-ended", () => {
-      console.log("Call ended by the other user");
+      // console.log("Call ended by the other user");
       setInComingCall(null);
     });
 
