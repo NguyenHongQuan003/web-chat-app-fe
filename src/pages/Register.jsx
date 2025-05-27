@@ -19,10 +19,12 @@ import {
   validatePassword,
   validatePhone,
 } from "../utils/validate";
+import useOTPCooldown from "../hooks/useOTPCooldown";
 
 const Register = () => {
   const [step, setStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
+  const { cooldown, isCooldownActive, startCooldown } = useOTPCooldown();
   const [formData, setFormData] = useState({
     phoneNumber: "0373644380",
     fullName: "",
@@ -98,7 +100,7 @@ const Register = () => {
 
       toast.success("OTP đã được gửi thành công!");
       toast.success("Vui lòng kiểm tra số điện thoại để nhận mã OTP");
-
+      startCooldown();
       setStep(2); // Chuyển sang bước nhập OTP
     } catch (error) {
       console.error("Không thể gửi OTP:", error.message);
@@ -233,13 +235,15 @@ const Register = () => {
             <Button
               type="submit"
               fullWidth
-              disabled={!!errors.phoneNumber || isLoading}
+              disabled={!!errors.phoneNumber || isLoading || isCooldownActive}
             >
               {isLoading ? (
                 <div className="flex items-center justify-center gap-2">
                   <Loading size="sm" />
                   <span>Đang xử lý...</span>
                 </div>
+              ) : isCooldownActive ? (
+                `Gửi lại sau ${cooldown}s`
               ) : (
                 "Tiếp tục"
               )}
@@ -253,7 +257,6 @@ const Register = () => {
               length={6}
               onChangeOTP={(otp) => {
                 setFormData({ ...formData, otp });
-                // console.log("OTP hiện tại OTP input:", otp);
                 handleChange({ target: { name: "otp", value: otp } });
               }}
               error={errors.otp}
@@ -275,14 +278,25 @@ const Register = () => {
                 "Xác nhận"
               )}
             </Button>
-            <Button
-              type="button"
-              variant="outline"
-              fullWidth
-              onClick={() => setStep(1)}
-            >
-              Quay lại
-            </Button>
+            <div className="flex gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                fullWidth
+                onClick={() => setStep(1)}
+              >
+                Quay lại
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                fullWidth
+                onClick={handleSendOTP}
+                disabled={isCooldownActive}
+              >
+                {isCooldownActive ? `Gửi lại sau ${cooldown}s` : "Gửi lại OTP"}
+              </Button>
+            </div>
           </form>
         );
       case 3:

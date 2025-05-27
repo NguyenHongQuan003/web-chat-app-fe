@@ -11,8 +11,9 @@ import Button from "./Button";
 import { isChangePasswordModalOpenState } from "../recoil/leftPanelAtom";
 import { useSetRecoilState } from "recoil";
 import { useNavigate } from "react-router-dom";
-
+import { useAuth } from "../utils/authUtils";
 const ForgotPasswordModal = ({ isOpen, onClose }) => {
+  const { signOut } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const [errors, setErrors] = useState({});
@@ -39,7 +40,11 @@ const ForgotPasswordModal = ({ isOpen, onClose }) => {
       case "newPassWord":
         setErrors((prev) => ({
           ...prev,
-          newPassWord: validatePassword(value),
+          newPassWord:
+            validatePassword(value) ||
+            (value === formData.currentPassWord
+              ? "Mật khẩu mới không được trùng với mật khẩu hiện tại"
+              : ""),
         }));
         setErrors((prev) => ({
           ...prev,
@@ -49,6 +54,7 @@ const ForgotPasswordModal = ({ isOpen, onClose }) => {
           ),
         }));
         break;
+
       case "confirm_password":
         setErrors((prev) => ({
           ...prev,
@@ -79,6 +85,7 @@ const ForgotPasswordModal = ({ isOpen, onClose }) => {
       toast.success("Cập nhật mật khẩu thành công");
       setIsChangePasswordModalOpen(false);
       initValue();
+      signOut();
       navigate("/login");
     } catch (error) {
       console.error(error.response.data.message);
@@ -148,7 +155,12 @@ const ForgotPasswordModal = ({ isOpen, onClose }) => {
             fullWidth
             onClick={handleSaveProfile}
             disabled={
-              !!errors.passWord || !!errors.confirm_password || isLoading
+              isLoading ||
+              !formData.currentPassWord ||
+              !formData.newPassWord ||
+              !formData.confirm_password ||
+              !!errors.newPassWord ||
+              !!errors.confirm_password
             }
           >
             {isLoading ? (
