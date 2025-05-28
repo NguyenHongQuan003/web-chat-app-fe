@@ -1,4 +1,9 @@
-import { FaUserFriends, FaUserPlus, FaUsers, FaUsersCog } from "react-icons/fa";
+import {
+  FaUserFriends,
+  FaUserPlus,
+  FaUsers,
+  // FaUsersCog
+} from "react-icons/fa";
 import { useRecoilState } from "recoil";
 import { typeContentState } from "../recoil/leftPanelAtom";
 
@@ -25,11 +30,11 @@ const SidebarContact = () => {
       icon: FaUserPlus,
       label: "Lời mời kết bạn",
     },
-    {
-      id: "groupInvites",
-      icon: FaUsersCog,
-      label: "Lời mời vào nhóm và cộng đồng",
-    },
+    // {
+    //   id: "groupInvites",
+    //   icon: FaUsersCog,
+    //   label: "Lời mời vào nhóm và cộng đồng",
+    // },
   ];
 
   return (

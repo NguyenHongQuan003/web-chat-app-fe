@@ -39,9 +39,9 @@ const ContentArea = () => {
     if (typeContent.contentName === "friendRequests") {
       return <FriendRequestList />;
     }
-    if (typeContent.contentName === "groupInvites") {
-      return <div>Group Invites</div>;
-    }
+    // if (typeContent.contentName === "groupInvites") {
+    //   return <div>Group Invites</div>;
+    // }
     return <Welcome />;
   };
 
