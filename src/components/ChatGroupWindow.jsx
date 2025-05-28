@@ -209,15 +209,15 @@ const ChatGroupWindow = () => {
               </div>
             </div>
             <div className="flex items-center gap-0.5 text-gray-600">
-              <button className="cursor-pointer hover:bg-gray-200 p-1.5 rounded-xs">
+              {/* <button className="cursor-pointer hover:bg-gray-200 p-1.5 rounded-xs">
                 <BsTelephone className="w-5 h-5 cursor-pointer" />
-              </button>
-              <button className="cursor-pointer hover:bg-gray-200 p-1.5 rounded-xs">
+              </button> */}
+              {/* <button className="cursor-pointer hover:bg-gray-200 p-1.5 rounded-xs">
                 <BsCameraVideo className="w-5 h-5 cursor-pointer" />
-              </button>
-              <button className="cursor-pointer hover:bg-gray-200 p-1.5 rounded-xs">
+              </button> */}
+              {/* <button className="cursor-pointer hover:bg-gray-200 p-1.5 rounded-xs">
                 <BsThreeDotsVertical className="w-5 h-5 cursor-pointer" />
-              </button>
+              </button> */}
               <button
                 onClick={() => setIsManagerGroupOpen(!isManagerGroupOpen)}
                 className={`cursor-pointer hover:bg-gray-200 p-1.5 rounded-xs`}

@@ -48,3 +48,16 @@ export const updateStateSeen = async (conversationID) => {
     throw error;
   }
 };
+
+// http://127.0.0.1:8022/api/v1/conversations/conversationNoSeen
+export const getConversationNoSeen = async () => {
+  try {
+    const response = await axiosInstance.get(
+      "/conversations/conversationNoSeen"
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching conversations with no seen state:", error);
+    throw error;
+  }
+};
