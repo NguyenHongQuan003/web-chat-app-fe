@@ -1,8 +1,5 @@
 import { useEffect, useRef, useState } from "react";
 import {
-  BsThreeDotsVertical,
-  BsTelephone,
-  BsCameraVideo,
   BsLayoutSidebarInsetReverse,
   BsLayoutSidebarReverse,
 } from "react-icons/bs";
