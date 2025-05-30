@@ -46,7 +46,9 @@ const RenderMessageContent = ({ message }) => {
 
   if (message?.messageType === "text") {
     return (
-      <p className="whitespace-pre-wrap px-2 pt-4">{message.messageContent}</p>
+      <p className="whitespace-pre-wrap break-words px-2 pt-4 max-w-3xl">
+        {message.messageContent}
+      </p>
     );
   }
 
